@@ -3,7 +3,6 @@
 import {
   Percent,
   ShieldAlert,
-  TrendingDown,
   TrendingUp,
   Wallet,
   type LucideIcon,
@@ -11,7 +10,7 @@ import {
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { type MetricData, type MetricId } from "@/lib/mock-data";
-import { cn, formatMetricChange, formatMetricValue } from "@/lib/utils";
+import { cn, formatMetricValue } from "@/lib/utils";
 
 interface MetricCardProps {
   metric: MetricData;
@@ -41,7 +40,6 @@ const badgeToneMap = {
 export default function MetricCard({ metric }: MetricCardProps) {
   const { dictionary: copy } = useLanguage();
   const Icon = iconMap[metric.id];
-  const ChangeIcon = metric.change >= 0 ? TrendingUp : TrendingDown;
 
   return (
     <article className="panel-card relative overflow-hidden p-5">
@@ -77,18 +75,12 @@ export default function MetricCard({ metric }: MetricCardProps) {
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <span
               className={cn(
-                "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-sm font-semibold ring-1 ring-inset",
-                badgeToneMap[metric.changeTone],
+                "inline-flex items-center rounded-full px-2.5 py-1 text-sm font-semibold ring-1 ring-inset",
+                badgeToneMap.neutral,
               )}
             >
-              <ChangeIcon className="h-3.5 w-3.5" />
-              {formatMetricChange(
-                metric.change,
-                metric.changeFormat,
-                metric.changeDigits ?? 2,
-              )}
+              {copy.basedOnCurrentTrades}
             </span>
-            <span className="text-sm text-slate-500">{copy.previousPeriod}</span>
           </div>
         </div>
       </div>

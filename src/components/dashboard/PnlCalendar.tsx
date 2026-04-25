@@ -1,38 +1,74 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import {
-  type CalendarDayPnl,
-  type CalendarSummary,
-} from "@/lib/mock-data";
+import type { CalendarStats } from "@/lib/trade-calculations";
 import {
   buildCalendarGrid,
   cn,
   formatCompactCurrency,
   formatCurrency,
+  formatMonthLabel,
   formatPercent,
+  parseSelectedMonth,
 } from "@/lib/utils";
 
 interface PnlCalendarProps {
-  dayValues: CalendarDayPnl[];
-  summary: CalendarSummary;
+  selectedMonth: string;
+  dailyPnlMap: Record<string, number>;
+  summary: CalendarStats;
+  onMonthChange: (nextMonth: string) => void;
 }
 
 export default function PnlCalendar({
-  dayValues,
+  selectedMonth,
+  dailyPnlMap,
   summary,
+  onMonthChange,
 }: PnlCalendarProps) {
-  const { dictionary: copy } = useLanguage();
-  const cells = buildCalendarGrid(2025, 4, dayValues);
+  const { dictionary: copy, locale } = useLanguage();
+  const { year, month } = parseSelectedMonth(selectedMonth);
+  const cells = buildCalendarGrid(year, month - 1, dailyPnlMap);
+  const tradedDays = summary.winningDays + summary.losingDays;
+  const winningDayRate =
+    tradedDays > 0 ? (summary.winningDays / tradedDays) * 100 : 0;
+  const losingDayRate =
+    tradedDays > 0 ? (summary.losingDays / tradedDays) * 100 : 0;
+
+  function shiftMonth(offset: number) {
+    const nextDate = new Date(year, month - 1 + offset, 1);
+    onMonthChange(
+      `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`,
+    );
+  }
 
   return (
     <section className="panel-card p-5 lg:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="panel-title">{copy.calendar.title}</h2>
-          <p className="mt-1 text-sm text-slate-500">{copy.monthLabel}</p>
+          <div className="mt-1 flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => shiftMonth(-1)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+              aria-label="Previous month"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+            <p className="text-sm text-slate-500">
+              {formatMonthLabel(selectedMonth, locale)}
+            </p>
+            <button
+              type="button"
+              onClick={() => shiftMonth(1)}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+              aria-label="Next month"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
         <button type="button" className="soft-pill w-fit">
           <span>{copy.monthlyLabel}</span>
@@ -97,7 +133,14 @@ export default function PnlCalendar({
       <div className="mt-6 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
         <div className="rounded-[18px] bg-[rgba(108,77,255,0.05)] px-4 py-4">
           <p className="text-sm text-slate-500">{copy.calendar.summary.totalPnl}</p>
-          <p className="mt-2 text-lg font-semibold text-emerald-600">
+          <p
+            className={cn(
+              "mt-2 text-lg font-semibold",
+              summary.totalPnl > 0 && "text-emerald-600",
+              summary.totalPnl < 0 && "text-rose-600",
+              summary.totalPnl === 0 && "text-slate-900",
+            )}
+          >
             {formatCurrency(summary.totalPnl)}
           </p>
         </div>
@@ -106,7 +149,7 @@ export default function PnlCalendar({
             {copy.calendar.summary.winningDays}
           </p>
           <p className="mt-2 text-lg font-semibold text-slate-900">
-            {summary.winningDays} ({formatPercent(summary.winningRate)})
+            {summary.winningDays} ({formatPercent(winningDayRate)})
           </p>
         </div>
         <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
@@ -114,13 +157,13 @@ export default function PnlCalendar({
             {copy.calendar.summary.losingDays}
           </p>
           <p className="mt-2 text-lg font-semibold text-slate-900">
-            {summary.losingDays} ({formatPercent(summary.losingRate)})
+            {summary.losingDays} ({formatPercent(losingDayRate)})
           </p>
         </div>
         <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
           <p className="text-sm text-slate-500">{copy.calendar.summary.bestDay}</p>
           <p className="mt-2 text-lg font-semibold text-[var(--accent)]">
-            {formatCurrency(summary.bestDay)}
+            {formatCurrency(summary.bestDayPnl)}
           </p>
         </div>
       </div>

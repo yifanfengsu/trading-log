@@ -2,10 +2,8 @@ import type {
   MetricId,
   ReviewId,
   SidebarMenuId,
-  StrategyId,
-  TradeSide,
-  TradeStatus,
 } from "@/lib/mock-data";
+import type { TradeSetup, TradeSide, TradeStatus } from "@/lib/trade-types";
 
 export type Locale = "zh" | "en";
 
@@ -17,13 +15,16 @@ export interface Dictionary {
   appSubtitle: string;
   periodRange: string;
   previousPeriod: string;
+  basedOnCurrentTrades: string;
   monthLabel: string;
   monthlyLabel: string;
   allAccounts: string;
   allMarkets: string;
   allStrategies: string;
+  addTrade: string;
   chooseMetric: string;
   lineChart: string;
+  emptyState: string;
   reviewDate: string;
   promo: {
     title: string;
@@ -49,6 +50,11 @@ export interface Dictionary {
   };
   review: {
     title: string;
+    pnlSummary: {
+      daily: string;
+      weekly: string;
+      monthly: string;
+    };
     items: Record<
       ReviewId,
       {
@@ -85,11 +91,38 @@ export interface Dictionary {
       pnl: string;
       rMultiple: string;
       status: string;
+      actions: string;
     };
+    edit: string;
+    delete: string;
   };
-  strategies: Record<StrategyId, string>;
+  strategies: Record<TradeSetup, string>;
   side: Record<TradeSide, string>;
   status: Record<TradeStatus, string>;
+  tradeForm: {
+    addTitle: string;
+    editTitle: string;
+    saveTrade: string;
+    saveChanges: string;
+    cancel: string;
+    closeTime: string;
+    symbol: string;
+    side: string;
+    setup: string;
+    entryPrice: string;
+    exitPrice: string;
+    riskPercent: string;
+    netPnl: string;
+    rMultiple: string;
+    notes: string;
+    tags: string;
+    symbolPlaceholder: string;
+    tagsPlaceholder: string;
+    enterSymbol: string;
+    enterValidNumber: string;
+    requiredFields: string;
+    deleteConfirm: string;
+  };
   language: {
     zh: string;
     en: string;
@@ -103,13 +136,16 @@ export const dictionaries: Record<Locale, Dictionary> = {
     appSubtitle: "个人交易仪表盘",
     periodRange: "2025年5月1日 - 2025年5月31日",
     previousPeriod: "较 4月1日 - 4月30日",
+    basedOnCurrentTrades: "基于当前交易数据",
     monthLabel: "2025年5月",
     monthlyLabel: "按月",
     allAccounts: "全部账户",
     allMarkets: "全部市场",
     allStrategies: "全部策略",
+    addTrade: "新增交易",
     chooseMetric: "选择指标",
     lineChart: "折线图",
+    emptyState: "暂无交易数据",
     reviewDate: "2025年5月31日",
     promo: {
       title: "稳定一致，才有优势。",
@@ -156,6 +192,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     review: {
       title: "今日复盘",
+      pnlSummary: {
+        daily: "当日盈亏",
+        weekly: "本周盈亏",
+        monthly: "本月盈亏",
+      },
       items: {
         rulesFollowed: {
           label: "执行到位",
@@ -196,7 +237,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     recentTrades: {
       title: "最近交易",
-      subtitle: "最近 4 笔已完成交易",
+      subtitle: "最近 6 笔已完成交易",
       viewAll: "查看全部交易",
       columns: {
         time: "时间",
@@ -209,13 +250,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
         pnl: "盈亏",
         rMultiple: "R倍数",
         status: "状态",
+        actions: "操作",
       },
+      edit: "编辑",
+      delete: "删除",
     },
     strategies: {
       trendFollowing: "趋势跟随",
       breakout: "突破策略",
       scalping: "剥头皮",
       meanReversion: "均值回归",
+      other: "其他",
     },
     side: {
       long: "做多",
@@ -223,6 +268,30 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     status: {
       closed: "已平仓",
+    },
+    tradeForm: {
+      addTitle: "新增交易",
+      editTitle: "编辑交易",
+      saveTrade: "保存交易",
+      saveChanges: "保存修改",
+      cancel: "取消",
+      closeTime: "平仓时间",
+      symbol: "交易对",
+      side: "方向",
+      setup: "策略",
+      entryPrice: "入场价",
+      exitPrice: "出场价",
+      riskPercent: "风险比例",
+      netPnl: "净盈亏",
+      rMultiple: "R 倍数",
+      notes: "复盘笔记",
+      tags: "标签",
+      symbolPlaceholder: "请输入交易对",
+      tagsPlaceholder: "趋势, 突破",
+      enterSymbol: "请输入交易对",
+      enterValidNumber: "请输入有效数字",
+      requiredFields: "请填写所有必填项",
+      deleteConfirm: "确定要删除这笔交易吗？",
     },
     language: {
       zh: "中文",
@@ -235,13 +304,16 @@ export const dictionaries: Record<Locale, Dictionary> = {
     appSubtitle: "Personal trading workspace",
     periodRange: "May 1 - May 31, 2025",
     previousPeriod: "vs Apr 1 - Apr 30",
+    basedOnCurrentTrades: "Based on current trades",
     monthLabel: "May 2025",
     monthlyLabel: "Monthly",
     allAccounts: "All Accounts",
     allMarkets: "All Markets",
     allStrategies: "All Strategies",
+    addTrade: "Add Trade",
     chooseMetric: "Choose metric",
     lineChart: "Line",
+    emptyState: "No trade data yet",
     reviewDate: "May 31, 2025",
     promo: {
       title: "Consistency is an edge.",
@@ -296,6 +368,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     review: {
       title: "Today Review",
+      pnlSummary: {
+        daily: "Daily P&L",
+        weekly: "Weekly P&L",
+        monthly: "Monthly P&L",
+      },
       items: {
         rulesFollowed: {
           label: "Rules Followed",
@@ -336,7 +413,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     recentTrades: {
       title: "Recent Trades",
-      subtitle: "Latest 4 completed trades",
+      subtitle: "Latest 6 completed trades",
       viewAll: "View all trades",
       columns: {
         time: "Time",
@@ -349,13 +426,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
         pnl: "P&L",
         rMultiple: "R-Multiple",
         status: "Status",
+        actions: "Actions",
       },
+      edit: "Edit",
+      delete: "Delete",
     },
     strategies: {
       trendFollowing: "Trend Following",
       breakout: "Breakout",
       scalping: "Scalping",
       meanReversion: "Mean Reversion",
+      other: "Other",
     },
     side: {
       long: "Long",
@@ -363,6 +444,30 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     status: {
       closed: "Closed",
+    },
+    tradeForm: {
+      addTitle: "Add Trade",
+      editTitle: "Edit Trade",
+      saveTrade: "Save Trade",
+      saveChanges: "Save Changes",
+      cancel: "Cancel",
+      closeTime: "Close Time",
+      symbol: "Symbol",
+      side: "Side",
+      setup: "Setup",
+      entryPrice: "Entry Price",
+      exitPrice: "Exit Price",
+      riskPercent: "Risk %",
+      netPnl: "Net P&L",
+      rMultiple: "R-Multiple",
+      notes: "Notes",
+      tags: "Tags",
+      symbolPlaceholder: "Enter symbol",
+      tagsPlaceholder: "trend, breakout",
+      enterSymbol: "Enter symbol",
+      enterValidNumber: "Enter a valid number",
+      requiredFields: "Fill all required fields",
+      deleteConfirm: "Delete this trade?",
     },
     language: {
       zh: "中文",

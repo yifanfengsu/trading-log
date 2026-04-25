@@ -10,10 +10,13 @@ import {
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { type ReviewItemData, type ReviewId } from "@/lib/mock-data";
-import { cn } from "@/lib/utils";
+import type { PnlPeriodSummary } from "@/lib/trade-calculations";
+import { cn, formatCurrency, formatDateLabel } from "@/lib/utils";
 
 interface TodayReviewProps {
   items: ReviewItemData[];
+  activeDate: string;
+  pnlSummary: PnlPeriodSummary;
 }
 
 const iconMap: Record<ReviewId, LucideIcon> = {
@@ -43,14 +46,55 @@ const toneClasses = {
   },
 } as const;
 
-export default function TodayReview({ items }: TodayReviewProps) {
-  const { dictionary: copy } = useLanguage();
+export default function TodayReview({
+  items,
+  activeDate,
+  pnlSummary,
+}: TodayReviewProps) {
+  const { dictionary: copy, locale } = useLanguage();
+  const pnlItems = [
+    {
+      label: copy.review.pnlSummary.daily,
+      value: pnlSummary.dailyPnl,
+    },
+    {
+      label: copy.review.pnlSummary.weekly,
+      value: pnlSummary.weeklyPnl,
+    },
+    {
+      label: copy.review.pnlSummary.monthly,
+      value: pnlSummary.monthlyPnl,
+    },
+  ];
 
   return (
     <section className="panel-card p-5 lg:p-6">
       <div>
         <h2 className="panel-title">{copy.review.title}</h2>
-        <p className="mt-1 text-sm text-slate-500">{copy.reviewDate}</p>
+        <p className="mt-1 text-sm text-slate-500">
+          {formatDateLabel(activeDate, locale)}
+        </p>
+      </div>
+
+      <div className="mt-5 grid gap-2 sm:grid-cols-3">
+        {pnlItems.map((item) => (
+          <div
+            key={item.label}
+            className="rounded-[16px] bg-[rgba(108,77,255,0.06)] px-3 py-3"
+          >
+            <p className="text-xs font-medium text-slate-500">{item.label}</p>
+            <p
+              className={cn(
+                "mt-1 text-sm font-semibold",
+                item.value > 0 && "text-emerald-600",
+                item.value < 0 && "text-rose-600",
+                item.value === 0 && "text-slate-700",
+              )}
+            >
+              {formatCurrency(item.value)}
+            </p>
+          </div>
+        ))}
       </div>
 
       <div className="mt-6 space-y-3">

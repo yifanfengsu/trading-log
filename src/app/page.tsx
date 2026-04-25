@@ -1,10 +1,13 @@
 import AppShell from "@/components/layout/AppShell";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
+import { TradeStoreProvider } from "@/components/providers/TradeStoreProvider";
 
 export default function Home() {
   return (
     <LanguageProvider>
-      <AppShell />
+      <TradeStoreProvider>
+        <AppShell />
+      </TradeStoreProvider>
     </LanguageProvider>
   );
 }

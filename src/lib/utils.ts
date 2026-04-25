@@ -1,7 +1,8 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
-import type { CalendarDayPnl, MetricFormat } from "@/lib/mock-data";
+import type { Locale } from "@/lib/i18n";
+import type { MetricFormat } from "@/lib/mock-data";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -16,6 +17,10 @@ export function formatCurrency(
   value: number,
   { digits = 2, signed = false }: NumberOptions = {},
 ) {
+  if (!Number.isFinite(value)) {
+    return value === Infinity ? "∞" : "—";
+  }
+
   const formatter = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
@@ -34,6 +39,10 @@ export function formatPercent(
   value: number,
   { digits = 1, signed = false }: NumberOptions = {},
 ) {
+  if (!Number.isFinite(value)) {
+    return value === Infinity ? "∞" : "—";
+  }
+
   const formatted = `${Math.abs(value).toFixed(digits)}%`;
 
   if (signed) {
@@ -53,6 +62,10 @@ export function formatNumber(
   value: number,
   { digits = 2, signed = false }: NumberOptions = {},
 ) {
+  if (!Number.isFinite(value)) {
+    return value === Infinity ? "∞" : "—";
+  }
+
   const formatted = Math.abs(value).toFixed(digits);
 
   if (signed) {
@@ -114,7 +127,7 @@ export function formatCompactCurrency(value: number) {
 }
 
 export function formatTradePrice(value: number) {
-  const digits = value >= 1000 ? 1 : 2;
+  const digits = value < 1 ? 4 : value >= 1000 ? 1 : 2;
   return new Intl.NumberFormat("en-US", {
     minimumFractionDigits: digits,
     maximumFractionDigits: digits,
@@ -130,6 +143,110 @@ export function formatRMultiple(value: number) {
   return `${prefix}${value.toFixed(2)}R`;
 }
 
+const englishMonthNames = [
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
+] as const;
+
+const englishShortMonthNames = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "May",
+  "Jun",
+  "Jul",
+  "Aug",
+  "Sep",
+  "Oct",
+  "Nov",
+  "Dec",
+] as const;
+
+export function getDateKey(dateOrIso: string) {
+  return dateOrIso.slice(0, 10);
+}
+
+export function parseSelectedMonth(selectedMonth: string) {
+  const [year, month] = selectedMonth.split("-").map(Number);
+
+  return {
+    year,
+    month,
+  };
+}
+
+export function getMonthEndDay(selectedMonth: string) {
+  const { year, month } = parseSelectedMonth(selectedMonth);
+  return new Date(year, month, 0).getDate();
+}
+
+export function getMonthEndDateKey(selectedMonth: string) {
+  return `${selectedMonth}-${String(getMonthEndDay(selectedMonth)).padStart(2, "0")}`;
+}
+
+export function shiftSelectedMonth(selectedMonth: string, offset: number) {
+  const { year, month } = parseSelectedMonth(selectedMonth);
+  const nextDate = new Date(year, month - 1 + offset, 1);
+
+  return `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export function formatMonthRange(selectedMonth: string, locale: Locale) {
+  const { year, month } = parseSelectedMonth(selectedMonth);
+  const endDay = getMonthEndDay(selectedMonth);
+
+  if (locale === "zh") {
+    return `${year}年${month}月1日 - ${year}年${month}月${endDay}日`;
+  }
+
+  return `${englishMonthNames[month - 1]} 1 - ${englishMonthNames[month - 1]} ${endDay}, ${year}`;
+}
+
+export function formatMonthLabel(selectedMonth: string, locale: Locale) {
+  const { year, month } = parseSelectedMonth(selectedMonth);
+
+  if (locale === "zh") {
+    return `${year}年${month}月`;
+  }
+
+  return `${englishMonthNames[month - 1]} ${year}`;
+}
+
+export function formatDateLabel(dateKey: string, locale: Locale) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+
+  if (locale === "zh") {
+    return `${year}年${month}月${day}日`;
+  }
+
+  return `${englishMonthNames[month - 1]} ${day}, ${year}`;
+}
+
+export function formatShortDateLabel(dateKey: string, locale: Locale) {
+  const [, month, day] = dateKey.split("-").map(Number);
+
+  if (locale === "zh") {
+    return `${month}月${day}日`;
+  }
+
+  return `${englishShortMonthNames[month - 1]} ${day}`;
+}
+
+export function formatTradeTimestamp(iso: string) {
+  return iso.replace("T", " ").slice(0, 16);
+}
+
 export interface CalendarCell {
   key: string;
   day: number | null;
@@ -140,13 +257,13 @@ export interface CalendarCell {
 export function buildCalendarGrid(
   year: number,
   monthIndex: number,
-  dayValues: CalendarDayPnl[],
+  dailyPnlMap: Record<string, number>,
 ) {
   const cells: CalendarCell[] = [];
-  const dayMap = new Map(dayValues.map((entry) => [entry.day, entry.pnl]));
   const firstDate = new Date(year, monthIndex, 1);
   const daysInMonth = new Date(year, monthIndex + 1, 0).getDate();
   const startOffset = (firstDate.getDay() + 6) % 7;
+  const monthKey = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
 
   for (let index = 0; index < startOffset; index += 1) {
     cells.push({
@@ -161,7 +278,7 @@ export function buildCalendarGrid(
     cells.push({
       key: `day-${day}`,
       day,
-      pnl: dayMap.get(day) ?? null,
+      pnl: dailyPnlMap[`${monthKey}-${String(day).padStart(2, "0")}`] ?? null,
       inCurrentMonth: true,
     });
   }

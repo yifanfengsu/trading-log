@@ -5,12 +5,18 @@ import {
   ChevronDown,
   Layers,
   Landmark,
+  Plus,
   Target,
   type LucideIcon,
 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { cn } from "@/lib/utils";
+import { cn, formatMonthRange } from "@/lib/utils";
+
+interface TopBarProps {
+  selectedMonth: string;
+  onAddTrade: () => void;
+}
 
 interface FilterChipProps {
   icon: LucideIcon;
@@ -29,7 +35,7 @@ function FilterChip({ icon: Icon, label }: FilterChipProps) {
   );
 }
 
-export default function TopBar() {
+export default function TopBar({ selectedMonth, onAddTrade }: TopBarProps) {
   const { dictionary: copy, locale, setLocale } = useLanguage();
 
   return (
@@ -45,7 +51,10 @@ export default function TopBar() {
 
       <div className="flex flex-col gap-3 lg:items-end">
         <div className="flex flex-wrap items-center gap-2">
-          <FilterChip icon={CalendarDays} label={copy.periodRange} />
+          <FilterChip
+            icon={CalendarDays}
+            label={formatMonthRange(selectedMonth, locale)}
+          />
           <FilterChip icon={Landmark} label={copy.allAccounts} />
           <FilterChip icon={Layers} label={copy.allMarkets} />
           <FilterChip icon={Target} label={copy.allStrategies} />
@@ -74,6 +83,15 @@ export default function TopBar() {
               );
             })}
           </div>
+
+          <button
+            type="button"
+            onClick={onAddTrade}
+            className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
+          >
+            <Plus className="h-4 w-4" />
+            {copy.addTrade}
+          </button>
 
           <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#8a74ff_0%,#6c4dff_65%,#4d7dff_100%)] text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)]">
             JD

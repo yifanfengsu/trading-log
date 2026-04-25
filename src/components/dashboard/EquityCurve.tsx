@@ -1,38 +1,56 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { Area, AreaChart, CartesianGrid, ReferenceDot, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ReferenceDot,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { type EquityPoint } from "@/lib/mock-data";
-import { formatAxisCurrencyTick, formatCurrency } from "@/lib/utils";
+import type { EquityCurvePoint } from "@/lib/trade-calculations";
+import {
+  formatAxisCurrencyTick,
+  formatCompactCurrency,
+  formatCurrency,
+  formatMonthRange,
+  formatShortDateLabel,
+} from "@/lib/utils";
 
 interface EquityCurveProps {
-  data: EquityPoint[];
+  data: EquityCurvePoint[];
+  selectedMonth: string;
 }
 
-export default function EquityCurve({ data }: EquityCurveProps) {
-  const { dictionary: copy } = useLanguage();
+export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
+  const { dictionary: copy, locale } = useLanguage();
   const lastPoint = data[data.length - 1];
   const isClient = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false,
   );
-  const chartTicks = [
-    "2025-05-01",
-    "2025-05-08",
-    "2025-05-15",
-    "2025-05-22",
-    "2025-05-31",
-  ];
+  const chartTicks = Array.from(
+    new Set(
+      data.length > 2
+        ? [data[0].date, data[Math.floor(data.length / 2)].date, data[data.length - 1].date]
+        : data.map((point) => point.date),
+    ),
+  );
 
   return (
     <section className="panel-card p-5 lg:p-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="panel-title">{copy.equityCurve.title}</h2>
-          <p className="mt-1 text-sm text-slate-500">{copy.periodRange}</p>
+          <p className="mt-1 text-sm text-slate-500">
+            {formatMonthRange(selectedMonth, locale)}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
           <button type="button" className="soft-pill">
@@ -45,7 +63,11 @@ export default function EquityCurve({ data }: EquityCurveProps) {
       </div>
 
       <div className="mt-6 h-[320px] w-full">
-        {isClient ? (
+        {data.length === 0 ? (
+          <div className="flex h-full items-center justify-center rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(250,250,255,0.72)] text-sm font-medium text-slate-400">
+            {copy.emptyState}
+          </div>
+        ) : isClient ? (
           <ResponsiveContainer>
             <AreaChart
               data={data}
@@ -71,7 +93,7 @@ export default function EquityCurve({ data }: EquityCurveProps) {
                 minTickGap={32}
                 tick={{ fill: "#8c88a6", fontSize: 12 }}
                 tickFormatter={(value: string) =>
-                  copy.equityCurve.xAxisTicks[value] ?? value
+                  formatShortDateLabel(value, locale)
                 }
               />
               <YAxis
@@ -97,7 +119,7 @@ export default function EquityCurve({ data }: EquityCurveProps) {
                   formatCurrency(Number(value ?? 0), { digits: 0 })
                 }
                 labelFormatter={(label) =>
-                  copy.equityCurve.xAxisTicks[String(label)] ?? String(label)
+                  formatShortDateLabel(String(label), locale)
                 }
               />
               <Area
@@ -122,7 +144,7 @@ export default function EquityCurve({ data }: EquityCurveProps) {
                 stroke="#fff"
                 strokeWidth={3}
                 label={{
-                  value: "$8,642",
+                  value: formatCompactCurrency(lastPoint.equity),
                   position: "right",
                   fill: "#6C4DFF",
                   fontSize: 12,
