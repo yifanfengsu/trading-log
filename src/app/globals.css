@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7f7fb;
+  --foreground: #171228;
+  --card: rgba(255, 255, 255, 0.9);
+  --card-border: rgba(255, 255, 255, 0.72);
+  --muted-border: rgba(148, 163, 184, 0.14);
+  --accent: #6c4dff;
+  --accent-strong: #5a38ff;
+  --accent-soft: rgba(108, 77, 255, 0.1);
+  --success: #159957;
+  --success-soft: rgba(21, 153, 87, 0.1);
+  --danger: #e25b6d;
+  --danger-soft: rgba(226, 91, 109, 0.1);
+  --shadow-card: 0 18px 48px rgba(31, 15, 86, 0.07);
+  --font-sans-stack:
+    -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+    "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
+    "Noto Sans CJK SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans-stack);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  color-scheme: light;
 }
 
 body {
-  background: var(--background);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(140, 123, 255, 0.12), transparent 26%),
+    radial-gradient(circle at top right, rgba(77, 125, 255, 0.08), transparent 18%),
+    linear-gradient(180deg, #fbfbff 0%, var(--background) 52%, #f5f6ff 100%);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans-stack);
+  text-rendering: optimizeLegibility;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid rgba(108, 77, 255, 0.32);
+  outline-offset: 2px;
+}
+
+::selection {
+  background: rgba(108, 77, 255, 0.16);
+}
+
+.panel-card {
+  border: 1px solid var(--card-border);
+  border-radius: 22px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), var(--card));
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
+}
+
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.soft-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.65rem 0.95rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #556070;
+  box-shadow: 0 8px 18px rgba(31, 15, 86, 0.04);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.soft-pill:hover {
+  border-color: rgba(108, 77, 255, 0.18);
+  color: #0f172a;
+  box-shadow: 0 12px 20px rgba(31, 15, 86, 0.06);
+}
+
+@media (max-width: 768px) {
+  .soft-pill {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
