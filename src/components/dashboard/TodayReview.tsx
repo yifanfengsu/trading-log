@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   CheckCircle2,
   CircleMinus,
@@ -9,6 +10,7 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { type ReviewItemData, type ReviewId } from "@/lib/mock-data";
 import type { PnlPeriodSummary } from "@/lib/trade-calculations";
 import { cn, formatCurrency, formatDateLabel } from "@/lib/utils";
@@ -52,6 +54,8 @@ export default function TodayReview({
   pnlSummary,
 }: TodayReviewProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { getReviewByDate } = useDailyReviews();
+  const savedReview = getReviewByDate(activeDate);
   const pnlItems = [
     {
       label: copy.review.pnlSummary.daily,
@@ -66,14 +70,30 @@ export default function TodayReview({
       value: pnlSummary.monthlyPnl,
     },
   ];
+  const savedReviewItems: Record<ReviewId, string> | null = savedReview
+    ? {
+        rulesFollowed: savedReview.rulesFollowed,
+        mainMistake: savedReview.mainMistake,
+        marketCondition: savedReview.marketCondition,
+        tomorrowFocus: savedReview.tomorrowFocus,
+      }
+    : null;
 
   return (
     <section className="panel-card p-5 lg:p-6">
-      <div>
-        <h2 className="panel-title">{copy.review.title}</h2>
-        <p className="mt-1 text-sm text-slate-500">
-          {formatDateLabel(activeDate, locale)}
-        </p>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="panel-title">{copy.review.title}</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {formatDateLabel(activeDate, locale)}
+          </p>
+        </div>
+        <Link
+          href={`/calendar?date=${activeDate}`}
+          className="inline-flex h-9 w-fit items-center justify-center rounded-full bg-[rgba(108,77,255,0.10)] px-3 text-xs font-semibold text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.16)]"
+        >
+          {copy.calendarPage.editReview}
+        </Link>
       </div>
 
       <div className="mt-5 grid gap-2 sm:grid-cols-3">
@@ -101,6 +121,9 @@ export default function TodayReview({
         {items.map((item) => {
           const Icon = iconMap[item.id];
           const content = copy.review.items[item.id];
+          const body = savedReviewItems
+            ? savedReviewItems[item.id] || "—"
+            : content.body;
 
           return (
             <article
@@ -123,7 +146,7 @@ export default function TodayReview({
                     {content.label}
                   </p>
                   <p className="mt-1 text-sm leading-6 text-slate-500">
-                    {content.body}
+                    {body}
                   </p>
                 </div>
               </div>

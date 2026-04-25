@@ -3,6 +3,7 @@ import type {
   ReviewId,
   SidebarMenuId,
 } from "@/lib/mock-data";
+import type { ReviewEmotion } from "@/lib/review-types";
 import type { TradeSetup, TradeSide, TradeStatus } from "@/lib/trade-types";
 
 export type Locale = "zh" | "en";
@@ -47,6 +48,55 @@ export interface Dictionary {
       losingDays: string;
       bestDay: string;
     };
+  };
+  calendarPage: {
+    title: string;
+    subtitle: string;
+    previousMonth: string;
+    nextMonth: string;
+    monthlyPnl: string;
+    tradingDays: string;
+    winningDays: string;
+    losingDays: string;
+    reviewedDays: string;
+    monthlyInsights: string;
+    bestDay: string;
+    worstDay: string;
+    avgDailyPnl: string;
+    reviewCompletion: string;
+    reviewed: string;
+    notReviewed: string;
+    noTrades: string;
+    trades: string;
+    tradeCount: string;
+    dailyStats: string;
+    tradesOnThisDay: string;
+    noTradesOnThisDay: string;
+    dailyReview: string;
+    saveReview: string;
+    deleteReview: string;
+    clear: string;
+    deleteReviewConfirm: string;
+    rulesFollowed: string;
+    mainMistake: string;
+    marketCondition: string;
+    tomorrowFocus: string;
+    emotion: string;
+    executionScore: string;
+    notes: string;
+    rulesFollowedPlaceholder: string;
+    mainMistakePlaceholder: string;
+    marketConditionPlaceholder: string;
+    tomorrowFocusPlaceholder: string;
+    noDailyReview: string;
+    editReview: string;
+    noDataForMonth: string;
+    winRate: string;
+    profitFactor: string;
+    avgR: string;
+    dailyPnl: string;
+    close: string;
+    emotions: Record<ReviewEmotion, string>;
   };
   review: {
     title: string;
@@ -123,6 +173,35 @@ export interface Dictionary {
     requiredFields: string;
     deleteConfirm: string;
   };
+  tradesPage: {
+    title: string;
+    subtitle: string;
+    totalTrades: string;
+    totalPnl: string;
+    avgR: string;
+    searchSymbol: string;
+    allSides: string;
+    allSetups: string;
+    allResults: string;
+    winners: string;
+    losers: string;
+    startDate: string;
+    endDate: string;
+    reset: string;
+    resetFilters: string;
+    noFilterResults: string;
+    viewDetails: string;
+    actions: string;
+    close: string;
+    editTrade: string;
+    deleteTrade: string;
+    notes: string;
+    tags: string;
+    noNotes: string;
+    noTags: string;
+    filteredResults: string;
+    tradeCountLabel: string;
+  };
   language: {
     zh: string;
     en: string;
@@ -188,6 +267,63 @@ export const dictionaries: Record<Locale, Dictionary> = {
         winningDays: "盈利天数",
         losingDays: "亏损天数",
         bestDay: "最佳单日",
+      },
+    },
+    calendarPage: {
+      title: "日历",
+      subtitle: "按日期查看盈亏、交易记录和每日复盘。",
+      previousMonth: "上个月",
+      nextMonth: "下个月",
+      monthlyPnl: "月度盈亏",
+      tradingDays: "交易天数",
+      winningDays: "盈利天数",
+      losingDays: "亏损天数",
+      reviewedDays: "已复盘天数",
+      monthlyInsights: "本月洞察",
+      bestDay: "最佳单日",
+      worstDay: "最差单日",
+      avgDailyPnl: "平均每日盈亏",
+      reviewCompletion: "复盘完成率",
+      reviewed: "已复盘",
+      notReviewed: "未复盘",
+      noTrades: "无交易",
+      trades: "笔交易",
+      tradeCount: "交易笔数",
+      dailyStats: "当天统计",
+      tradesOnThisDay: "当天交易",
+      noTradesOnThisDay: "当天没有交易",
+      dailyReview: "每日复盘",
+      saveReview: "保存复盘",
+      deleteReview: "删除复盘",
+      clear: "清空",
+      deleteReviewConfirm: "确定要删除这条复盘吗？",
+      rulesFollowed: "执行到位",
+      mainMistake: "主要问题",
+      marketCondition: "市场环境",
+      tomorrowFocus: "明日重点",
+      emotion: "情绪状态",
+      executionScore: "执行评分",
+      notes: "其他笔记",
+      rulesFollowedPlaceholder: "今天哪些规则执行得好？",
+      mainMistakePlaceholder: "今天最大的问题或错误是什么？",
+      marketConditionPlaceholder: "今天的市场环境如何？",
+      tomorrowFocusPlaceholder: "明天最重要的执行重点是什么？",
+      noDailyReview: "还没有填写当日复盘。",
+      editReview: "编辑复盘",
+      noDataForMonth: "暂无本月数据",
+      winRate: "胜率",
+      profitFactor: "盈利因子",
+      avgR: "平均 R",
+      dailyPnl: "当日盈亏",
+      close: "关闭",
+      emotions: {
+        calm: "平静",
+        confident: "自信",
+        anxious: "焦虑",
+        greedy: "贪婪",
+        frustrated: "沮丧",
+        tired: "疲惫",
+        neutral: "中性",
       },
     },
     review: {
@@ -293,6 +429,35 @@ export const dictionaries: Record<Locale, Dictionary> = {
       requiredFields: "请填写所有必填项",
       deleteConfirm: "确定要删除这笔交易吗？",
     },
+    tradesPage: {
+      title: "交易记录",
+      subtitle: "查看、筛选和复盘所有已记录的交易。",
+      totalTrades: "总交易数",
+      totalPnl: "总盈亏",
+      avgR: "平均 R",
+      searchSymbol: "搜索交易对",
+      allSides: "全部方向",
+      allSetups: "全部策略",
+      allResults: "全部结果",
+      winners: "只看盈利",
+      losers: "只看亏损",
+      startDate: "开始日期",
+      endDate: "结束日期",
+      reset: "重置筛选",
+      resetFilters: "重置筛选",
+      noFilterResults: "没有符合筛选条件的交易",
+      viewDetails: "查看详情",
+      actions: "操作",
+      close: "关闭",
+      editTrade: "编辑交易",
+      deleteTrade: "删除交易",
+      notes: "复盘笔记",
+      tags: "标签",
+      noNotes: "无笔记",
+      noTags: "无标签",
+      filteredResults: "筛选结果",
+      tradeCountLabel: "笔交易",
+    },
     language: {
       zh: "中文",
       en: "EN",
@@ -364,6 +529,63 @@ export const dictionaries: Record<Locale, Dictionary> = {
         winningDays: "Winning Days",
         losingDays: "Losing Days",
         bestDay: "Best Day",
+      },
+    },
+    calendarPage: {
+      title: "Calendar",
+      subtitle: "Review P&L, trades, and daily notes by date.",
+      previousMonth: "Previous Month",
+      nextMonth: "Next Month",
+      monthlyPnl: "Monthly P&L",
+      tradingDays: "Trading Days",
+      winningDays: "Winning Days",
+      losingDays: "Losing Days",
+      reviewedDays: "Reviewed Days",
+      monthlyInsights: "Monthly Insights",
+      bestDay: "Best Day",
+      worstDay: "Worst Day",
+      avgDailyPnl: "Avg Daily P&L",
+      reviewCompletion: "Review Completion",
+      reviewed: "Reviewed",
+      notReviewed: "Not reviewed",
+      noTrades: "No trades",
+      trades: "trades",
+      tradeCount: "Trades",
+      dailyStats: "Daily Stats",
+      tradesOnThisDay: "Trades on This Day",
+      noTradesOnThisDay: "No trades on this day",
+      dailyReview: "Daily Review",
+      saveReview: "Save Review",
+      deleteReview: "Delete Review",
+      clear: "Clear",
+      deleteReviewConfirm: "Delete this review?",
+      rulesFollowed: "Rules Followed",
+      mainMistake: "Main Mistake",
+      marketCondition: "Market Condition",
+      tomorrowFocus: "Tomorrow Focus",
+      emotion: "Emotion",
+      executionScore: "Execution Score",
+      notes: "Notes",
+      rulesFollowedPlaceholder: "Which rules did you follow well today?",
+      mainMistakePlaceholder: "What was the biggest mistake today?",
+      marketConditionPlaceholder: "What was the market condition today?",
+      tomorrowFocusPlaceholder: "What is the key focus for tomorrow?",
+      noDailyReview: "No daily review yet.",
+      editReview: "Edit Review",
+      noDataForMonth: "No data for this month",
+      winRate: "Win Rate",
+      profitFactor: "Profit Factor",
+      avgR: "Avg R",
+      dailyPnl: "Daily P&L",
+      close: "Close",
+      emotions: {
+        calm: "Calm",
+        confident: "Confident",
+        anxious: "Anxious",
+        greedy: "Greedy",
+        frustrated: "Frustrated",
+        tired: "Tired",
+        neutral: "Neutral",
       },
     },
     review: {
@@ -468,6 +690,35 @@ export const dictionaries: Record<Locale, Dictionary> = {
       enterValidNumber: "Enter a valid number",
       requiredFields: "Fill all required fields",
       deleteConfirm: "Delete this trade?",
+    },
+    tradesPage: {
+      title: "Trades",
+      subtitle: "Review, filter, and manage all recorded trades.",
+      totalTrades: "Total Trades",
+      totalPnl: "Total P&L",
+      avgR: "Avg R",
+      searchSymbol: "Search symbol",
+      allSides: "All Sides",
+      allSetups: "All Setups",
+      allResults: "All Results",
+      winners: "Winners",
+      losers: "Losers",
+      startDate: "Start Date",
+      endDate: "End Date",
+      reset: "Reset",
+      resetFilters: "Reset filters",
+      noFilterResults: "No trades match your filters",
+      viewDetails: "View Details",
+      actions: "Actions",
+      close: "Close",
+      editTrade: "Edit Trade",
+      deleteTrade: "Delete Trade",
+      notes: "Notes",
+      tags: "Tags",
+      noNotes: "No notes",
+      noTags: "No tags",
+      filteredResults: "Filtered Results",
+      tradeCountLabel: "trades",
     },
     language: {
       zh: "中文",

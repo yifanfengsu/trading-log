@@ -1,8 +1,10 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import type { CalendarStats } from "@/lib/trade-calculations";
 import {
   buildCalendarGrid,
@@ -28,8 +30,10 @@ export default function PnlCalendar({
   onMonthChange,
 }: PnlCalendarProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { dailyReviews } = useDailyReviews();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const cells = buildCalendarGrid(year, month - 1, dailyPnlMap);
+  const reviewedDates = new Set(dailyReviews.map((review) => review.date));
   const tradedDays = summary.winningDays + summary.losingDays;
   const winningDayRate =
     tradedDays > 0 ? (summary.winningDays / tradedDays) * 100 : 0;
@@ -87,25 +91,30 @@ export default function PnlCalendar({
         ))}
 
         {cells.map((cell) => {
+          const dateKey =
+            cell.inCurrentMonth && cell.day
+              ? `${selectedMonth}-${String(cell.day).padStart(2, "0")}`
+              : null;
+          const hasTrade =
+            dateKey !== null &&
+            Object.prototype.hasOwnProperty.call(dailyPnlMap, dateKey);
+          const isReviewed = dateKey !== null && reviewedDates.has(dateKey);
           const isProfit = (cell.pnl ?? 0) > 0;
           const isLoss = (cell.pnl ?? 0) < 0;
-
-          return (
-            <div
-              key={cell.key}
-              className={cn(
-                "flex min-h-[82px] flex-col rounded-[18px] border p-3 transition-colors lg:min-h-[96px]",
-                !cell.inCurrentMonth &&
-                  "border-[rgba(151,161,184,0.14)] bg-[rgba(241,243,251,0.7)]",
-                cell.inCurrentMonth &&
-                  !cell.pnl &&
-                  "border-[rgba(151,161,184,0.12)] bg-white/70",
-                isProfit &&
-                  "border-emerald-100 bg-[linear-gradient(180deg,rgba(22,163,74,0.12),rgba(255,255,255,0.9))]",
-                isLoss &&
-                  "border-rose-100 bg-[linear-gradient(180deg,rgba(244,63,94,0.12),rgba(255,255,255,0.92))]",
-              )}
-            >
+          const className = cn(
+            "flex min-h-[82px] flex-col rounded-[18px] border p-3 transition-colors lg:min-h-[96px]",
+            !cell.inCurrentMonth &&
+              "border-[rgba(151,161,184,0.14)] bg-[rgba(241,243,251,0.7)]",
+            cell.inCurrentMonth &&
+              !hasTrade &&
+              "border-[rgba(151,161,184,0.12)] bg-white/70",
+            isProfit &&
+              "border-emerald-100 bg-[linear-gradient(180deg,rgba(22,163,74,0.12),rgba(255,255,255,0.9))]",
+            isLoss &&
+              "border-rose-100 bg-[linear-gradient(180deg,rgba(244,63,94,0.12),rgba(255,255,255,0.92))]",
+          );
+          const content = (
+            <>
               <span
                 className={cn(
                   "text-sm font-semibold",
@@ -114,7 +123,15 @@ export default function PnlCalendar({
               >
                 {cell.day ?? ""}
               </span>
-              {cell.pnl !== null ? (
+              <div className="mt-1 flex gap-1">
+                {isReviewed ? (
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                ) : null}
+                {!isReviewed && hasTrade ? (
+                  <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                ) : null}
+              </div>
+              {hasTrade && cell.pnl !== null ? (
                 <span
                   className={cn(
                     "mt-auto text-sm font-semibold tracking-[-0.02em]",
@@ -125,6 +142,20 @@ export default function PnlCalendar({
                   {formatCompactCurrency(cell.pnl)}
                 </span>
               ) : null}
+            </>
+          );
+
+          return dateKey ? (
+            <Link
+              key={cell.key}
+              href={`/calendar?date=${dateKey}`}
+              className={cn(className, "hover:border-[rgba(108,77,255,0.24)]")}
+            >
+              {content}
+            </Link>
+          ) : (
+            <div key={cell.key} className={className}>
+              {content}
             </div>
           );
         })}

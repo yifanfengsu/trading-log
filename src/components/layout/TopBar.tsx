@@ -11,12 +11,9 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
+import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { cn, formatMonthRange } from "@/lib/utils";
-
-interface TopBarProps {
-  selectedMonth: string;
-  onAddTrade: () => void;
-}
 
 interface FilterChipProps {
   icon: LucideIcon;
@@ -35,8 +32,10 @@ function FilterChip({ icon: Icon, label }: FilterChipProps) {
   );
 }
 
-export default function TopBar({ selectedMonth, onAddTrade }: TopBarProps) {
+export default function TopBar() {
   const { dictionary: copy, locale, setLocale } = useLanguage();
+  const { selectedMonth } = useSelectedMonth();
+  const { openCreateTrade } = useTradeDrawer();
 
   return (
     <header className="panel-card flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
@@ -86,7 +85,7 @@ export default function TopBar({ selectedMonth, onAddTrade }: TopBarProps) {
 
           <button
             type="button"
-            onClick={onAddTrade}
+            onClick={openCreateTrade}
             className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
           >
             <Plus className="h-4 w-4" />

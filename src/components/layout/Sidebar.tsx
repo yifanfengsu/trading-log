@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   ArrowLeftRight,
   BarChart3,
@@ -31,6 +33,7 @@ const menuIconMap: Record<SidebarMenuId, LucideIcon> = {
 
 export default function Sidebar() {
   const { dictionary: copy } = useLanguage();
+  const pathname = usePathname();
 
   return (
     <aside className="panel-card flex w-full shrink-0 flex-col gap-5 p-4 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:w-[280px] lg:p-5">
@@ -49,9 +52,31 @@ export default function Sidebar() {
       <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
         {sidebarMenuIds.map((item) => {
           const Icon = menuIconMap[item];
-          const isActive = item === "dashboard";
+          const href =
+            item === "dashboard"
+              ? "/"
+              : item === "trades"
+                ? "/trades"
+                : item === "calendar"
+                  ? "/calendar"
+                  : "#";
+          const isActive =
+            (item === "dashboard" && pathname === "/") ||
+            (item === "trades" && pathname.startsWith("/trades")) ||
+            (item === "calendar" && pathname.startsWith("/calendar"));
+          const content = (
+            <>
+              <Icon
+                className={cn(
+                  "h-[18px] w-[18px] shrink-0",
+                  isActive ? "text-[var(--accent)]" : "text-slate-400",
+                )}
+              />
+              <span className="truncate">{copy.menu[item]}</span>
+            </>
+          );
 
-          return (
+          return href === "#" ? (
             <button
               key={item}
               type="button"
@@ -62,14 +87,21 @@ export default function Sidebar() {
                   : "text-slate-600 hover:bg-white/70 hover:text-slate-900",
               )}
             >
-              <Icon
-                className={cn(
-                  "h-[18px] w-[18px] shrink-0",
-                  isActive ? "text-[var(--accent)]" : "text-slate-400",
-                )}
-              />
-              <span className="truncate">{copy.menu[item]}</span>
+              {content}
             </button>
+          ) : (
+            <Link
+              key={item}
+              href={href}
+              className={cn(
+                "flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all",
+                isActive
+                  ? "bg-[linear-gradient(135deg,rgba(108,77,255,0.16),rgba(108,77,255,0.08))] text-[var(--accent)] shadow-[inset_0_0_0_1px_rgba(108,77,255,0.12)]"
+                  : "text-slate-600 hover:bg-white/70 hover:text-slate-900",
+              )}
+            >
+              {content}
+            </Link>
           );
         })}
       </nav>

@@ -3,6 +3,7 @@
 import { ArrowRightLeft, Pencil, Trash2 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import type { Trade } from "@/lib/trade-types";
 import {
@@ -16,7 +17,6 @@ import {
 
 interface RecentTradesProps {
   rows: Trade[];
-  onEdit: (trade: Trade) => void;
 }
 
 function getSymbolBadge(symbol: string) {
@@ -42,9 +42,10 @@ function getSymbolBadge(symbol: string) {
   };
 }
 
-export default function RecentTrades({ rows, onEdit }: RecentTradesProps) {
+export default function RecentTrades({ rows }: RecentTradesProps) {
   const { dictionary: copy } = useLanguage();
   const { deleteTrade } = useTrades();
+  const { openEditTrade } = useTradeDrawer();
 
   function handleDelete(trade: Trade) {
     if (window.confirm(copy.tradeForm.deleteConfirm)) {
@@ -182,7 +183,7 @@ export default function RecentTrades({ rows, onEdit }: RecentTradesProps) {
                     <div className="flex items-center gap-2">
                       <button
                         type="button"
-                        onClick={() => onEdit(row)}
+                        onClick={() => openEditTrade(row)}
                         className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
                         aria-label={copy.recentTrades.edit}
                       >
