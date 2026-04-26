@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { UserSettings } from "@/lib/settings-types";
@@ -31,6 +32,7 @@ interface TradeFormState {
   riskPercent: string;
   pnl: string;
   rMultiple: string;
+  playbookId: string;
   notes: string;
   tags: string;
 }
@@ -73,6 +75,7 @@ function getInitialFormState(
       riskPercent: String(settings.defaultRiskPercent),
       pnl: "",
       rMultiple: "",
+      playbookId: "",
       notes: "",
       tags: "",
     };
@@ -88,6 +91,7 @@ function getInitialFormState(
     riskPercent: String(trade.riskPercent),
     pnl: String(trade.pnl),
     rMultiple: String(trade.rMultiple),
+    playbookId: trade.playbookId ?? "",
     notes: trade.notes ?? "",
     tags: trade.tags?.join(", ") ?? "",
   };
@@ -111,6 +115,7 @@ function parseTags(value: string) {
 
 export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) {
   const { dictionary: copy } = useLanguage();
+  const { playbooks, getPlaybookById } = usePlaybooks();
   const { addTrade, updateTrade } = useTrades();
   const { settings } = useUserSettings();
   const [form, setForm] = useState<TradeFormState>(() =>
@@ -121,6 +126,20 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
     mode === "create" ? copy.tradeForm.addTitle : copy.tradeForm.editTitle;
   const saveLabel =
     mode === "create" ? copy.tradeForm.saveTrade : copy.tradeForm.saveChanges;
+  const activePlaybooks = playbooks.filter(
+    (playbook) => playbook.status === "active",
+  );
+  const selectedPlaybook = form.playbookId
+    ? getPlaybookById(form.playbookId)
+    : undefined;
+  const playbookOptions =
+    selectedPlaybook &&
+    !activePlaybooks.some((playbook) => playbook.id === selectedPlaybook.id)
+      ? [...activePlaybooks, selectedPlaybook]
+      : activePlaybooks;
+  const hasDeletedSelectedPlaybook = Boolean(
+    form.playbookId && !selectedPlaybook,
+  );
 
   function updateField<Key extends keyof TradeFormState>(
     key: Key,
@@ -130,6 +149,34 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
       ...currentForm,
       [key]: value,
     }));
+  }
+
+  function handlePlaybookChange(playbookId: string) {
+    const nextPlaybook = playbooks.find((playbook) => playbook.id === playbookId);
+
+    setForm((currentForm) => ({
+      ...currentForm,
+      playbookId,
+      setup: nextPlaybook ? nextPlaybook.setup : currentForm.setup,
+    }));
+  }
+
+  function handleSetupChange(setup: TradeSetup) {
+    setForm((currentForm) => {
+      const currentPlaybook = currentForm.playbookId
+        ? playbooks.find((playbook) => playbook.id === currentForm.playbookId)
+        : undefined;
+
+      return {
+        ...currentForm,
+        setup,
+        playbookId:
+          currentForm.playbookId &&
+          (!currentPlaybook || currentPlaybook.setup !== setup)
+            ? ""
+            : currentForm.playbookId,
+      };
+    });
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -169,6 +216,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
       riskPercent,
       pnl,
       rMultiple,
+      playbookId: form.playbookId || undefined,
       status: "closed",
       notes: form.notes.trim() || undefined,
       tags: parseTags(form.tags),
@@ -264,7 +312,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                 <select
                   value={form.setup}
                   onChange={(event) =>
-                    updateField("setup", event.target.value as TradeSetup)
+                    handleSetupChange(event.target.value as TradeSetup)
                   }
                   className={inputClass}
                 >
@@ -276,6 +324,30 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                 </select>
               </label>
             </div>
+
+            <label className="block text-sm font-medium text-slate-600">
+              {copy.tradeForm.playbook}
+              <select
+                value={form.playbookId}
+                onChange={(event) => handlePlaybookChange(event.target.value)}
+                className={inputClass}
+              >
+                <option value="">{copy.playbookPage.none}</option>
+                {playbookOptions.map((playbook) => (
+                  <option key={playbook.id} value={playbook.id}>
+                    {playbook.name}
+                    {playbook.status === "archived"
+                      ? ` (${copy.playbookStatus.archived})`
+                      : ""}
+                  </option>
+                ))}
+                {hasDeletedSelectedPlaybook ? (
+                  <option value={form.playbookId}>
+                    {copy.playbookPage.deletedPlaybook}
+                  </option>
+                ) : null}
+              </select>
+            </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">

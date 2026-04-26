@@ -78,6 +78,10 @@ export default function ImportBackupDialog({
               value={String(summary.periodReportsCount)}
             />
             <SummaryRow
+              label={copy.settingsPage.playbooksCount}
+              value={String(summary.playbooksCount)}
+            />
+            <SummaryRow
               label={copy.settingsPage.exportedAt}
               value={formatDateTime(summary.exportedAt, locale)}
             />

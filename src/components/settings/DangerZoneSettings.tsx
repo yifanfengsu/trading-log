@@ -4,6 +4,7 @@ import { AlertTriangle, Trash2 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvider";
+import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
@@ -31,6 +32,7 @@ export default function DangerZoneSettings() {
   const { clearTrades } = useTrades();
   const { clearDailyReviews } = useDailyReviews();
   const { clearPeriodReports } = usePeriodReports();
+  const { clearPlaybooks } = usePlaybooks();
   const { resetSettings } = useUserSettings();
 
   function handleClearTrades() {
@@ -51,6 +53,12 @@ export default function DangerZoneSettings() {
     }
   }
 
+  function handleClearPlaybooks() {
+    if (window.confirm(copy.settingsPage.clearPlaybooksConfirm)) {
+      clearPlaybooks();
+    }
+  }
+
   function handleClearAllData() {
     if (!window.confirm(copy.settingsPage.clearAllDataConfirm)) {
       return;
@@ -59,6 +67,7 @@ export default function DangerZoneSettings() {
     clearTrades();
     clearDailyReviews();
     clearPeriodReports();
+    clearPlaybooks();
     resetSettings();
   }
 
@@ -90,6 +99,10 @@ export default function DangerZoneSettings() {
         <DangerAction
           label={copy.settingsPage.clearPeriodReports}
           onClick={handleClearPeriodReports}
+        />
+        <DangerAction
+          label={copy.settingsPage.clearPlaybooks}
+          onClick={handleClearPlaybooks}
         />
         <DangerAction
           label={copy.settingsPage.clearAllData}

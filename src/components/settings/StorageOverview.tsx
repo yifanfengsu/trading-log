@@ -1,8 +1,16 @@
 "use client";
 
-import { Database, FileText, NotebookTabs, Wallet, type LucideIcon } from "lucide-react";
+import {
+  BookOpenText,
+  Database,
+  FileText,
+  NotebookTabs,
+  Wallet,
+  type LucideIcon,
+} from "lucide-react";
 
 import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvider";
+import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -35,6 +43,7 @@ export default function StorageOverview() {
   const { trades } = useTrades();
   const { dailyReviews } = useDailyReviews();
   const { periodReports } = usePeriodReports();
+  const { playbooks } = usePlaybooks();
 
   return (
     <section className="panel-card p-5 lg:p-6">
@@ -54,6 +63,11 @@ export default function StorageOverview() {
           icon={FileText}
           label={copy.settingsPage.periodReportsCount}
           value={String(periodReports.length)}
+        />
+        <OverviewItem
+          icon={BookOpenText}
+          label={copy.settingsPage.playbooksCount}
+          value={String(playbooks.length)}
         />
         <OverviewItem
           icon={Wallet}

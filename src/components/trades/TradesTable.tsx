@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, Eye, Pencil, Trash2 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
@@ -88,6 +89,7 @@ export default function TradesTable({
   const { dictionary: copy } = useLanguage();
   const { settings } = useUserSettings();
   const { deleteTrade } = useTrades();
+  const { getPlaybookById } = usePlaybooks();
   const { openCreateTrade, openEditTrade } = useTradeDrawer();
 
   function handleDelete(trade: Trade) {
@@ -108,7 +110,7 @@ export default function TradesTable({
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-[1260px] w-full border-separate border-spacing-y-2">
+        <table className="min-w-[1380px] w-full border-separate border-spacing-y-2">
           <thead>
             <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
               <th className="px-3 pb-2">
@@ -132,6 +134,9 @@ export default function TradesTable({
               </th>
               <th className="px-3 pb-2 font-medium">
                 {copy.recentTrades.columns.setup}
+              </th>
+              <th className="px-3 pb-2 font-medium">
+                {copy.playbookPage.playbook}
               </th>
               <th className="px-3 pb-2 font-medium">
                 {copy.recentTrades.columns.entry}
@@ -173,7 +178,7 @@ export default function TradesTable({
             {trades.length === 0 ? (
               <tr>
                 <td
-                  colSpan={12}
+                  colSpan={13}
                   className="rounded-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-14 text-center"
                 >
                   <p className="text-sm font-semibold text-slate-500">
@@ -217,6 +222,14 @@ export default function TradesTable({
                     </td>
                     <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4 font-medium text-slate-700">
                       {copy.strategies[trade.setup]}
+                    </td>
+                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4 font-medium text-slate-700">
+                      <span className="line-clamp-1">
+                        {trade.playbookId
+                          ? (getPlaybookById(trade.playbookId)?.name ??
+                            copy.playbookPage.deletedPlaybook)
+                          : "—"}
+                      </span>
                     </td>
                     <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
                       {formatTradePrice(trade.entryPrice)}

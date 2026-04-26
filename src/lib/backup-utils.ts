@@ -1,5 +1,6 @@
 import type { BackupFile } from "@/lib/backup-types";
 import { isValidDateKey } from "@/lib/calendar-utils";
+import { isPlaybook, type Playbook } from "@/lib/playbook-types";
 import type { DailyReview, DailyReviewScore, ReviewEmotion } from "@/lib/review-types";
 import type { PeriodReport, ReportPeriodType } from "@/lib/report-types";
 import {
@@ -15,7 +16,14 @@ interface CreateBackupParams {
   trades: Trade[];
   dailyReviews: DailyReview[];
   periodReports: PeriodReport[];
+  playbooks: Playbook[];
 }
+
+type BackupFileWithOptionalPlaybooks = Omit<BackupFile, "data"> & {
+  data: Omit<BackupFile["data"], "playbooks"> & {
+    playbooks?: Playbook[];
+  };
+};
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
@@ -53,6 +61,7 @@ function isTrade(value: unknown): value is Trade {
     isNumber(value.riskPercent) &&
     isNumber(value.pnl) &&
     isNumber(value.rMultiple) &&
+    (value.playbookId === undefined || typeof value.playbookId === "string") &&
     isTradeStatus(value.status) &&
     (value.notes === undefined || typeof value.notes === "string") &&
     (value.tags === undefined || isStringArray(value.tags))
@@ -131,7 +140,7 @@ function isPeriodReport(value: unknown): value is PeriodReport {
   );
 }
 
-function isBackupFile(value: unknown): value is BackupFile {
+function isBackupFile(value: unknown): value is BackupFileWithOptionalPlaybooks {
   if (!isRecord(value)) {
     return false;
   }
@@ -154,7 +163,9 @@ function isBackupFile(value: unknown): value is BackupFile {
     Array.isArray(data.dailyReviews) &&
     data.dailyReviews.every(isDailyReview) &&
     Array.isArray(data.periodReports) &&
-    data.periodReports.every(isPeriodReport)
+    data.periodReports.every(isPeriodReport) &&
+    (data.playbooks === undefined ||
+      (Array.isArray(data.playbooks) && data.playbooks.every(isPlaybook)))
   );
 }
 
@@ -163,6 +174,7 @@ export function createBackupFile({
   trades,
   dailyReviews,
   periodReports,
+  playbooks,
 }: CreateBackupParams): BackupFile {
   return {
     app: "trade-journal",
@@ -173,6 +185,7 @@ export function createBackupFile({
       trades,
       dailyReviews,
       periodReports,
+      playbooks,
     },
   };
 }
@@ -194,6 +207,7 @@ export function parseBackupJson(json: string): BackupFile | null {
       data: {
         ...parsed.data,
         settings: normalizeUserSettings(parsed.data.settings) ?? parsed.data.settings,
+        playbooks: parsed.data.playbooks ?? [],
       },
     };
   } catch {
@@ -206,6 +220,7 @@ export function getBackupSummary(backup: BackupFile) {
     tradesCount: backup.data.trades.length,
     dailyReviewsCount: backup.data.dailyReviews.length,
     periodReportsCount: backup.data.periodReports.length,
+    playbooksCount: backup.data.playbooks.length,
     exportedAt: backup.exportedAt,
   };
 }

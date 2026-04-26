@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { Trade } from "@/lib/trade-types";
 import {
@@ -48,7 +49,12 @@ export default function TradeDetailDrawer({
   onEdit,
 }: TradeDetailDrawerProps) {
   const { dictionary: copy } = useLanguage();
+  const { getPlaybookById } = usePlaybooks();
   const { settings } = useUserSettings();
+  const playbookLabel = trade.playbookId
+    ? (getPlaybookById(trade.playbookId)?.name ??
+      copy.playbookPage.deletedPlaybook)
+    : "—";
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -90,6 +96,7 @@ export default function TradeDetailDrawer({
               label={copy.tradeForm.setup}
               value={copy.strategies[trade.setup]}
             />
+            <DetailRow label={copy.tradeForm.playbook} value={playbookLabel} />
             <DetailRow
               label={copy.tradeForm.entryPrice}
               value={formatTradePrice(trade.entryPrice)}

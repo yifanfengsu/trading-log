@@ -3,6 +3,7 @@ import type {
   ReviewId,
   SidebarMenuId,
 } from "@/lib/mock-data";
+import type { PlaybookStatus } from "@/lib/playbook-types";
 import type { ReviewEmotion } from "@/lib/review-types";
 import type { TradeSetup, TradeSide, TradeStatus } from "@/lib/trade-types";
 
@@ -234,6 +235,57 @@ export interface Dictionary {
   strategies: Record<TradeSetup, string>;
   side: Record<TradeSide, string>;
   status: Record<TradeStatus, string>;
+  playbookStatus: Record<PlaybookStatus, string>;
+  playbookPage: {
+    title: string;
+    subtitle: string;
+    newPlaybook: string;
+    editPlaybook: string;
+    playbook: string;
+    playbookPerformance: string;
+    noPlaybooksYet: string;
+    noLinkedTradesYet: string;
+    deletedPlaybook: string;
+    none: string;
+    activePlaybooks: string;
+    archived: string;
+    linkedTrades: string;
+    avgWinRate: string;
+    searchPlaceholder: string;
+    allSetups: string;
+    allStatuses: string;
+    active: string;
+    archive: string;
+    restore: string;
+    view: string;
+    edit: string;
+    delete: string;
+    playbookName: string;
+    setupType: string;
+    market: string;
+    marketPlaceholder: string;
+    timeframes: string;
+    timeframesPlaceholder: string;
+    description: string;
+    entryRules: string;
+    exitRules: string;
+    riskRules: string;
+    avoidConditions: string;
+    executionChecklist: string;
+    required: string;
+    savePlaybook: string;
+    saveChanges: string;
+    nameRequired: string;
+    oneRulePerLine: string;
+    oneChecklistItemPerLine: string;
+    recentLinkedTrades: string;
+    topWinningTrade: string;
+    topLosingTrade: string;
+    deleteConfirm: string;
+    archiveConfirm: string;
+    selectPlaybook: string;
+    tagsPlaceholder: string;
+  };
   tradeForm: {
     addTitle: string;
     editTitle: string;
@@ -249,6 +301,7 @@ export interface Dictionary {
     riskPercent: string;
     netPnl: string;
     rMultiple: string;
+    playbook: string;
     notes: string;
     tags: string;
     symbolPlaceholder: string;
@@ -329,6 +382,10 @@ export interface Dictionary {
     tradesCount: string;
     dailyReviewsCount: string;
     periodReportsCount: string;
+    playbooksCount: string;
+    clearPlaybooks: string;
+    clearPlaybooksConfirm: string;
+    backupIncludesPlaybooks: string;
     chooseBackupFile: string;
     restoreData: string;
     backupAndRestore: string;
@@ -622,6 +679,61 @@ export const dictionaries: Record<Locale, Dictionary> = {
     status: {
       closed: "已平仓",
     },
+    playbookStatus: {
+      active: "启用",
+      archived: "已归档",
+    },
+    playbookPage: {
+      title: "交易手册",
+      subtitle: "管理交易策略规则、执行清单，并分析每套策略的真实表现。",
+      newPlaybook: "新增策略手册",
+      editPlaybook: "编辑策略手册",
+      playbook: "策略手册",
+      playbookPerformance: "策略手册表现",
+      noPlaybooksYet: "暂无策略手册",
+      noLinkedTradesYet: "暂无关联交易",
+      deletedPlaybook: "已删除手册",
+      none: "无",
+      activePlaybooks: "启用手册",
+      archived: "已归档",
+      linkedTrades: "已关联交易",
+      avgWinRate: "平均胜率",
+      searchPlaceholder: "搜索名称、市场或标签",
+      allSetups: "全部策略",
+      allStatuses: "全部状态",
+      active: "启用",
+      archive: "归档",
+      restore: "恢复",
+      view: "查看",
+      edit: "编辑",
+      delete: "删除",
+      playbookName: "策略名称",
+      setupType: "策略类型",
+      market: "适用市场",
+      marketPlaceholder: "加密货币, 期货, 美股",
+      timeframes: "时间周期",
+      timeframesPlaceholder: "5分钟, 15分钟, 1小时",
+      description: "策略描述",
+      entryRules: "入场规则",
+      exitRules: "出场规则",
+      riskRules: "风控规则",
+      avoidConditions: "禁做条件",
+      executionChecklist: "执行检查清单",
+      required: "必须",
+      savePlaybook: "保存手册",
+      saveChanges: "保存修改",
+      nameRequired: "手册名称不能为空",
+      oneRulePerLine: "每行一条规则",
+      oneChecklistItemPerLine: "每行一条检查项",
+      recentLinkedTrades: "最近关联交易",
+      topWinningTrade: "最大盈利交易",
+      topLosingTrade: "最大亏损交易",
+      deleteConfirm:
+        "确定要删除这个策略手册吗？交易记录不会被删除，但会失去手册关联。",
+      archiveConfirm: "确定要归档这个策略手册吗？",
+      selectPlaybook: "选择策略手册",
+      tagsPlaceholder: "动量, A+",
+    },
     tradeForm: {
       addTitle: "新增交易",
       editTitle: "编辑交易",
@@ -637,6 +749,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       riskPercent: "风险比例",
       netPnl: "净盈亏",
       rMultiple: "R 倍数",
+      playbook: "策略手册",
       notes: "复盘笔记",
       tags: "标签",
       symbolPlaceholder: "请输入交易对",
@@ -703,7 +816,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       exported: "已导出",
       imported: "已导入",
       restoreDemoData: "恢复演示数据",
-      restoreDemoDataConfirm: "确定要恢复演示数据吗？这会覆盖当前交易和每日复盘数据。",
+      restoreDemoDataConfirm:
+        "确定要恢复演示数据吗？这会覆盖当前交易、每日复盘和策略手册数据。",
       dangerZone: "危险操作",
       clearTrades: "清空交易数据",
       clearDailyReviews: "清空每日复盘",
@@ -712,11 +826,16 @@ export const dictionaries: Record<Locale, Dictionary> = {
       clearTradesConfirm: "确定要清空所有交易数据吗？此操作不可撤销。",
       clearDailyReviewsConfirm: "确定要清空所有每日复盘吗？此操作不可撤销。",
       clearPeriodReportsConfirm: "确定要清空所有周期报告吗？此操作不可撤销。",
-      clearAllDataConfirm: "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告和设置。",
+      clearAllDataConfirm:
+        "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告、策略手册并重置设置。",
       irreversible: "此操作不可撤销",
       tradesCount: "交易数量",
       dailyReviewsCount: "每日复盘数量",
       periodReportsCount: "周期报告数量",
+      playbooksCount: "策略手册数量",
+      clearPlaybooks: "清空策略手册",
+      clearPlaybooksConfirm: "确定要清空所有策略手册吗？此操作不可撤销。",
+      backupIncludesPlaybooks: "Playbook 数据会包含在备份文件中",
       chooseBackupFile: "请选择备份文件",
       restoreData: "恢复数据",
       backupAndRestore: "备份与恢复",
@@ -1018,6 +1137,61 @@ export const dictionaries: Record<Locale, Dictionary> = {
     status: {
       closed: "Closed",
     },
+    playbookStatus: {
+      active: "Active",
+      archived: "Archived",
+    },
+    playbookPage: {
+      title: "Playbook",
+      subtitle: "Manage strategy rules, execution checklists, and real performance.",
+      newPlaybook: "New Playbook",
+      editPlaybook: "Edit Playbook",
+      playbook: "Playbook",
+      playbookPerformance: "Playbook Performance",
+      noPlaybooksYet: "No playbooks yet",
+      noLinkedTradesYet: "No linked trades yet",
+      deletedPlaybook: "Deleted playbook",
+      none: "None",
+      activePlaybooks: "Active Playbooks",
+      archived: "Archived",
+      linkedTrades: "Linked Trades",
+      avgWinRate: "Avg Win Rate",
+      searchPlaceholder: "Search name, market, or tags",
+      allSetups: "All Setups",
+      allStatuses: "All Statuses",
+      active: "Active",
+      archive: "Archive",
+      restore: "Restore",
+      view: "View",
+      edit: "Edit",
+      delete: "Delete",
+      playbookName: "Playbook Name",
+      setupType: "Setup Type",
+      market: "Market",
+      marketPlaceholder: "Crypto, Futures, US Stocks",
+      timeframes: "Timeframes",
+      timeframesPlaceholder: "5m, 15m, 1h",
+      description: "Description",
+      entryRules: "Entry Rules",
+      exitRules: "Exit Rules",
+      riskRules: "Risk Rules",
+      avoidConditions: "Avoid Conditions",
+      executionChecklist: "Execution Checklist",
+      required: "Required",
+      savePlaybook: "Save Playbook",
+      saveChanges: "Save Changes",
+      nameRequired: "Playbook name is required",
+      oneRulePerLine: "One rule per line",
+      oneChecklistItemPerLine: "One checklist item per line",
+      recentLinkedTrades: "Recent Linked Trades",
+      topWinningTrade: "Top Winning Trade",
+      topLosingTrade: "Top Losing Trade",
+      deleteConfirm:
+        "Delete this playbook? Trades will not be deleted, but their playbook link may no longer resolve.",
+      archiveConfirm: "Archive this playbook?",
+      selectPlaybook: "Select Playbook",
+      tagsPlaceholder: "momentum, A+",
+    },
     tradeForm: {
       addTitle: "Add Trade",
       editTitle: "Edit Trade",
@@ -1033,6 +1207,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       riskPercent: "Risk %",
       netPnl: "Net P&L",
       rMultiple: "R-Multiple",
+      playbook: "Playbook",
       notes: "Notes",
       tags: "Tags",
       symbolPlaceholder: "Enter symbol",
@@ -1099,7 +1274,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       exported: "Exported",
       imported: "Imported",
       restoreDemoData: "Restore Demo Data",
-      restoreDemoDataConfirm: "Restore demo data? This will replace current trades and daily reviews.",
+      restoreDemoDataConfirm:
+        "Restore demo data? This will replace current trades, daily reviews, and playbooks.",
       dangerZone: "Danger Zone",
       clearTrades: "Clear Trades",
       clearDailyReviews: "Clear Daily Reviews",
@@ -1108,11 +1284,16 @@ export const dictionaries: Record<Locale, Dictionary> = {
       clearTradesConfirm: "Clear all trades? This cannot be undone.",
       clearDailyReviewsConfirm: "Clear all daily reviews? This cannot be undone.",
       clearPeriodReportsConfirm: "Clear all period reports? This cannot be undone.",
-      clearAllDataConfirm: "Clear all local data? This will delete trades, daily reviews, period reports, and settings.",
+      clearAllDataConfirm:
+        "Clear all local data? This will delete trades, daily reviews, period reports, playbooks, and reset settings.",
       irreversible: "This action cannot be undone",
       tradesCount: "Trades Count",
       dailyReviewsCount: "Daily Reviews Count",
       periodReportsCount: "Period Reports Count",
+      playbooksCount: "Playbooks Count",
+      clearPlaybooks: "Clear Playbooks",
+      clearPlaybooksConfirm: "Clear all playbooks? This cannot be undone.",
+      backupIncludesPlaybooks: "Playbook data will be included in backup files",
       chooseBackupFile: "Choose backup file",
       restoreData: "Restore Data",
       backupAndRestore: "Backup & Restore",

@@ -20,6 +20,7 @@ export type Trade = {
   riskPercent: number;
   pnl: number;
   rMultiple: number;
+  playbookId?: string;
   status: TradeStatus;
   notes?: string;
   tags?: string[];

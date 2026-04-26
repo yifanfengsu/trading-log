@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvider";
+import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
@@ -31,6 +32,7 @@ export default function DataManagementSettings() {
   } = useDailyReviews();
   const { periodReports, replacePeriodReports, clearPeriodReports } =
     usePeriodReports();
+  const { playbooks, replacePlaybooks, resetPlaybooksToSeed } = usePlaybooks();
   const [pendingBackup, setPendingBackup] = useState<BackupFile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<ActionStatus>(null);
@@ -65,6 +67,7 @@ export default function DataManagementSettings() {
       trades,
       dailyReviews,
       periodReports,
+      playbooks,
     });
 
     downloadTextFile(
@@ -104,6 +107,7 @@ export default function DataManagementSettings() {
     replaceTrades(pendingBackup.data.trades);
     replaceDailyReviews(pendingBackup.data.dailyReviews);
     replacePeriodReports(pendingBackup.data.periodReports);
+    replacePlaybooks(pendingBackup.data.playbooks);
     setPendingBackup(null);
     setError(null);
     markStatus("imported");
@@ -116,6 +120,7 @@ export default function DataManagementSettings() {
 
     resetTradesToSeed();
     resetDailyReviewsToSeed();
+    resetPlaybooksToSeed();
     clearPeriodReports();
     setError(null);
   }
@@ -162,6 +167,10 @@ export default function DataManagementSettings() {
           <RotateCcw className="h-4 w-4" />
         </button>
       </div>
+
+      <p className="mt-4 text-sm text-slate-500">
+        {copy.settingsPage.backupIncludesPlaybooks}
+      </p>
 
       {error ? (
         <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">

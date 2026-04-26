@@ -78,6 +78,7 @@ function isTrade(value: unknown): value is Trade {
     isNumber(value.riskPercent) &&
     isNumber(value.pnl) &&
     isNumber(value.rMultiple) &&
+    (value.playbookId === undefined || typeof value.playbookId === "string") &&
     isTradeStatus(value.status) &&
     (value.notes === undefined || typeof value.notes === "string") &&
     (tags === undefined ||
@@ -110,6 +111,7 @@ function normalizeTradeInput(trade: TradeInput): TradeInput {
   return {
     ...trade,
     symbol: trade.symbol.trim().toUpperCase(),
+    playbookId: trade.playbookId?.trim() || undefined,
     status: "closed",
     notes: trade.notes?.trim() || undefined,
     tags: trade.tags
