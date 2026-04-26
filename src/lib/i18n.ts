@@ -3,6 +3,7 @@ import type {
   ReviewId,
   SidebarMenuId,
 } from "@/lib/mock-data";
+import type { NoteLink, NoteStatus, NoteType } from "@/lib/note-types";
 import type { PlaybookStatus } from "@/lib/playbook-types";
 import type { ReviewEmotion } from "@/lib/review-types";
 import type { TradeSetup, TradeSide, TradeStatus } from "@/lib/trade-types";
@@ -236,6 +237,9 @@ export interface Dictionary {
   side: Record<TradeSide, string>;
   status: Record<TradeStatus, string>;
   playbookStatus: Record<PlaybookStatus, string>;
+  noteTypes: Record<NoteType, string>;
+  noteStatus: Record<NoteStatus, string>;
+  noteLinkTypes: Record<NoteLink["type"], string>;
   playbookPage: {
     title: string;
     subtitle: string;
@@ -340,6 +344,58 @@ export interface Dictionary {
     filteredResults: string;
     tradeCountLabel: string;
   };
+  notesPage: {
+    title: string;
+    subtitle: string;
+    newNote: string;
+    editNote: string;
+    saveNote: string;
+    saveChanges: string;
+    totalNotes: string;
+    pinnedNotes: string;
+    archived: string;
+    linkedNotes: string;
+    noNotesYet: string;
+    noFilterResults: string;
+    searchPlaceholder: string;
+    allTypes: string;
+    allStatuses: string;
+    allLinks: string;
+    allTags: string;
+    linkedEntity: string;
+    titleField: string;
+    content: string;
+    type: string;
+    status: string;
+    tags: string;
+    pinned: string;
+    pin: string;
+    unpin: string;
+    pinNote: string;
+    unpinNote: string;
+    archive: string;
+    restore: string;
+    created: string;
+    updated: string;
+    linkedTo: string;
+    addNote: string;
+    noLinkedNotesYet: string;
+    deleteConfirm: string;
+    deletedTrade: string;
+    deletedPlaybook: string;
+    trade: string;
+    date: string;
+    playbook: string;
+    selectTrade: string;
+    selectPlaybook: string;
+    selectDate: string;
+    linkType: string;
+    tradeNoteTitle: string;
+    dateNoteTitle: string;
+    playbookNoteTitle: string;
+    titleRequired: string;
+    linkRequired: string;
+  };
   settingsPage: {
     title: string;
     subtitle: string;
@@ -383,9 +439,13 @@ export interface Dictionary {
     dailyReviewsCount: string;
     periodReportsCount: string;
     playbooksCount: string;
+    notesCount: string;
     clearPlaybooks: string;
+    clearNotes: string;
     clearPlaybooksConfirm: string;
+    clearNotesConfirm: string;
     backupIncludesPlaybooks: string;
+    backupIncludesNotes: string;
     chooseBackupFile: string;
     restoreData: string;
     backupAndRestore: string;
@@ -683,6 +743,25 @@ export const dictionaries: Record<Locale, Dictionary> = {
       active: "启用",
       archived: "已归档",
     },
+    noteTypes: {
+      general: "普通笔记",
+      marketObservation: "市场观察",
+      tradeIdea: "交易想法",
+      mistake: "错误记录",
+      rule: "交易规则",
+      strategy: "策略优化",
+      review: "复盘笔记",
+    },
+    noteStatus: {
+      active: "启用",
+      archived: "已归档",
+    },
+    noteLinkTypes: {
+      none: "无关联",
+      trade: "关联交易",
+      date: "关联日期",
+      playbook: "关联策略手册",
+    },
     playbookPage: {
       title: "交易手册",
       subtitle: "管理交易策略规则、执行清单，并分析每套策略的真实表现。",
@@ -788,6 +867,58 @@ export const dictionaries: Record<Locale, Dictionary> = {
       filteredResults: "筛选结果",
       tradeCountLabel: "笔交易",
     },
+    notesPage: {
+      title: "笔记",
+      subtitle: "记录交易想法、市场观察、执行问题和策略优化。",
+      newNote: "新增笔记",
+      editNote: "编辑笔记",
+      saveNote: "保存笔记",
+      saveChanges: "保存修改",
+      totalNotes: "全部笔记",
+      pinnedNotes: "置顶笔记",
+      archived: "已归档",
+      linkedNotes: "关联笔记",
+      noNotesYet: "暂无笔记",
+      noFilterResults: "没有符合筛选条件的笔记",
+      searchPlaceholder: "搜索标题、内容或标签",
+      allTypes: "全部类型",
+      allStatuses: "全部状态",
+      allLinks: "全部关联",
+      allTags: "全部标签",
+      linkedEntity: "关联对象",
+      titleField: "标题",
+      content: "正文",
+      type: "类型",
+      status: "状态",
+      tags: "标签",
+      pinned: "置顶",
+      pin: "置顶",
+      unpin: "取消置顶",
+      pinNote: "置顶笔记",
+      unpinNote: "取消置顶笔记",
+      archive: "归档",
+      restore: "恢复",
+      created: "创建时间",
+      updated: "更新时间",
+      linkedTo: "关联到",
+      addNote: "添加笔记",
+      noLinkedNotesYet: "暂无关联笔记",
+      deleteConfirm: "确定要删除这条笔记吗？",
+      deletedTrade: "已删除交易",
+      deletedPlaybook: "已删除手册",
+      trade: "交易",
+      date: "日期",
+      playbook: "策略手册",
+      selectTrade: "选择交易",
+      selectPlaybook: "选择策略手册",
+      selectDate: "选择日期",
+      linkType: "关联类型",
+      tradeNoteTitle: "交易笔记",
+      dateNoteTitle: "日期笔记",
+      playbookNoteTitle: "策略手册笔记",
+      titleRequired: "标题不能为空",
+      linkRequired: "请选择关联对象",
+    },
     settingsPage: {
       title: "设置",
       subtitle: "配置交易日志偏好、默认交易参数和本地数据备份。",
@@ -817,7 +948,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       imported: "已导入",
       restoreDemoData: "恢复演示数据",
       restoreDemoDataConfirm:
-        "确定要恢复演示数据吗？这会覆盖当前交易、每日复盘和策略手册数据。",
+        "确定要恢复演示数据吗？这会覆盖当前交易、每日复盘、策略手册和笔记数据。",
       dangerZone: "危险操作",
       clearTrades: "清空交易数据",
       clearDailyReviews: "清空每日复盘",
@@ -827,15 +958,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
       clearDailyReviewsConfirm: "确定要清空所有每日复盘吗？此操作不可撤销。",
       clearPeriodReportsConfirm: "确定要清空所有周期报告吗？此操作不可撤销。",
       clearAllDataConfirm:
-        "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告、策略手册并重置设置。",
+        "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告、策略手册和笔记并重置设置。",
       irreversible: "此操作不可撤销",
       tradesCount: "交易数量",
       dailyReviewsCount: "每日复盘数量",
       periodReportsCount: "周期报告数量",
       playbooksCount: "策略手册数量",
+      notesCount: "笔记数量",
       clearPlaybooks: "清空策略手册",
+      clearNotes: "清空笔记",
       clearPlaybooksConfirm: "确定要清空所有策略手册吗？此操作不可撤销。",
-      backupIncludesPlaybooks: "Playbook 数据会包含在备份文件中",
+      clearNotesConfirm: "确定要清空所有笔记吗？此操作不可撤销。",
+      backupIncludesPlaybooks: "策略手册数据会包含在备份文件中",
+      backupIncludesNotes: "笔记数据会包含在备份文件中",
       chooseBackupFile: "请选择备份文件",
       restoreData: "恢复数据",
       backupAndRestore: "备份与恢复",
@@ -1141,6 +1276,25 @@ export const dictionaries: Record<Locale, Dictionary> = {
       active: "Active",
       archived: "Archived",
     },
+    noteTypes: {
+      general: "General",
+      marketObservation: "Market Observation",
+      tradeIdea: "Trade Idea",
+      mistake: "Mistake",
+      rule: "Rule",
+      strategy: "Strategy",
+      review: "Review",
+    },
+    noteStatus: {
+      active: "Active",
+      archived: "Archived",
+    },
+    noteLinkTypes: {
+      none: "No Link",
+      trade: "Linked Trade",
+      date: "Linked Date",
+      playbook: "Linked Playbook",
+    },
     playbookPage: {
       title: "Playbook",
       subtitle: "Manage strategy rules, execution checklists, and real performance.",
@@ -1246,6 +1400,59 @@ export const dictionaries: Record<Locale, Dictionary> = {
       filteredResults: "Filtered Results",
       tradeCountLabel: "trades",
     },
+    notesPage: {
+      title: "Notes",
+      subtitle:
+        "Capture trade ideas, market observations, execution issues, and strategy improvements.",
+      newNote: "New Note",
+      editNote: "Edit Note",
+      saveNote: "Save Note",
+      saveChanges: "Save Changes",
+      totalNotes: "Total Notes",
+      pinnedNotes: "Pinned Notes",
+      archived: "Archived",
+      linkedNotes: "Linked Notes",
+      noNotesYet: "No notes yet",
+      noFilterResults: "No notes match your filters",
+      searchPlaceholder: "Search title, content, or tags",
+      allTypes: "All Types",
+      allStatuses: "All Statuses",
+      allLinks: "All Links",
+      allTags: "All Tags",
+      linkedEntity: "Linked Entity",
+      titleField: "Title",
+      content: "Content",
+      type: "Type",
+      status: "Status",
+      tags: "Tags",
+      pinned: "Pinned",
+      pin: "Pin",
+      unpin: "Unpin",
+      pinNote: "Pin Note",
+      unpinNote: "Unpin Note",
+      archive: "Archive",
+      restore: "Restore",
+      created: "Created",
+      updated: "Updated",
+      linkedTo: "Linked To",
+      addNote: "Add Note",
+      noLinkedNotesYet: "No linked notes yet",
+      deleteConfirm: "Delete this note?",
+      deletedTrade: "Deleted trade",
+      deletedPlaybook: "Deleted playbook",
+      trade: "Trade",
+      date: "Date",
+      playbook: "Playbook",
+      selectTrade: "Select Trade",
+      selectPlaybook: "Select Playbook",
+      selectDate: "Select Date",
+      linkType: "Link Type",
+      tradeNoteTitle: "Trade Note",
+      dateNoteTitle: "Date Note",
+      playbookNoteTitle: "Playbook Note",
+      titleRequired: "Title is required",
+      linkRequired: "Select a linked entity",
+    },
     settingsPage: {
       title: "Settings",
       subtitle: "Configure preferences, trade defaults, and local data backups.",
@@ -1275,7 +1482,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       imported: "Imported",
       restoreDemoData: "Restore Demo Data",
       restoreDemoDataConfirm:
-        "Restore demo data? This will replace current trades, daily reviews, and playbooks.",
+        "Restore demo data? This will replace current trades, daily reviews, playbooks, and notes.",
       dangerZone: "Danger Zone",
       clearTrades: "Clear Trades",
       clearDailyReviews: "Clear Daily Reviews",
@@ -1285,15 +1492,19 @@ export const dictionaries: Record<Locale, Dictionary> = {
       clearDailyReviewsConfirm: "Clear all daily reviews? This cannot be undone.",
       clearPeriodReportsConfirm: "Clear all period reports? This cannot be undone.",
       clearAllDataConfirm:
-        "Clear all local data? This will delete trades, daily reviews, period reports, playbooks, and reset settings.",
+        "Clear all local data? This will delete trades, daily reviews, period reports, playbooks, notes, and reset settings.",
       irreversible: "This action cannot be undone",
       tradesCount: "Trades Count",
       dailyReviewsCount: "Daily Reviews Count",
       periodReportsCount: "Period Reports Count",
       playbooksCount: "Playbooks Count",
+      notesCount: "Notes Count",
       clearPlaybooks: "Clear Playbooks",
+      clearNotes: "Clear Notes",
       clearPlaybooksConfirm: "Clear all playbooks? This cannot be undone.",
+      clearNotesConfirm: "Clear all notes? This cannot be undone.",
       backupIncludesPlaybooks: "Playbook data will be included in backup files",
+      backupIncludesNotes: "Notes data will be included in backup files",
       chooseBackupFile: "Choose backup file",
       restoreData: "Restore Data",
       backupAndRestore: "Backup & Restore",

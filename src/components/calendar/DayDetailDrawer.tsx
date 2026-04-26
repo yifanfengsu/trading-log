@@ -1,9 +1,12 @@
 "use client";
 
 import { Pencil, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import DailyReviewForm from "@/components/calendar/DailyReviewForm";
+import LinkedNotesPreview from "@/components/notes/LinkedNotesPreview";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { getDateDisplay } from "@/lib/calendar-utils";
@@ -61,12 +64,20 @@ export default function DayDetailDrawer({
   onClose,
 }: DayDetailDrawerProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const router = useRouter();
   const { settings } = useUserSettings();
+  const { getNotesForDate } = useNotes();
   const { openEditTrade } = useTradeDrawer();
   const stats = getDailyTradeStats(trades);
+  const linkedNotes = getNotesForDate(date);
   const sortedTrades = [...trades].sort((a, b) =>
     b.closedAt.localeCompare(a.closedAt),
   );
+
+  function handleAddNote() {
+    onClose();
+    router.push(`/notes?date=${encodeURIComponent(date)}`);
+  }
 
   return (
     <div className="fixed inset-0 z-40 flex justify-end">
@@ -225,6 +236,8 @@ export default function DayDetailDrawer({
               />
             </div>
           </section>
+
+          <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />
         </div>
       </aside>
     </div>

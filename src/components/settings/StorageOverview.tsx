@@ -4,6 +4,7 @@ import {
   BookOpenText,
   Database,
   FileText,
+  NotebookPen,
   NotebookTabs,
   Wallet,
   type LucideIcon,
@@ -14,6 +15,7 @@ import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { formatCurrency } from "@/lib/utils";
 
@@ -44,6 +46,7 @@ export default function StorageOverview() {
   const { dailyReviews } = useDailyReviews();
   const { periodReports } = usePeriodReports();
   const { playbooks } = usePlaybooks();
+  const { notes } = useNotes();
 
   return (
     <section className="panel-card p-5 lg:p-6">
@@ -68,6 +71,11 @@ export default function StorageOverview() {
           icon={BookOpenText}
           label={copy.settingsPage.playbooksCount}
           value={String(playbooks.length)}
+        />
+        <OverviewItem
+          icon={NotebookPen}
+          label={copy.settingsPage.notesCount}
+          value={String(notes.length)}
         />
         <OverviewItem
           icon={Wallet}

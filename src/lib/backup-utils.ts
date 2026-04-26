@@ -1,5 +1,6 @@
 import type { BackupFile } from "@/lib/backup-types";
 import { isValidDateKey } from "@/lib/calendar-utils";
+import { normalizeNotes, type Note } from "@/lib/note-types";
 import { isPlaybook, type Playbook } from "@/lib/playbook-types";
 import type { DailyReview, DailyReviewScore, ReviewEmotion } from "@/lib/review-types";
 import type { PeriodReport, ReportPeriodType } from "@/lib/report-types";
@@ -17,11 +18,13 @@ interface CreateBackupParams {
   dailyReviews: DailyReview[];
   periodReports: PeriodReport[];
   playbooks: Playbook[];
+  notes: Note[];
 }
 
-type BackupFileWithOptionalPlaybooks = Omit<BackupFile, "data"> & {
-  data: Omit<BackupFile["data"], "playbooks"> & {
+type BackupFileWithOptionalCollections = Omit<BackupFile, "data"> & {
+  data: Omit<BackupFile["data"], "playbooks" | "notes"> & {
     playbooks?: Playbook[];
+    notes?: Note[];
   };
 };
 
@@ -140,7 +143,7 @@ function isPeriodReport(value: unknown): value is PeriodReport {
   );
 }
 
-function isBackupFile(value: unknown): value is BackupFileWithOptionalPlaybooks {
+function isBackupFile(value: unknown): value is BackupFileWithOptionalCollections {
   if (!isRecord(value)) {
     return false;
   }
@@ -165,7 +168,8 @@ function isBackupFile(value: unknown): value is BackupFileWithOptionalPlaybooks 
     Array.isArray(data.periodReports) &&
     data.periodReports.every(isPeriodReport) &&
     (data.playbooks === undefined ||
-      (Array.isArray(data.playbooks) && data.playbooks.every(isPlaybook)))
+      (Array.isArray(data.playbooks) && data.playbooks.every(isPlaybook))) &&
+    (data.notes === undefined || normalizeNotes(data.notes) !== null)
   );
 }
 
@@ -175,6 +179,7 @@ export function createBackupFile({
   dailyReviews,
   periodReports,
   playbooks,
+  notes,
 }: CreateBackupParams): BackupFile {
   return {
     app: "trade-journal",
@@ -186,6 +191,7 @@ export function createBackupFile({
       dailyReviews,
       periodReports,
       playbooks,
+      notes,
     },
   };
 }
@@ -208,6 +214,7 @@ export function parseBackupJson(json: string): BackupFile | null {
         ...parsed.data,
         settings: normalizeUserSettings(parsed.data.settings) ?? parsed.data.settings,
         playbooks: parsed.data.playbooks ?? [],
+        notes: normalizeNotes(parsed.data.notes ?? []) ?? [],
       },
     };
   } catch {
@@ -221,6 +228,7 @@ export function getBackupSummary(backup: BackupFile) {
     dailyReviewsCount: backup.data.dailyReviews.length,
     periodReportsCount: backup.data.periodReports.length,
     playbooksCount: backup.data.playbooks.length,
+    notesCount: backup.data.notes.length,
     exportedAt: backup.exportedAt,
   };
 }

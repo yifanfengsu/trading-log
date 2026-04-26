@@ -1,6 +1,7 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Eye, Pencil, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, Eye, NotebookPen, Pencil, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
@@ -87,6 +88,7 @@ export default function TradesTable({
   onResetFilters,
 }: TradesTableProps) {
   const { dictionary: copy } = useLanguage();
+  const router = useRouter();
   const { settings } = useUserSettings();
   const { deleteTrade } = useTrades();
   const { getPlaybookById } = usePlaybooks();
@@ -96,6 +98,10 @@ export default function TradesTable({
     if (window.confirm(copy.tradeForm.deleteConfirm)) {
       deleteTrade(trade.id);
     }
+  }
+
+  function handleAddNote(trade: Trade) {
+    router.push(`/notes?tradeId=${encodeURIComponent(trade.id)}`);
   }
 
   return (
@@ -285,6 +291,14 @@ export default function TradesTable({
                           aria-label={copy.tradesPage.editTrade}
                         >
                           <Pencil className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleAddNote(trade)}
+                          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+                          aria-label={copy.notesPage.addNote}
+                        >
+                          <NotebookPen className="h-4 w-4" />
                         </button>
                         <button
                           type="button"

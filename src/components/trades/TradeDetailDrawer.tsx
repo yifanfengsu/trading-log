@@ -1,8 +1,11 @@
 "use client";
 
 import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
+import LinkedNotesPreview from "@/components/notes/LinkedNotesPreview";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { Trade } from "@/lib/trade-types";
@@ -49,12 +52,20 @@ export default function TradeDetailDrawer({
   onEdit,
 }: TradeDetailDrawerProps) {
   const { dictionary: copy } = useLanguage();
+  const router = useRouter();
+  const { getNotesForTrade } = useNotes();
   const { getPlaybookById } = usePlaybooks();
   const { settings } = useUserSettings();
+  const linkedNotes = getNotesForTrade(trade.id);
   const playbookLabel = trade.playbookId
     ? (getPlaybookById(trade.playbookId)?.name ??
       copy.playbookPage.deletedPlaybook)
     : "—";
+
+  function handleAddNote() {
+    onClose();
+    router.push(`/notes?tradeId=${encodeURIComponent(trade.id)}`);
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -157,6 +168,8 @@ export default function TradeDetailDrawer({
               )}
             </div>
           </div>
+
+          <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />
         </div>
 
         <div className="flex items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur">

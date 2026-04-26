@@ -4,6 +4,7 @@ import { Download, RotateCcw, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
@@ -33,6 +34,7 @@ export default function DataManagementSettings() {
   const { periodReports, replacePeriodReports, clearPeriodReports } =
     usePeriodReports();
   const { playbooks, replacePlaybooks, resetPlaybooksToSeed } = usePlaybooks();
+  const { notes, replaceNotes, resetNotesToSeed } = useNotes();
   const [pendingBackup, setPendingBackup] = useState<BackupFile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<ActionStatus>(null);
@@ -68,6 +70,7 @@ export default function DataManagementSettings() {
       dailyReviews,
       periodReports,
       playbooks,
+      notes,
     });
 
     downloadTextFile(
@@ -108,6 +111,7 @@ export default function DataManagementSettings() {
     replaceDailyReviews(pendingBackup.data.dailyReviews);
     replacePeriodReports(pendingBackup.data.periodReports);
     replacePlaybooks(pendingBackup.data.playbooks);
+    replaceNotes(pendingBackup.data.notes ?? []);
     setPendingBackup(null);
     setError(null);
     if (fileInputRef.current) {
@@ -131,6 +135,7 @@ export default function DataManagementSettings() {
     resetTradesToSeed();
     resetDailyReviewsToSeed();
     resetPlaybooksToSeed();
+    resetNotesToSeed();
     clearPeriodReports();
     setError(null);
   }
@@ -180,6 +185,8 @@ export default function DataManagementSettings() {
 
       <p className="mt-4 text-sm text-slate-500">
         {copy.settingsPage.backupIncludesPlaybooks}
+        <br />
+        {copy.settingsPage.backupIncludesNotes}
       </p>
 
       {error ? (

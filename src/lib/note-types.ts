@@ -1,0 +1,141 @@
+export type NoteType =
+  | "general"
+  | "marketObservation"
+  | "tradeIdea"
+  | "mistake"
+  | "rule"
+  | "strategy"
+  | "review";
+
+export type NoteStatus = "active" | "archived";
+
+export type NoteLink =
+  | { type: "trade"; tradeId: string }
+  | { type: "date"; date: string }
+  | { type: "playbook"; playbookId: string }
+  | { type: "none" };
+
+export type Note = {
+  id: string;
+  title: string;
+  content: string;
+  type: NoteType;
+  status: NoteStatus;
+  pinned: boolean;
+  tags: string[];
+  link: NoteLink;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type NoteInput = Omit<Note, "id" | "createdAt" | "updatedAt">;
+export type NotePatch = Partial<NoteInput>;
+
+export const noteTypes = [
+  "general",
+  "marketObservation",
+  "tradeIdea",
+  "mistake",
+  "rule",
+  "strategy",
+  "review",
+] as const satisfies readonly NoteType[];
+
+export const noteStatuses = [
+  "active",
+  "archived",
+] as const satisfies readonly NoteStatus[];
+
+export const noteLinkTypes = [
+  "none",
+  "trade",
+  "date",
+  "playbook",
+] as const satisfies readonly NoteLink["type"][];
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
+export function isNoteType(value: unknown): value is NoteType {
+  return noteTypes.some((type) => type === value);
+}
+
+export function isNoteStatus(value: unknown): value is NoteStatus {
+  return noteStatuses.some((status) => status === value);
+}
+
+export function isNoteDateKey(value: unknown): value is string {
+  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+}
+
+export function isNoteLink(value: unknown): value is NoteLink {
+  if (!isRecord(value) || typeof value.type !== "string") {
+    return false;
+  }
+
+  if (value.type === "none") {
+    return true;
+  }
+
+  if (value.type === "trade") {
+    return typeof value.tradeId === "string";
+  }
+
+  if (value.type === "date") {
+    return isNoteDateKey(value.date);
+  }
+
+  if (value.type === "playbook") {
+    return typeof value.playbookId === "string";
+  }
+
+  return false;
+}
+
+export function normalizeNote(value: unknown): Note | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  if (
+    typeof value.id !== "string" ||
+    typeof value.title !== "string" ||
+    typeof value.content !== "string" ||
+    !isNoteType(value.type) ||
+    !isNoteStatus(value.status) ||
+    typeof value.pinned !== "boolean" ||
+    !isStringArray(value.tags) ||
+    typeof value.createdAt !== "string" ||
+    typeof value.updatedAt !== "string"
+  ) {
+    return null;
+  }
+
+  return {
+    id: value.id,
+    title: value.title,
+    content: value.content,
+    type: value.type,
+    status: value.status,
+    pinned: value.pinned,
+    tags: value.tags,
+    link: isNoteLink(value.link) ? value.link : { type: "none" },
+    createdAt: value.createdAt,
+    updatedAt: value.updatedAt,
+  };
+}
+
+export function normalizeNotes(value: unknown): Note[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  const notes = value.map(normalizeNote);
+
+  return notes.every((note): note is Note => note !== null) ? notes : null;
+}

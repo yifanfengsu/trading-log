@@ -3,6 +3,7 @@
 import { AlertTriangle, Trash2 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
@@ -33,6 +34,7 @@ export default function DangerZoneSettings() {
   const { clearDailyReviews } = useDailyReviews();
   const { clearPeriodReports } = usePeriodReports();
   const { clearPlaybooks } = usePlaybooks();
+  const { clearNotes } = useNotes();
   const { resetSettings } = useUserSettings();
 
   function handleClearTrades() {
@@ -59,6 +61,12 @@ export default function DangerZoneSettings() {
     }
   }
 
+  function handleClearNotes() {
+    if (window.confirm(copy.settingsPage.clearNotesConfirm)) {
+      clearNotes();
+    }
+  }
+
   function handleClearAllData() {
     if (!window.confirm(copy.settingsPage.clearAllDataConfirm)) {
       return;
@@ -68,6 +76,7 @@ export default function DangerZoneSettings() {
     clearDailyReviews();
     clearPeriodReports();
     clearPlaybooks();
+    clearNotes();
     resetSettings();
   }
 
@@ -103,6 +112,10 @@ export default function DangerZoneSettings() {
         <DangerAction
           label={copy.settingsPage.clearPlaybooks}
           onClick={handleClearPlaybooks}
+        />
+        <DangerAction
+          label={copy.settingsPage.clearNotes}
+          onClick={handleClearNotes}
         />
         <DangerAction
           label={copy.settingsPage.clearAllData}

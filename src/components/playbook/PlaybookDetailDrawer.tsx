@@ -1,8 +1,11 @@
 "use client";
 
 import { Archive, Pencil, RotateCcw, Trash2, X } from "lucide-react";
+import { useRouter } from "next/navigation";
 
+import LinkedNotesPreview from "@/components/notes/LinkedNotesPreview";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import {
   getPlaybookStats,
@@ -100,15 +103,23 @@ export default function PlaybookDetailDrawer({
   onDelete,
 }: PlaybookDetailDrawerProps) {
   const { dictionary: copy } = useLanguage();
+  const router = useRouter();
+  const { getNotesForPlaybook } = useNotes();
   const { settings } = useUserSettings();
   const stats = getPlaybookStats(trades, playbook);
   const recentTrades = getRecentPlaybookTrades(trades, playbook, 5);
+  const linkedNotes = getNotesForPlaybook(playbook.id);
   const isArchived = playbook.status === "archived";
 
   function handleDelete() {
     if (window.confirm(copy.playbookPage.deleteConfirm)) {
       onDelete(playbook);
     }
+  }
+
+  function handleAddNote() {
+    onClose();
+    router.push(`/notes?playbookId=${encodeURIComponent(playbook.id)}`);
   }
 
   return (
@@ -333,6 +344,8 @@ export default function PlaybookDetailDrawer({
               </div>
             )}
           </section>
+
+          <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />
         </div>
 
         <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur">

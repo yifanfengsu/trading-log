@@ -65,9 +65,11 @@ export default function Sidebar() {
                       ? "/reports"
                       : item === "playbook"
                         ? "/playbook"
-                        : item === "settings"
-                          ? "/settings"
-                          : "#";
+                        : item === "notes"
+                          ? "/notes"
+                          : item === "settings"
+                            ? "/settings"
+                            : "#";
           const isActive =
             (item === "dashboard" && pathname === "/") ||
             (item === "trades" && pathname.startsWith("/trades")) ||
@@ -75,6 +77,7 @@ export default function Sidebar() {
             (item === "analytics" && pathname.startsWith("/analytics")) ||
             (item === "reports" && pathname.startsWith("/reports")) ||
             (item === "playbook" && pathname.startsWith("/playbook")) ||
+            (item === "notes" && pathname.startsWith("/notes")) ||
             (item === "settings" && pathname.startsWith("/settings"));
           const content = (
             <>

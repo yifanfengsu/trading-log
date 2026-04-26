@@ -1,4 +1,5 @@
 import type { DailyReview } from "@/lib/review-types";
+import type { Note } from "@/lib/note-types";
 import type { Playbook } from "@/lib/playbook-types";
 import type { PeriodReport } from "@/lib/report-types";
 import type { UserSettings } from "@/lib/settings-types";
@@ -14,5 +15,6 @@ export type BackupFile = {
     dailyReviews: DailyReview[];
     periodReports: PeriodReport[];
     playbooks: Playbook[];
+    notes: Note[];
   };
 };
