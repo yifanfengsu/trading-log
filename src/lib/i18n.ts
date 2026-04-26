@@ -98,6 +98,43 @@ export interface Dictionary {
     close: string;
     emotions: Record<ReviewEmotion, string>;
   };
+  analyticsPage: {
+    title: string;
+    subtitle: string;
+    month: string;
+    allSymbols: string;
+    setupPerformance: string;
+    longVsShort: string;
+    symbolPerformance: string;
+    weekdayPerformance: string;
+    rMultipleDistribution: string;
+    tagImpact: string;
+    reviewBehaviorInsights: string;
+    topWinnersLosers: string;
+    topWinners: string;
+    topLosers: string;
+    avgR: string;
+    maxDrawdown: string;
+    trades: string;
+    tag: string;
+    noTagData: string;
+    noReviewData: string;
+    reviewedTradingDays: string;
+    unreviewedTradingDays: string;
+    reviewedDaysPnl: string;
+    unreviewedDaysPnl: string;
+    averageExecutionScore: string;
+    emotion: string;
+    reviewedDays: string;
+    avgDailyPnl: string;
+    avgScore: string;
+    rMultipleInsight: string;
+    noTradeData: string;
+    noFilterData: string;
+    noWinningTrades: string;
+    noLosingTrades: string;
+    weekdays: string[];
+  };
   review: {
     title: string;
     pnlSummary: {
@@ -325,6 +362,43 @@ export const dictionaries: Record<Locale, Dictionary> = {
         tired: "疲惫",
         neutral: "中性",
       },
+    },
+    analyticsPage: {
+      title: "数据分析",
+      subtitle: "从策略、交易对、方向、时间和行为维度分析交易表现。",
+      month: "月份",
+      allSymbols: "全部交易对",
+      setupPerformance: "按策略表现",
+      longVsShort: "做多 vs 做空",
+      symbolPerformance: "按交易对表现",
+      weekdayPerformance: "按星期表现",
+      rMultipleDistribution: "R 倍数分布",
+      tagImpact: "标签影响",
+      reviewBehaviorInsights: "复盘行为洞察",
+      topWinnersLosers: "最大盈利 / 最大亏损",
+      topWinners: "最大盈利",
+      topLosers: "最大亏损",
+      avgR: "平均 R",
+      maxDrawdown: "最大回撤",
+      trades: "交易数",
+      tag: "标签",
+      noTagData: "暂无标签数据",
+      noReviewData: "暂无复盘数据",
+      reviewedTradingDays: "已复盘交易日",
+      unreviewedTradingDays: "未复盘交易日",
+      reviewedDaysPnl: "已复盘日盈亏",
+      unreviewedDaysPnl: "未复盘日盈亏",
+      averageExecutionScore: "平均执行评分",
+      emotion: "情绪状态",
+      reviewedDays: "复盘天数",
+      avgDailyPnl: "平均每日盈亏",
+      avgScore: "平均评分",
+      rMultipleInsight: "检查亏损是否集中在 -1R 以下，盈利是否能覆盖亏损。",
+      noTradeData: "暂无交易数据",
+      noFilterData: "没有符合筛选条件的数据",
+      noWinningTrades: "暂无盈利交易",
+      noLosingTrades: "暂无亏损交易",
+      weekdays: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
     },
     review: {
       title: "今日复盘",
@@ -587,6 +661,44 @@ export const dictionaries: Record<Locale, Dictionary> = {
         tired: "Tired",
         neutral: "Neutral",
       },
+    },
+    analyticsPage: {
+      title: "Analytics",
+      subtitle: "Analyze performance by setup, symbol, side, timing, and behavior.",
+      month: "Month",
+      allSymbols: "All Symbols",
+      setupPerformance: "Setup Performance",
+      longVsShort: "Long vs Short",
+      symbolPerformance: "Symbol Performance",
+      weekdayPerformance: "Weekday Performance",
+      rMultipleDistribution: "R-Multiple Distribution",
+      tagImpact: "Tag Impact",
+      reviewBehaviorInsights: "Review Behavior Insights",
+      topWinnersLosers: "Top Winners & Losers",
+      topWinners: "Top Winners",
+      topLosers: "Top Losers",
+      avgR: "Avg R",
+      maxDrawdown: "Max Drawdown",
+      trades: "Trades",
+      tag: "Tag",
+      noTagData: "No tag data yet",
+      noReviewData: "No review data yet",
+      reviewedTradingDays: "Reviewed Trading Days",
+      unreviewedTradingDays: "Unreviewed Trading Days",
+      reviewedDaysPnl: "Reviewed Days P&L",
+      unreviewedDaysPnl: "Unreviewed Days P&L",
+      averageExecutionScore: "Avg Execution Score",
+      emotion: "Emotion",
+      reviewedDays: "Reviewed Days",
+      avgDailyPnl: "Avg Daily P&L",
+      avgScore: "Avg Score",
+      rMultipleInsight:
+        "Check whether losses cluster below -1R and whether winners cover them.",
+      noTradeData: "No trade data yet",
+      noFilterData: "No data matches your filters",
+      noWinningTrades: "No winning trades",
+      noLosingTrades: "No losing trades",
+      weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     },
     review: {
       title: "Today Review",

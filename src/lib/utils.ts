@@ -139,8 +139,28 @@ export function formatRisk(value: number) {
 }
 
 export function formatRMultiple(value: number) {
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
+
   const prefix = value > 0 ? "+" : "";
   return `${prefix}${value.toFixed(2)}R`;
+}
+
+export function formatProfitFactor(value: number | null | undefined) {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return "—";
+  }
+
+  if (value === Infinity) {
+    return "∞";
+  }
+
+  if (!Number.isFinite(value)) {
+    return "—";
+  }
+
+  return value.toFixed(2);
 }
 
 const englishMonthNames = [
@@ -175,6 +195,13 @@ const englishShortMonthNames = [
 
 export function getDateKey(dateOrIso: string) {
   return dateOrIso.slice(0, 10);
+}
+
+export function getWeekdayIndexFromDateKey(dateKey: string): 1 | 2 | 3 | 4 | 5 | 6 | 7 {
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const dayOfWeek = new Date(year, month - 1, day).getDay();
+
+  return (dayOfWeek === 0 ? 7 : dayOfWeek) as 1 | 2 | 3 | 4 | 5 | 6 | 7;
 }
 
 export function parseSelectedMonth(selectedMonth: string) {
@@ -245,6 +272,20 @@ export function formatShortDateLabel(dateKey: string, locale: Locale) {
 
 export function formatTradeTimestamp(iso: string) {
   return iso.replace("T", " ").slice(0, 16);
+}
+
+export function formatDateTime(iso: string, locale: Locale) {
+  const dateKey = getDateKey(iso);
+  const time = iso.includes("T") ? iso.split("T")[1]?.slice(0, 5) : "";
+
+  if (locale === "zh") {
+    return `${dateKey}${time ? ` ${time}` : ""}`;
+  }
+
+  const [year, month, day] = dateKey.split("-").map(Number);
+  const dateLabel = `${englishShortMonthNames[month - 1]} ${day}, ${year}`;
+
+  return `${dateLabel}${time ? ` ${time}` : ""}`;
 }
 
 export interface CalendarCell {

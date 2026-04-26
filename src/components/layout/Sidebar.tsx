@@ -59,11 +59,14 @@ export default function Sidebar() {
                 ? "/trades"
                 : item === "calendar"
                   ? "/calendar"
-                  : "#";
+                  : item === "analytics"
+                    ? "/analytics"
+                    : "#";
           const isActive =
             (item === "dashboard" && pathname === "/") ||
             (item === "trades" && pathname.startsWith("/trades")) ||
-            (item === "calendar" && pathname.startsWith("/calendar"));
+            (item === "calendar" && pathname.startsWith("/calendar")) ||
+            (item === "analytics" && pathname.startsWith("/analytics"));
           const content = (
             <>
               <Icon

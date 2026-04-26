@@ -3,6 +3,14 @@ import { getDateKey } from "@/lib/utils";
 
 export type TradeResultFilter = "all" | "winner" | "loser";
 
+export type AnalyticsFilters = {
+  selectedMonth: string;
+  symbol: "all" | string;
+  side: "all" | TradeSide;
+  setup: "all" | TradeSetup;
+  result: TradeResultFilter;
+};
+
 export type TradeFilters = {
   query: string;
   side: "all" | TradeSide;
@@ -28,6 +36,49 @@ export const defaultTradeFilters: TradeFilters = {
   startDate: "",
   endDate: "",
 };
+
+export const defaultAnalyticsFilters: AnalyticsFilters = {
+  selectedMonth: "2025-05",
+  symbol: "all",
+  side: "all",
+  setup: "all",
+  result: "all",
+};
+
+export function filterAnalyticsTrades(
+  trades: Trade[],
+  filters: AnalyticsFilters,
+) {
+  return trades.filter((trade) => {
+    const dateKey = getDateKey(trade.closedAt);
+
+    if (!dateKey.startsWith(filters.selectedMonth)) {
+      return false;
+    }
+
+    if (filters.symbol !== "all" && trade.symbol !== filters.symbol) {
+      return false;
+    }
+
+    if (filters.side !== "all" && trade.side !== filters.side) {
+      return false;
+    }
+
+    if (filters.setup !== "all" && trade.setup !== filters.setup) {
+      return false;
+    }
+
+    if (filters.result === "winner" && trade.pnl <= 0) {
+      return false;
+    }
+
+    if (filters.result === "loser" && trade.pnl >= 0) {
+      return false;
+    }
+
+    return true;
+  });
+}
 
 export function filterTrades(trades: Trade[], filters: TradeFilters) {
   const query = filters.query.trim().toUpperCase();
