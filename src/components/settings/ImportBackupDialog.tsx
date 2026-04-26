@@ -1,6 +1,7 @@
 "use client";
 
 import { X } from "lucide-react";
+import { createPortal } from "react-dom";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { BackupFile } from "@/lib/backup-types";
@@ -8,7 +9,8 @@ import { getBackupSummary } from "@/lib/backup-utils";
 import { formatDateTime } from "@/lib/utils";
 
 interface ImportBackupDialogProps {
-  backup: BackupFile;
+  open: boolean;
+  backup: BackupFile | null;
   onCancel: () => void;
   onConfirm: () => void;
 }
@@ -28,28 +30,42 @@ function SummaryRow({ label, value }: SummaryRowProps) {
 }
 
 export default function ImportBackupDialog({
+  open,
   backup,
   onCancel,
   onConfirm,
 }: ImportBackupDialogProps) {
   const { dictionary: copy, locale } = useLanguage();
+
+  if (!open || !backup) {
+    return null;
+  }
+
   const summary = getBackupSummary(backup);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
+  const dialog = (
+    <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto px-4 py-4 sm:py-6">
       <button
         type="button"
         className="absolute inset-0 bg-slate-950/24 backdrop-blur-[2px]"
         onClick={onCancel}
         aria-label={copy.tradeForm.cancel}
       />
-      <section className="panel-card relative w-full max-w-[460px] overflow-hidden p-0">
-        <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="import-backup-title"
+        className="panel-card relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-[560px] flex-col overflow-hidden p-0"
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
               {copy.settingsPage.backupAndRestore}
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="import-backup-title"
+              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {copy.settingsPage.importBackup}
             </h2>
           </div>
@@ -63,7 +79,7 @@ export default function ImportBackupDialog({
           </button>
         </div>
 
-        <div className="px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
           <div className="rounded-[20px] bg-[rgba(250,250,255,0.88)] px-4">
             <SummaryRow
               label={copy.settingsPage.tradesCount}
@@ -91,7 +107,7 @@ export default function ImportBackupDialog({
           </p>
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4">
+        <div className="flex shrink-0 flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 sm:flex-row sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={onCancel}
@@ -110,4 +126,6 @@ export default function ImportBackupDialog({
       </section>
     </div>
   );
+
+  return createPortal(dialog, document.body);
 }

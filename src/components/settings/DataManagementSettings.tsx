@@ -110,7 +110,17 @@ export default function DataManagementSettings() {
     replacePlaybooks(pendingBackup.data.playbooks);
     setPendingBackup(null);
     setError(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     markStatus("imported");
+  }
+
+  function handleCancelImport() {
+    setPendingBackup(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
   }
 
   function handleRestoreDemoData() {
@@ -178,13 +188,12 @@ export default function DataManagementSettings() {
         </p>
       ) : null}
 
-      {pendingBackup ? (
-        <ImportBackupDialog
-          backup={pendingBackup}
-          onCancel={() => setPendingBackup(null)}
-          onConfirm={handleConfirmImport}
-        />
-      ) : null}
+      <ImportBackupDialog
+        open={pendingBackup !== null}
+        backup={pendingBackup}
+        onCancel={handleCancelImport}
+        onConfirm={handleConfirmImport}
+      />
     </section>
   );
 }
