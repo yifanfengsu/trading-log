@@ -3,6 +3,7 @@
 import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { SidePerformanceRow } from "@/lib/analytics-calculations";
 import {
   cn,
@@ -19,6 +20,7 @@ const sideOrder = ["long", "short"] as const;
 
 export default function SidePerformanceCard({ rows }: SidePerformanceCardProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const maxAbsPnl = Math.max(
     ...rows.map((row) => Math.abs(row.netPnl)),
     1,
@@ -79,7 +81,7 @@ export default function SidePerformanceCard({ rows }: SidePerformanceCardProps) 
                       isPositive ? "text-emerald-600" : "text-rose-600",
                     )}
                   >
-                    {formatCurrency(row.netPnl)}
+                    {formatCurrency(row.netPnl, settings.currency)}
                   </p>
                 </div>
 

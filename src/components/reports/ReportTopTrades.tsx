@@ -10,9 +10,9 @@ import {
   formatRMultiple,
 } from "@/lib/utils";
 
-interface TopTradesTableProps {
-  winners: Trade[];
-  losers: Trade[];
+interface ReportTopTradesProps {
+  topWinners: Trade[];
+  topLosers: Trade[];
 }
 
 interface TradeListProps {
@@ -100,24 +100,26 @@ function TradeList({ title, rows, emptyLabel }: TradeListProps) {
   );
 }
 
-export default function TopTradesTable({
-  winners,
-  losers,
-}: TopTradesTableProps) {
+export default function ReportTopTrades({
+  topWinners,
+  topLosers,
+}: ReportTopTradesProps) {
   const { dictionary: copy } = useLanguage();
 
   return (
     <section className="panel-card p-5 lg:p-6">
-      <h2 className="panel-title">{copy.analyticsPage.topWinnersLosers}</h2>
+      <h2 className="panel-title">
+        {copy.reportsPage.topWinningTrades} / {copy.reportsPage.topLosingTrades}
+      </h2>
       <div className="mt-5 grid gap-6">
         <TradeList
-          title={copy.analyticsPage.topWinners}
-          rows={winners}
+          title={copy.reportsPage.topWinningTrades}
+          rows={topWinners}
           emptyLabel={copy.analyticsPage.noWinningTrades}
         />
         <TradeList
-          title={copy.analyticsPage.topLosers}
-          rows={losers}
+          title={copy.reportsPage.topLosingTrades}
+          rows={topLosers}
           emptyLabel={copy.analyticsPage.noLosingTrades}
         />
       </div>

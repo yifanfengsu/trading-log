@@ -11,6 +11,7 @@ import {
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { type ReviewItemData, type ReviewId } from "@/lib/mock-data";
 import type { PnlPeriodSummary } from "@/lib/trade-calculations";
 import { cn, formatCurrency, formatDateLabel } from "@/lib/utils";
@@ -54,6 +55,7 @@ export default function TodayReview({
   pnlSummary,
 }: TodayReviewProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { settings } = useUserSettings();
   const { getReviewByDate } = useDailyReviews();
   const savedReview = getReviewByDate(activeDate);
   const pnlItems = [
@@ -111,7 +113,7 @@ export default function TodayReview({
                 item.value === 0 && "text-slate-700",
               )}
             >
-              {formatCurrency(item.value)}
+              {formatCurrency(item.value, settings.currency)}
             </p>
           </div>
         ))}

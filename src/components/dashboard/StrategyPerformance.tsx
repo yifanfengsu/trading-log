@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { StrategyStats } from "@/lib/trade-calculations";
 import { cn, formatCurrency, formatNumber, formatPercent } from "@/lib/utils";
 
@@ -14,6 +15,7 @@ export default function StrategyPerformance({
   rows,
 }: StrategyPerformanceProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
 
   return (
     <section className="panel-card p-5 lg:p-6">
@@ -78,7 +80,7 @@ export default function StrategyPerformance({
                         row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
                       )}
                     >
-                      {formatCurrency(row.netPnl)}
+                      {formatCurrency(row.netPnl, settings.currency)}
                     </td>
                     <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
                       <div className="min-w-[132px]">

@@ -2,9 +2,9 @@
 
 import {
   Activity,
+  CheckCircle2,
   ListChecks,
   Percent,
-  ShieldAlert,
   TrendingUp,
   Wallet,
   type LucideIcon,
@@ -12,7 +12,7 @@ import {
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
-import type { AnalyticsSummary } from "@/lib/analytics-calculations";
+import type { ReportStats } from "@/lib/report-types";
 import {
   cn,
   formatCurrency,
@@ -21,8 +21,8 @@ import {
   formatRMultiple,
 } from "@/lib/utils";
 
-interface AnalyticsSummaryCardsProps {
-  summary: AnalyticsSummary;
+interface ReportSummaryCardsProps {
+  stats: ReportStats;
 }
 
 interface SummaryItem {
@@ -40,20 +40,18 @@ const toneClassMap = {
   accent: "text-[var(--accent)]",
 } as const;
 
-export default function AnalyticsSummaryCards({
-  summary,
-}: AnalyticsSummaryCardsProps) {
+export default function ReportSummaryCards({ stats }: ReportSummaryCardsProps) {
   const { dictionary: copy } = useLanguage();
   const { settings } = useUserSettings();
   const items: SummaryItem[] = [
     {
       key: "netPnl",
       label: copy.metrics.netPnl.label,
-      value: formatCurrency(summary.netPnl, settings.currency),
+      value: formatCurrency(stats.netPnl, settings.currency),
       tone:
-        summary.netPnl > 0
+        stats.netPnl > 0
           ? "positive"
-          : summary.netPnl < 0
+          : stats.netPnl < 0
             ? "negative"
             : "neutral",
       icon: Wallet,
@@ -61,42 +59,42 @@ export default function AnalyticsSummaryCards({
     {
       key: "totalTrades",
       label: copy.tradesPage.totalTrades,
-      value: String(summary.totalTrades),
+      value: String(stats.totalTrades),
       tone: "accent",
       icon: ListChecks,
     },
     {
       key: "winRate",
       label: copy.metrics.winRate.label,
-      value: formatPercent(summary.winRate),
+      value: formatPercent(stats.winRate),
       tone: "neutral",
       icon: Percent,
     },
     {
       key: "profitFactor",
       label: copy.metrics.profitFactor.label,
-      value: formatProfitFactor(summary.profitFactor),
+      value: formatProfitFactor(stats.profitFactor),
       tone: "accent",
       icon: TrendingUp,
     },
     {
       key: "avgR",
       label: copy.analyticsPage.avgR,
-      value: formatRMultiple(summary.avgR),
+      value: formatRMultiple(stats.avgR),
       tone:
-        summary.avgR > 0
+        stats.avgR > 0
           ? "positive"
-          : summary.avgR < 0
+          : stats.avgR < 0
             ? "negative"
             : "neutral",
       icon: Activity,
     },
     {
-      key: "maxDrawdown",
-      label: copy.analyticsPage.maxDrawdown,
-      value: formatPercent(summary.maxDrawdownPercent),
-      tone: summary.maxDrawdownPercent > 0 ? "negative" : "neutral",
-      icon: ShieldAlert,
+      key: "reviewCompletion",
+      label: copy.reportsPage.reviewCompletion,
+      value: formatPercent(stats.reviewCompletionRate),
+      tone: "accent",
+      icon: CheckCircle2,
     },
   ];
 

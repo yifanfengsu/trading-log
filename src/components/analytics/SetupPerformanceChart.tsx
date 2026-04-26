@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { SetupPerformanceRow } from "@/lib/analytics-calculations";
 import {
   cn,
@@ -47,6 +48,7 @@ export default function SetupPerformanceChart({
   rows,
 }: SetupPerformanceChartProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const isClient = useIsClient();
   const data: SetupChartDatum[] = rows.map((row) => ({
     ...row,
@@ -67,7 +69,10 @@ export default function SetupPerformanceChart({
       <div className="rounded-2xl border border-[rgba(108,77,255,0.14)] bg-white/95 p-3 text-sm shadow-[0_12px_32px_rgba(31,15,86,0.10)]">
         <p className="font-semibold text-slate-950">{row.setupLabel}</p>
         <div className="mt-2 grid gap-1 text-slate-500">
-          <span>{copy.metrics.netPnl.label}: {formatCurrency(row.netPnl)}</span>
+          <span>
+            {copy.metrics.netPnl.label}:{" "}
+            {formatCurrency(row.netPnl, settings.currency)}
+          </span>
           <span>{copy.analyticsPage.trades}: {row.totalTrades}</span>
           <span>{copy.metrics.winRate.label}: {formatPercent(row.winRate)}</span>
           <span>
@@ -116,7 +121,9 @@ export default function SetupPerformanceChart({
                     tickMargin={12}
                     width={54}
                     tick={{ fill: "#8c88a6", fontSize: 12 }}
-                    tickFormatter={formatAxisCurrencyTick}
+                    tickFormatter={(value: number) =>
+                      formatAxisCurrencyTick(value, settings.currency)
+                    }
                   />
                   <Tooltip
                     cursor={{ fill: "rgba(108,77,255,0.06)" }}
@@ -170,7 +177,7 @@ export default function SetupPerformanceChart({
                         row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
                       )}
                     >
-                      {formatCurrency(row.netPnl)}
+                      {formatCurrency(row.netPnl, settings.currency)}
                     </td>
                     <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
                       {row.totalTrades}

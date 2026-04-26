@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { TagImpactRow } from "@/lib/analytics-calculations";
 import {
   cn,
@@ -15,6 +16,7 @@ interface TagImpactTableProps {
 
 export default function TagImpactTable({ rows }: TagImpactTableProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const displayRows = rows.slice(0, 8);
 
   return (
@@ -64,7 +66,7 @@ export default function TagImpactTable({ rows }: TagImpactTableProps) {
                       row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
                     )}
                   >
-                    {formatCurrency(row.netPnl)}
+                    {formatCurrency(row.netPnl, settings.currency)}
                   </td>
                   <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
                     {formatPercent(row.winRate)}

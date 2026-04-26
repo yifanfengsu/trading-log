@@ -5,6 +5,7 @@ import { ArrowRightLeft, Pencil, Trash2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { Trade } from "@/lib/trade-types";
 import {
   cn,
@@ -44,6 +45,7 @@ function getSymbolBadge(symbol: string) {
 
 export default function RecentTrades({ rows }: RecentTradesProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const { deleteTrade } = useTrades();
   const { openEditTrade } = useTradeDrawer();
 
@@ -164,7 +166,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
                       row.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
                     )}
                   >
-                    {formatCurrency(row.pnl)}
+                    {formatCurrency(row.pnl, settings.currency)}
                   </td>
                   <td
                     className={cn(

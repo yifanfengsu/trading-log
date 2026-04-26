@@ -15,6 +15,7 @@ import WeekdayPerformanceChart from "@/components/analytics/WeekdayPerformanceCh
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import {
   getAnalyticsSummary,
   getRMultipleDistribution,
@@ -46,6 +47,7 @@ function AnalyticsEmptyState({ label }: { label: string }) {
 export default function AnalyticsPage() {
   const { dictionary: copy } = useLanguage();
   const { trades } = useTrades();
+  const { settings } = useUserSettings();
   const { dailyReviews } = useDailyReviews();
   const [filters, setFilters] = useState<AnalyticsFiltersState>(
     defaultAnalyticsFilters,
@@ -59,8 +61,8 @@ export default function AnalyticsPage() {
     [filters, trades],
   );
   const summary = useMemo(
-    () => getAnalyticsSummary(filteredTrades),
-    [filteredTrades],
+    () => getAnalyticsSummary(filteredTrades, settings.startingBalance),
+    [filteredTrades, settings.startingBalance],
   );
   const setupPerformance = useMemo(
     () => getSetupPerformance(filteredTrades),

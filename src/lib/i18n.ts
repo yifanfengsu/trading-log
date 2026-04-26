@@ -135,6 +135,54 @@ export interface Dictionary {
     noLosingTrades: string;
     weekdays: string[];
   };
+  reportsPage: {
+    title: string;
+    subtitle: string;
+    weekly: string;
+    monthly: string;
+    reportType: string;
+    period: string;
+    saveReport: string;
+    copyMarkdown: string;
+    downloadMarkdown: string;
+    copied: string;
+    saved: string;
+    reportPreview: string;
+    copyMarkdownHint: string;
+    noTradeData: string;
+    summary: string;
+    keyWins: string;
+    keyMistakes: string;
+    lessons: string;
+    nextActions: string;
+    useSuggestions: string;
+    clear: string;
+    dailyBreakdown: string;
+    setupPerformance: string;
+    tagImpact: string;
+    savedReports: string;
+    noSavedReports: string;
+    open: string;
+    delete: string;
+    deleteConfirm: string;
+    type: string;
+    titleColumn: string;
+    updated: string;
+    actions: string;
+    corePerformance: string;
+    periodReview: string;
+    setupBreakdown: string;
+    tagBreakdown: string;
+    noData: string;
+    tradingWeeklyReport: string;
+    tradingMonthlyReport: string;
+    reviewCompletion: string;
+    topWinningTrades: string;
+    topLosingTrades: string;
+    autoSuggestions: string;
+    reviewed: string;
+    notReviewed: string;
+  };
   review: {
     title: string;
     pnlSummary: {
@@ -238,6 +286,53 @@ export interface Dictionary {
     noTags: string;
     filteredResults: string;
     tradeCountLabel: string;
+  };
+  settingsPage: {
+    title: string;
+    subtitle: string;
+    preferences: string;
+    language: string;
+    currency: string;
+    startingBalance: string;
+    saveSettings: string;
+    resetDefaults: string;
+    resetPreferencesConfirm: string;
+    tradeDefaults: string;
+    defaultSymbol: string;
+    defaultSide: string;
+    defaultSetup: string;
+    defaultRiskPercent: string;
+    saveDefaults: string;
+    localDataOverview: string;
+    currentCurrency: string;
+    dataManagement: string;
+    exportBackup: string;
+    importBackup: string;
+    confirmImport: string;
+    exportedAt: string;
+    invalidBackupFile: string;
+    importReplaceConfirm: string;
+    exported: string;
+    imported: string;
+    restoreDemoData: string;
+    restoreDemoDataConfirm: string;
+    dangerZone: string;
+    clearTrades: string;
+    clearDailyReviews: string;
+    clearPeriodReports: string;
+    clearAllData: string;
+    clearTradesConfirm: string;
+    clearDailyReviewsConfirm: string;
+    clearPeriodReportsConfirm: string;
+    clearAllDataConfirm: string;
+    irreversible: string;
+    tradesCount: string;
+    dailyReviewsCount: string;
+    periodReportsCount: string;
+    chooseBackupFile: string;
+    restoreData: string;
+    backupAndRestore: string;
+    settingsSaved: string;
   };
   language: {
     zh: string;
@@ -400,6 +495,54 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noLosingTrades: "暂无亏损交易",
       weekdays: ["周一", "周二", "周三", "周四", "周五", "周六", "周日"],
     },
+    reportsPage: {
+      title: "报告",
+      subtitle: "自动生成周报和月报，沉淀周期复盘结论。",
+      weekly: "周报",
+      monthly: "月报",
+      reportType: "报告类型",
+      period: "周期",
+      saveReport: "保存报告",
+      copyMarkdown: "复制 Markdown",
+      downloadMarkdown: "下载 Markdown",
+      copied: "已复制",
+      saved: "已保存",
+      reportPreview: "报告预览",
+      copyMarkdownHint: "可以复制 Markdown 后粘贴到你的复盘文档。",
+      noTradeData: "当前周期暂无交易数据。",
+      summary: "总结",
+      keyWins: "做得好的地方",
+      keyMistakes: "主要问题",
+      lessons: "经验教训",
+      nextActions: "下周期行动计划",
+      useSuggestions: "使用自动建议",
+      clear: "清空",
+      dailyBreakdown: "每日表现",
+      setupPerformance: "策略表现",
+      tagImpact: "标签影响",
+      savedReports: "已保存报告",
+      noSavedReports: "暂无已保存报告",
+      open: "打开",
+      delete: "删除",
+      deleteConfirm: "确定要删除这份报告吗？",
+      type: "类型",
+      titleColumn: "标题",
+      updated: "更新时间",
+      actions: "操作",
+      corePerformance: "核心表现",
+      periodReview: "周期复盘",
+      setupBreakdown: "策略分解",
+      tagBreakdown: "标签分解",
+      noData: "暂无数据",
+      tradingWeeklyReport: "交易周报",
+      tradingMonthlyReport: "交易月报",
+      reviewCompletion: "复盘完成率",
+      topWinningTrades: "最大盈利交易",
+      topLosingTrades: "最大亏损交易",
+      autoSuggestions: "使用最新数据生成的自动建议",
+      reviewed: "已复盘",
+      notReviewed: "未复盘",
+    },
     review: {
       title: "今日复盘",
       pnlSummary: {
@@ -531,6 +674,53 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noTags: "无标签",
       filteredResults: "筛选结果",
       tradeCountLabel: "笔交易",
+    },
+    settingsPage: {
+      title: "设置",
+      subtitle: "配置交易日志偏好、默认交易参数和本地数据备份。",
+      preferences: "偏好设置",
+      language: "语言",
+      currency: "货币显示",
+      startingBalance: "初始资金",
+      saveSettings: "保存设置",
+      resetDefaults: "重置默认",
+      resetPreferencesConfirm: "确定要重置偏好设置吗？",
+      tradeDefaults: "交易默认值",
+      defaultSymbol: "默认交易对",
+      defaultSide: "默认方向",
+      defaultSetup: "默认策略",
+      defaultRiskPercent: "默认风险比例",
+      saveDefaults: "保存默认值",
+      localDataOverview: "本地数据概览",
+      currentCurrency: "当前货币",
+      dataManagement: "数据管理",
+      exportBackup: "导出备份",
+      importBackup: "导入备份",
+      confirmImport: "确认导入",
+      exportedAt: "导出时间",
+      invalidBackupFile: "备份文件无效",
+      importReplaceConfirm: "导入会覆盖当前本地数据，确定继续吗？",
+      exported: "已导出",
+      imported: "已导入",
+      restoreDemoData: "恢复演示数据",
+      restoreDemoDataConfirm: "确定要恢复演示数据吗？这会覆盖当前交易和每日复盘数据。",
+      dangerZone: "危险操作",
+      clearTrades: "清空交易数据",
+      clearDailyReviews: "清空每日复盘",
+      clearPeriodReports: "清空周期报告",
+      clearAllData: "清空全部数据",
+      clearTradesConfirm: "确定要清空所有交易数据吗？此操作不可撤销。",
+      clearDailyReviewsConfirm: "确定要清空所有每日复盘吗？此操作不可撤销。",
+      clearPeriodReportsConfirm: "确定要清空所有周期报告吗？此操作不可撤销。",
+      clearAllDataConfirm: "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告和设置。",
+      irreversible: "此操作不可撤销",
+      tradesCount: "交易数量",
+      dailyReviewsCount: "每日复盘数量",
+      periodReportsCount: "周期报告数量",
+      chooseBackupFile: "请选择备份文件",
+      restoreData: "恢复数据",
+      backupAndRestore: "备份与恢复",
+      settingsSaved: "设置已保存",
     },
     language: {
       zh: "中文",
@@ -700,6 +890,55 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noLosingTrades: "No losing trades",
       weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
     },
+    reportsPage: {
+      title: "Reports",
+      subtitle: "Generate weekly and monthly reports to capture review insights.",
+      weekly: "Weekly",
+      monthly: "Monthly",
+      reportType: "Report Type",
+      period: "Period",
+      saveReport: "Save Report",
+      copyMarkdown: "Copy Markdown",
+      downloadMarkdown: "Download Markdown",
+      copied: "Copied",
+      saved: "Saved",
+      reportPreview: "Report Preview",
+      copyMarkdownHint:
+        "Copy the Markdown report and paste it into your review document.",
+      noTradeData: "No trade data for this period.",
+      summary: "Summary",
+      keyWins: "What Went Well",
+      keyMistakes: "Main Issues",
+      lessons: "Lessons",
+      nextActions: "Next Actions",
+      useSuggestions: "Use Suggestions",
+      clear: "Clear",
+      dailyBreakdown: "Daily Breakdown",
+      setupPerformance: "Setup Performance",
+      tagImpact: "Tag Impact",
+      savedReports: "Saved Reports",
+      noSavedReports: "No saved reports yet",
+      open: "Open",
+      delete: "Delete",
+      deleteConfirm: "Delete this report?",
+      type: "Type",
+      titleColumn: "Title",
+      updated: "Updated",
+      actions: "Actions",
+      corePerformance: "Core Performance",
+      periodReview: "Period Review",
+      setupBreakdown: "Setup Breakdown",
+      tagBreakdown: "Tag Breakdown",
+      noData: "No data",
+      tradingWeeklyReport: "Trading Weekly Report",
+      tradingMonthlyReport: "Trading Monthly Report",
+      reviewCompletion: "Review Completion",
+      topWinningTrades: "Top Winning Trades",
+      topLosingTrades: "Top Losing Trades",
+      autoSuggestions: "Auto suggestions generated from the latest data",
+      reviewed: "Reviewed",
+      notReviewed: "Not reviewed",
+    },
     review: {
       title: "Today Review",
       pnlSummary: {
@@ -831,6 +1070,53 @@ export const dictionaries: Record<Locale, Dictionary> = {
       noTags: "No tags",
       filteredResults: "Filtered Results",
       tradeCountLabel: "trades",
+    },
+    settingsPage: {
+      title: "Settings",
+      subtitle: "Configure preferences, trade defaults, and local data backups.",
+      preferences: "Preferences",
+      language: "Language",
+      currency: "Currency",
+      startingBalance: "Starting Balance",
+      saveSettings: "Save Settings",
+      resetDefaults: "Reset Defaults",
+      resetPreferencesConfirm: "Reset preferences to defaults?",
+      tradeDefaults: "Trade Defaults",
+      defaultSymbol: "Default Symbol",
+      defaultSide: "Default Side",
+      defaultSetup: "Default Setup",
+      defaultRiskPercent: "Default Risk %",
+      saveDefaults: "Save Defaults",
+      localDataOverview: "Local Data Overview",
+      currentCurrency: "Current Currency",
+      dataManagement: "Data Management",
+      exportBackup: "Export Backup",
+      importBackup: "Import Backup",
+      confirmImport: "Confirm Import",
+      exportedAt: "Exported At",
+      invalidBackupFile: "Invalid backup file",
+      importReplaceConfirm: "Importing will replace your current local data. Continue?",
+      exported: "Exported",
+      imported: "Imported",
+      restoreDemoData: "Restore Demo Data",
+      restoreDemoDataConfirm: "Restore demo data? This will replace current trades and daily reviews.",
+      dangerZone: "Danger Zone",
+      clearTrades: "Clear Trades",
+      clearDailyReviews: "Clear Daily Reviews",
+      clearPeriodReports: "Clear Period Reports",
+      clearAllData: "Clear All Data",
+      clearTradesConfirm: "Clear all trades? This cannot be undone.",
+      clearDailyReviewsConfirm: "Clear all daily reviews? This cannot be undone.",
+      clearPeriodReportsConfirm: "Clear all period reports? This cannot be undone.",
+      clearAllDataConfirm: "Clear all local data? This will delete trades, daily reviews, period reports, and settings.",
+      irreversible: "This action cannot be undone",
+      tradesCount: "Trades Count",
+      dailyReviewsCount: "Daily Reviews Count",
+      periodReportsCount: "Period Reports Count",
+      chooseBackupFile: "Choose backup file",
+      restoreData: "Restore Data",
+      backupAndRestore: "Backup & Restore",
+      settingsSaved: "Settings saved",
     },
     language: {
       zh: "中文",

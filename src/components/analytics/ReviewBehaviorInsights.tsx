@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { ReviewBehaviorInsights as ReviewBehaviorInsightsData } from "@/lib/analytics-calculations";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -56,6 +57,7 @@ export default function ReviewBehaviorInsights({
   insights,
 }: ReviewBehaviorInsightsProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
 
   return (
     <section className="panel-card p-5 lg:p-6">
@@ -73,12 +75,12 @@ export default function ReviewBehaviorInsights({
         />
         <InsightMetric
           label={copy.analyticsPage.reviewedDaysPnl}
-          value={formatCurrency(insights.reviewedDaysPnl)}
+          value={formatCurrency(insights.reviewedDaysPnl, settings.currency)}
           tone={getPnlTone(insights.reviewedDaysPnl)}
         />
         <InsightMetric
           label={copy.analyticsPage.unreviewedDaysPnl}
-          value={formatCurrency(insights.unreviewedDaysPnl)}
+          value={formatCurrency(insights.unreviewedDaysPnl, settings.currency)}
           tone={getPnlTone(insights.unreviewedDaysPnl)}
         />
         <InsightMetric
@@ -129,7 +131,7 @@ export default function ReviewBehaviorInsights({
                       row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
                     )}
                   >
-                    {formatCurrency(row.netPnl)}
+                    {formatCurrency(row.netPnl, settings.currency)}
                   </td>
                   <td
                     className={cn(
@@ -139,7 +141,7 @@ export default function ReviewBehaviorInsights({
                         : "text-rose-600",
                     )}
                   >
-                    {formatCurrency(row.avgDailyPnl)}
+                    {formatCurrency(row.avgDailyPnl, settings.currency)}
                   </td>
                   <td className="rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
                     {formatScore(row.avgScore)}

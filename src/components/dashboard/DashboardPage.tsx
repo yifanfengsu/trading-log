@@ -13,6 +13,7 @@ import StrategyPerformance from "@/components/dashboard/StrategyPerformance";
 import RecentTrades from "@/components/dashboard/RecentTrades";
 import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import {
   getCalendarStats,
   getDailyPnlMap,
@@ -50,9 +51,9 @@ function getLatestTradeDate(trades: Trade[]) {
   return latestTrade ? getDateKey(latestTrade.closedAt) : null;
 }
 
-function buildMetrics(trades: Trade[]): MetricData[] {
+function buildMetrics(trades: Trade[], startingBalance: number): MetricData[] {
   const stats = getPeriodStats(trades);
-  const maxDrawdown = getMaxDrawdown(trades);
+  const maxDrawdown = getMaxDrawdown(trades, startingBalance);
   const drawdownValue = maxDrawdown.percent > 0 ? -maxDrawdown.percent : 0;
 
   return [
@@ -89,6 +90,7 @@ function buildMetrics(trades: Trade[]): MetricData[] {
 
 export default function DashboardPage() {
   const { trades } = useTrades();
+  const { settings } = useUserSettings();
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const monthTrades = getTradesByMonth(trades, year, month);
@@ -96,7 +98,7 @@ export default function DashboardPage() {
   const calendarStats = getCalendarStats(trades, year, month);
   const equityCurveData = getEquityCurveData(monthTrades);
   const strategyStats = getStrategyStats(monthTrades);
-  const dashboardMetrics = buildMetrics(monthTrades);
+  const dashboardMetrics = buildMetrics(monthTrades, settings.startingBalance);
   const recentTrades = [...trades]
     .sort((a, b) => b.closedAt.localeCompare(a.closedAt))
     .slice(0, 6);

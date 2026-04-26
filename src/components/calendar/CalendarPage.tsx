@@ -9,6 +9,7 @@ import DayDetailDrawer from "@/components/calendar/DayDetailDrawer";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import {
   getMonthLabel,
   getMonthNavigation,
@@ -57,6 +58,7 @@ function InsightRow({ label, value, tone = "neutral" }: InsightRowProps) {
 export default function CalendarPage({ initialDate }: CalendarPageProps) {
   const { dictionary: copy, locale } = useLanguage();
   const { trades } = useTrades();
+  const { settings } = useUserSettings();
   const { dailyReviews, getReviewByDate } = useDailyReviews();
   const initialSelectedDate =
     initialDate && isValidDateKey(initialDate) ? initialDate : null;
@@ -110,7 +112,10 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
       return copy.calendarPage.noDataForMonth;
     }
 
-    return `${formatShortDateLabel(date, locale)} · ${formatCurrency(value)}`;
+    return `${formatShortDateLabel(date, locale)} · ${formatCurrency(
+      value,
+      settings.currency,
+    )}`;
   }
 
   return (
@@ -179,7 +184,10 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
               />
               <InsightRow
                 label={copy.calendarPage.avgDailyPnl}
-                value={formatCurrency(insights.averageTradingDayPnl)}
+                value={formatCurrency(
+                  insights.averageTradingDayPnl,
+                  settings.currency,
+                )}
                 tone={
                   insights.averageTradingDayPnl > 0
                     ? "positive"

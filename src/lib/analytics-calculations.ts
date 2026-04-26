@@ -1,6 +1,7 @@
 import type { DailyReview, ReviewEmotion } from "@/lib/review-types";
 import {
   getMaxDrawdown,
+  STARTING_BALANCE,
   getPeriodStats,
 } from "@/lib/trade-calculations";
 import type { Trade, TradeSetup, TradeSide } from "@/lib/trade-types";
@@ -173,9 +174,12 @@ function getDailyPnlEntries(trades: Trade[]) {
   );
 }
 
-export function getAnalyticsSummary(trades: Trade[]): AnalyticsSummary {
+export function getAnalyticsSummary(
+  trades: Trade[],
+  startingBalance = STARTING_BALANCE,
+): AnalyticsSummary {
   const stats = getPeriodStats(trades);
-  const maxDrawdown = getMaxDrawdown(trades);
+  const maxDrawdown = getMaxDrawdown(trades, startingBalance);
 
   return {
     netPnl: stats.netPnl,

@@ -13,6 +13,7 @@ import {
 } from "recharts";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { EquityCurvePoint } from "@/lib/trade-calculations";
 import {
   formatAxisCurrencyTick,
@@ -29,6 +30,7 @@ interface EquityCurveProps {
 
 export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { settings } = useUserSettings();
   const lastPoint = data[data.length - 1];
   const isClient = useSyncExternalStore(
     () => () => {},
@@ -104,7 +106,9 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 domain={[-4000, 12000]}
                 ticks={[-4000, 0, 4000, 8000, 12000]}
                 tick={{ fill: "#8c88a6", fontSize: 12 }}
-                tickFormatter={formatAxisCurrencyTick}
+                tickFormatter={(value: number) =>
+                  formatAxisCurrencyTick(value, settings.currency)
+                }
               />
               <Tooltip
                 cursor={{ stroke: "rgba(108,77,255,0.18)", strokeWidth: 1.5 }}
@@ -116,7 +120,10 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 }}
                 labelStyle={{ color: "#171228", fontWeight: 600 }}
                 formatter={(value) =>
-                  formatCurrency(Number(value ?? 0), { digits: 0 })
+                  formatCurrency(Number(value ?? 0), {
+                    currency: settings.currency,
+                    digits: 0,
+                  })
                 }
                 labelFormatter={(label) =>
                   formatShortDateLabel(String(label), locale)
@@ -144,7 +151,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 stroke="#fff"
                 strokeWidth={3}
                 label={{
-                  value: formatCompactCurrency(lastPoint.equity),
+                  value: formatCompactCurrency(lastPoint.equity, settings.currency),
                   position: "right",
                   fill: "#6C4DFF",
                   fontSize: 12,

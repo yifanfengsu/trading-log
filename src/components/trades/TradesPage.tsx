@@ -9,6 +9,7 @@ import TradesToolbar from "@/components/trades/TradesToolbar";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { getPeriodStats } from "@/lib/trade-calculations";
 import {
   defaultTradeFilters,
@@ -64,6 +65,7 @@ function getAverageR(trades: Trade[]) {
 export default function TradesPage() {
   const { dictionary: copy } = useLanguage();
   const { trades } = useTrades();
+  const { settings } = useUserSettings();
   const { openCreateTrade, openEditTrade } = useTradeDrawer();
   const [filters, setFilters] = useState<TradeFilters>(defaultTradeFilters);
   const [sortState, setSortState] = useState<TradeSortState>(null);
@@ -111,7 +113,7 @@ export default function TradesPage() {
         />
         <SummaryCard
           label={copy.tradesPage.totalPnl}
-          value={formatCurrency(stats.netPnl)}
+          value={formatCurrency(stats.netPnl, settings.currency)}
           tone={stats.netPnl > 0 ? "positive" : stats.netPnl < 0 ? "negative" : "neutral"}
         />
         <SummaryCard

@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { Trade } from "@/lib/trade-types";
 import {
   cn,
@@ -47,6 +48,7 @@ export default function TradeDetailDrawer({
   onEdit,
 }: TradeDetailDrawerProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -102,7 +104,7 @@ export default function TradeDetailDrawer({
             />
             <DetailRow
               label={copy.tradeForm.netPnl}
-              value={formatCurrency(trade.pnl)}
+              value={formatCurrency(trade.pnl, settings.currency)}
               valueClassName={trade.pnl >= 0 ? "text-emerald-600" : "text-rose-600"}
             />
             <DetailRow

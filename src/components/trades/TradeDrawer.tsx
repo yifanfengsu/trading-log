@@ -5,6 +5,8 @@ import { type FormEvent, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import type { UserSettings } from "@/lib/settings-types";
 import type {
   Trade,
   TradeInput,
@@ -56,16 +58,19 @@ function getCurrentDatetimeLocal() {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
-function getInitialFormState(trade?: Trade): TradeFormState {
+function getInitialFormState(
+  trade: Trade | undefined,
+  settings: UserSettings,
+): TradeFormState {
   if (!trade) {
     return {
       closedAt: getCurrentDatetimeLocal(),
-      symbol: "",
-      side: "long",
-      setup: "breakout",
+      symbol: settings.defaultSymbol,
+      side: settings.defaultSide,
+      setup: settings.defaultSetup,
       entryPrice: "",
       exitPrice: "",
-      riskPercent: "1",
+      riskPercent: String(settings.defaultRiskPercent),
       pnl: "",
       rMultiple: "",
       notes: "",
@@ -107,8 +112,9 @@ function parseTags(value: string) {
 export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) {
   const { dictionary: copy } = useLanguage();
   const { addTrade, updateTrade } = useTrades();
+  const { settings } = useUserSettings();
   const [form, setForm] = useState<TradeFormState>(() =>
-    getInitialFormState(trade),
+    getInitialFormState(mode === "edit" ? trade : undefined, settings),
   );
   const [error, setError] = useState<string | null>(null);
   const title =

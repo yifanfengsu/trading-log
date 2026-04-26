@@ -166,7 +166,10 @@ export function getEquityCurveData(trades: Trade[]): EquityCurvePoint[] {
   });
 }
 
-export function getMaxDrawdown(trades: Trade[]): MaxDrawdown {
+export function getMaxDrawdown(
+  trades: Trade[],
+  startingBalance = STARTING_BALANCE,
+): MaxDrawdown {
   let peak = 0;
   let maxDrawdown = 0;
 
@@ -177,7 +180,8 @@ export function getMaxDrawdown(trades: Trade[]): MaxDrawdown {
 
   return {
     amount: maxDrawdown,
-    percent: (maxDrawdown / STARTING_BALANCE) * 100,
+    percent:
+      startingBalance > 0 ? (maxDrawdown / startingBalance) * 100 : 0,
   };
 }
 

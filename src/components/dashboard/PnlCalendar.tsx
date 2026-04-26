@@ -5,6 +5,7 @@ import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { CalendarStats } from "@/lib/trade-calculations";
 import {
   buildCalendarGrid,
@@ -30,6 +31,7 @@ export default function PnlCalendar({
   onMonthChange,
 }: PnlCalendarProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { settings } = useUserSettings();
   const { dailyReviews } = useDailyReviews();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const cells = buildCalendarGrid(year, month - 1, dailyPnlMap);
@@ -139,7 +141,7 @@ export default function PnlCalendar({
                     isLoss && "text-rose-700",
                   )}
                 >
-                  {formatCompactCurrency(cell.pnl)}
+                  {formatCompactCurrency(cell.pnl, settings.currency)}
                 </span>
               ) : null}
             </>
@@ -172,7 +174,7 @@ export default function PnlCalendar({
               summary.totalPnl === 0 && "text-slate-900",
             )}
           >
-            {formatCurrency(summary.totalPnl)}
+            {formatCurrency(summary.totalPnl, settings.currency)}
           </p>
         </div>
         <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
@@ -194,7 +196,7 @@ export default function PnlCalendar({
         <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
           <p className="text-sm text-slate-500">{copy.calendar.summary.bestDay}</p>
           <p className="mt-2 text-lg font-semibold text-[var(--accent)]">
-            {formatCurrency(summary.bestDayPnl)}
+            {formatCurrency(summary.bestDayPnl, settings.currency)}
           </p>
         </div>
       </div>

@@ -27,6 +27,9 @@ interface TradeStoreContextValue {
   addTrade: (trade: TradeInput) => void;
   updateTrade: (id: string, trade: TradeInput) => void;
   deleteTrade: (id: string) => void;
+  replaceTrades: (trades: Trade[]) => void;
+  clearTrades: () => void;
+  resetTradesToSeed: () => void;
 }
 
 const TradeStoreContext = createContext<TradeStoreContextValue | null>(null);
@@ -179,14 +182,40 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
     commitTrades(nextTrades);
   }, [commitTrades]);
 
+  const replaceTrades = useCallback(
+    (nextTrades: Trade[]) => {
+      commitTrades([...nextTrades]);
+    },
+    [commitTrades],
+  );
+
+  const clearTrades = useCallback(() => {
+    commitTrades([]);
+  }, [commitTrades]);
+
+  const resetTradesToSeed = useCallback(() => {
+    commitTrades(seedTrades);
+  }, [commitTrades]);
+
   const value = useMemo(
     () => ({
       trades,
       addTrade,
       updateTrade,
       deleteTrade,
+      replaceTrades,
+      clearTrades,
+      resetTradesToSeed,
     }),
-    [addTrade, deleteTrade, trades, updateTrade],
+    [
+      addTrade,
+      clearTrades,
+      deleteTrade,
+      replaceTrades,
+      resetTradesToSeed,
+      trades,
+      updateTrade,
+    ],
   );
 
   return (

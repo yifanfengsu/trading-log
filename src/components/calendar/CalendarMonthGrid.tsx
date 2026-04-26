@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { getDateDisplay, getMonthMatrix } from "@/lib/calendar-utils";
 import {
   cn,
@@ -26,6 +27,7 @@ export default function CalendarMonthGrid({
   onSelectDate,
 }: CalendarMonthGridProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { settings } = useUserSettings();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const cells = getMonthMatrix(year, month);
 
@@ -104,7 +106,7 @@ export default function CalendarMonthGrid({
                         !isProfit && !isLoss && "text-slate-700",
                       )}
                     >
-                      {formatCompactCurrency(pnl)}
+                      {formatCompactCurrency(pnl, settings.currency)}
                     </p>
                     <p className="text-xs font-medium text-slate-500">
                       {tradeCount} {copy.calendarPage.trades}

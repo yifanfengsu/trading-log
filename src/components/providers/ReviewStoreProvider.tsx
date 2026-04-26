@@ -38,6 +38,9 @@ interface ReviewStoreContextValue {
   getReviewByDate: (date: string) => DailyReview | undefined;
   upsertReview: (review: DailyReview) => void;
   deleteReview: (date: string) => void;
+  replaceDailyReviews: (reviews: DailyReview[]) => void;
+  clearDailyReviews: () => void;
+  resetDailyReviewsToSeed: () => void;
 }
 
 const ReviewStoreContext = createContext<ReviewStoreContextValue | null>(null);
@@ -160,14 +163,40 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
     [commitReviews],
   );
 
+  const replaceDailyReviews = useCallback(
+    (nextReviews: DailyReview[]) => {
+      commitReviews([...nextReviews]);
+    },
+    [commitReviews],
+  );
+
+  const clearDailyReviews = useCallback(() => {
+    commitReviews([]);
+  }, [commitReviews]);
+
+  const resetDailyReviewsToSeed = useCallback(() => {
+    commitReviews(seedDailyReviews);
+  }, [commitReviews]);
+
   const value = useMemo(
     () => ({
       dailyReviews,
       getReviewByDate,
       upsertReview,
       deleteReview,
+      replaceDailyReviews,
+      clearDailyReviews,
+      resetDailyReviewsToSeed,
     }),
-    [dailyReviews, deleteReview, getReviewByDate, upsertReview],
+    [
+      clearDailyReviews,
+      dailyReviews,
+      deleteReview,
+      getReviewByDate,
+      replaceDailyReviews,
+      resetDailyReviewsToSeed,
+      upsertReview,
+    ],
   );
 
   return (

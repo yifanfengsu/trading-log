@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUp, Eye, Pencil, Trash2 } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { TradeSortKey, TradeSortState } from "@/lib/trade-filters";
 import type { Trade } from "@/lib/trade-types";
 import {
@@ -85,6 +86,7 @@ export default function TradesTable({
   onResetFilters,
 }: TradesTableProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const { deleteTrade } = useTrades();
   const { openCreateTrade, openEditTrade } = useTradeDrawer();
 
@@ -231,7 +233,7 @@ export default function TradesTable({
                         trade.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
                       )}
                     >
-                      {formatCurrency(trade.pnl)}
+                      {formatCurrency(trade.pnl, settings.currency)}
                     </td>
                     <td
                       className={cn(

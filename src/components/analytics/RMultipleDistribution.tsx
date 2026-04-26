@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { RMultipleDistributionRow } from "@/lib/analytics-calculations";
 import { formatCurrency } from "@/lib/utils";
 
@@ -37,6 +38,7 @@ export default function RMultipleDistribution({
   rows,
 }: RMultipleDistributionProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const isClient = useIsClient();
 
   function renderTooltip({
@@ -54,7 +56,10 @@ export default function RMultipleDistribution({
         <p className="font-semibold text-slate-950">{row.bucket}</p>
         <div className="mt-2 grid gap-1 text-slate-500">
           <span>{copy.analyticsPage.trades}: {row.count}</span>
-          <span>{copy.metrics.netPnl.label}: {formatCurrency(row.netPnl)}</span>
+          <span>
+            {copy.metrics.netPnl.label}:{" "}
+            {formatCurrency(row.netPnl, settings.currency)}
+          </span>
         </div>
       </div>
     );

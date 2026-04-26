@@ -3,6 +3,7 @@
 import { CalendarCheck2, CircleCheck, CircleX, LineChart, NotebookTabs } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { CalendarMonthSummary } from "@/lib/review-calculations";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -42,6 +43,7 @@ export default function CalendarSummaryCards({
   summary,
 }: CalendarSummaryCardsProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const values = {
     monthlyPnl: summary.monthlyPnl,
     tradingDays: summary.tradingDays,
@@ -74,7 +76,7 @@ export default function CalendarSummaryCards({
                   )}
                 >
                   {card.valueType === "currency"
-                    ? formatCurrency(value)
+                    ? formatCurrency(value, settings.currency)
                     : String(value)}
                 </p>
               </div>

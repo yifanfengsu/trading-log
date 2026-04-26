@@ -14,6 +14,7 @@ import {
 } from "recharts";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { WeekdayPerformanceRow } from "@/lib/analytics-calculations";
 import {
   formatAxisCurrencyTick,
@@ -45,6 +46,7 @@ export default function WeekdayPerformanceChart({
   rows,
 }: WeekdayPerformanceChartProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const isClient = useIsClient();
   const data: WeekdayChartDatum[] = rows.map((row) => ({
     ...row,
@@ -65,7 +67,10 @@ export default function WeekdayPerformanceChart({
       <div className="rounded-2xl border border-[rgba(108,77,255,0.14)] bg-white/95 p-3 text-sm shadow-[0_12px_32px_rgba(31,15,86,0.10)]">
         <p className="font-semibold text-slate-950">{row.weekdayLabel}</p>
         <div className="mt-2 grid gap-1 text-slate-500">
-          <span>{copy.metrics.netPnl.label}: {formatCurrency(row.netPnl)}</span>
+          <span>
+            {copy.metrics.netPnl.label}:{" "}
+            {formatCurrency(row.netPnl, settings.currency)}
+          </span>
           <span>{copy.analyticsPage.trades}: {row.totalTrades}</span>
           <span>{copy.metrics.winRate.label}: {formatPercent(row.winRate)}</span>
           <span>{copy.analyticsPage.avgR}: {formatRMultiple(row.avgR)}</span>
@@ -108,7 +113,9 @@ export default function WeekdayPerformanceChart({
                   tickMargin={12}
                   width={54}
                   tick={{ fill: "#8c88a6", fontSize: 12 }}
-                  tickFormatter={formatAxisCurrencyTick}
+                  tickFormatter={(value: number) =>
+                    formatAxisCurrencyTick(value, settings.currency)
+                  }
                 />
                 <Tooltip
                   cursor={{ fill: "rgba(108,77,255,0.06)" }}

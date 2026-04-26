@@ -5,6 +5,7 @@ import { Pencil, X } from "lucide-react";
 import DailyReviewForm from "@/components/calendar/DailyReviewForm";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { getDateDisplay } from "@/lib/calendar-utils";
 import type { DailyReview } from "@/lib/review-types";
 import { getDailyTradeStats } from "@/lib/review-calculations";
@@ -60,6 +61,7 @@ export default function DayDetailDrawer({
   onClose,
 }: DayDetailDrawerProps) {
   const { dictionary: copy, locale } = useLanguage();
+  const { settings } = useUserSettings();
   const { openEditTrade } = useTradeDrawer();
   const stats = getDailyTradeStats(trades);
   const sortedTrades = [...trades].sort((a, b) =>
@@ -102,7 +104,7 @@ export default function DayDetailDrawer({
             <div className="mt-3 grid gap-3 sm:grid-cols-2">
               <StatCard
                 label={copy.calendarPage.dailyPnl}
-                value={formatCurrency(stats.dailyPnl)}
+                value={formatCurrency(stats.dailyPnl, settings.currency)}
                 tone={
                   stats.dailyPnl > 0
                     ? "positive"
@@ -187,7 +189,7 @@ export default function DayDetailDrawer({
                             !isProfit && !isLoss && "text-slate-700",
                           )}
                         >
-                          {formatCurrency(trade.pnl)}
+                          {formatCurrency(trade.pnl, settings.currency)}
                         </p>
                         <p
                           className={cn(

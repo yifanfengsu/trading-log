@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { type MetricData, type MetricId } from "@/lib/mock-data";
 import { cn, formatMetricValue } from "@/lib/utils";
 
@@ -39,6 +40,7 @@ const badgeToneMap = {
 
 export default function MetricCard({ metric }: MetricCardProps) {
   const { dictionary: copy } = useLanguage();
+  const { settings } = useUserSettings();
   const Icon = iconMap[metric.id];
 
   return (
@@ -70,6 +72,7 @@ export default function MetricCard({ metric }: MetricCardProps) {
               metric.value,
               metric.valueFormat,
               metric.valueDigits ?? 2,
+              settings.currency,
             )}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
