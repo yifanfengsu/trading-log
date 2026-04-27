@@ -3,6 +3,10 @@
 import { RotateCcw, Search } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Button from "@/components/ui/Button";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Toolbar from "@/components/ui/Toolbar";
 import type { PlaybookFilters } from "@/lib/playbook-calculations";
 import type { TradeSetup } from "@/lib/trade-types";
 
@@ -19,9 +23,6 @@ const setupOptions: TradeSetup[] = [
   "meanReversion",
   "other",
 ];
-
-const controlClass =
-  "h-11 rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm font-medium text-slate-700 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
 export default function PlaybookToolbar({
   filters,
@@ -41,25 +42,24 @@ export default function PlaybookToolbar({
   }
 
   return (
-    <section className="panel-card p-4 lg:p-5">
+    <Toolbar>
       <div className="grid gap-3 lg:grid-cols-[minmax(240px,1fr)_220px_200px_auto]">
         <label className="relative block">
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-          <input
+          <Input
             type="search"
             value={filters.query}
             onChange={(event) => updateFilter("query", event.target.value)}
-            className={`${controlClass} w-full pl-9`}
+            className="pl-9"
             placeholder={copy.playbookPage.searchPlaceholder}
           />
         </label>
 
-        <select
+        <Select
           value={filters.setup}
           onChange={(event) =>
             updateFilter("setup", event.target.value as PlaybookFilters["setup"])
           }
-          className={`${controlClass} w-full`}
         >
           <option value="all">{copy.playbookPage.allSetups}</option>
           {setupOptions.map((setup) => (
@@ -67,9 +67,9 @@ export default function PlaybookToolbar({
               {copy.strategies[setup]}
             </option>
           ))}
-        </select>
+        </Select>
 
-        <select
+        <Select
           value={filters.status}
           onChange={(event) =>
             updateFilter(
@@ -77,22 +77,17 @@ export default function PlaybookToolbar({
               event.target.value as PlaybookFilters["status"],
             )
           }
-          className={`${controlClass} w-full`}
         >
           <option value="all">{copy.playbookPage.allStatuses}</option>
           <option value="active">{copy.playbookStatus.active}</option>
           <option value="archived">{copy.playbookStatus.archived}</option>
-        </select>
+        </Select>
 
-        <button
-          type="button"
-          onClick={onReset}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[rgba(108,77,255,0.24)] hover:text-slate-950"
-        >
+        <Button onClick={onReset} variant="secondary" className="rounded-2xl">
           <RotateCcw className="h-4 w-4" />
           {copy.tradesPage.resetFilters}
-        </button>
+        </Button>
       </div>
-    </section>
+    </Toolbar>
   );
 }

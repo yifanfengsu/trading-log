@@ -2,6 +2,14 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import DataTable, {
+  dataTableCellClassName,
+  dataTableHeadCellClassName,
+} from "@/components/ui/DataTable";
+import EmptyState from "@/components/ui/EmptyState";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type {
   DailyReportBreakdownRow,
   SetupReportBreakdownRow,
@@ -21,18 +29,6 @@ interface ReportBreakdownCardsProps {
   tagBreakdown: TagReportBreakdownRow[];
 }
 
-interface EmptyStateProps {
-  label: string;
-}
-
-function EmptyState({ label }: EmptyStateProps) {
-  return (
-    <div className="rounded-[18px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(250,250,255,0.72)] px-4 py-8 text-center text-sm font-medium text-slate-400">
-      {label}
-    </div>
-  );
-}
-
 export default function ReportBreakdownCards({
   dailyBreakdown,
   setupBreakdown,
@@ -42,112 +38,104 @@ export default function ReportBreakdownCards({
   const { settings } = useUserSettings();
 
   return (
-    <section className="panel-card p-5 lg:p-6">
+    <Card as="section">
       <div className="grid gap-7">
         <div>
-          <h2 className="panel-title">{copy.reportsPage.dailyBreakdown}</h2>
+          <SectionHeader title={copy.reportsPage.dailyBreakdown} />
           {dailyBreakdown.length === 0 ? (
             <div className="mt-4">
-              <EmptyState label={copy.reportsPage.noData} />
+              <EmptyState title={copy.reportsPage.noData} className="min-h-[180px]" />
             </div>
           ) : (
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-[560px] w-full border-separate border-spacing-y-2">
+            <DataTable minWidth={560} className="mt-4">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
-                    <th className="px-3 pb-1 font-medium">
+                  <tr>
+                    <th className={dataTableHeadCellClassName}>
                       {copy.recentTrades.columns.time}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.recentTrades.columns.pnl}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.analyticsPage.trades}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.reportsPage.periodReview}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {dailyBreakdown.slice(0, 8).map((row) => (
-                    <tr key={row.date} className="text-sm">
-                      <td className="rounded-l-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                    <tr key={row.date} className="group">
+                      <td className={dataTableCellClassName}>
                         {formatDateTime(row.date, locale)}
                       </td>
                       <td
                         className={cn(
-                          "bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                          dataTableCellClassName,
+                          "font-semibold",
                           row.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
                         )}
                       >
                         {formatCurrency(row.pnl, settings.currency)}
                       </td>
-                      <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                      <td className={dataTableCellClassName}>
                         {row.trades}
                       </td>
-                      <td className="rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3">
-                        <span
-                          className={cn(
-                            "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
-                            row.reviewed
-                              ? "bg-emerald-50 text-emerald-600"
-                              : "bg-slate-100 text-slate-500",
-                          )}
-                        >
+                      <td className={dataTableCellClassName}>
+                        <Badge variant={row.reviewed ? "green" : "gray"}>
                           {row.reviewed
                             ? copy.reportsPage.reviewed
                             : copy.reportsPage.notReviewed}
-                        </span>
+                        </Badge>
                       </td>
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+            </DataTable>
           )}
         </div>
 
         <div>
-          <h2 className="panel-title">{copy.reportsPage.setupBreakdown}</h2>
+          <SectionHeader title={copy.reportsPage.setupBreakdown} />
           {setupBreakdown.length === 0 ? (
             <div className="mt-4">
-              <EmptyState label={copy.reportsPage.noData} />
+              <EmptyState title={copy.reportsPage.noData} className="min-h-[180px]" />
             </div>
           ) : (
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-[620px] w-full border-separate border-spacing-y-2">
+            <DataTable minWidth={620} className="mt-4">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
-                    <th className="px-3 pb-1 font-medium">
+                  <tr>
+                    <th className={dataTableHeadCellClassName}>
                       {copy.recentTrades.columns.setup}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.analyticsPage.trades}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.metrics.netPnl.label}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.metrics.winRate.label}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.analyticsPage.avgR}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {setupBreakdown.slice(0, 8).map((row) => (
-                    <tr key={row.setup} className="text-sm">
-                      <td className="rounded-l-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold text-slate-900">
+                    <tr key={row.setup} className="group">
+                      <td className={cn(dataTableCellClassName, "font-semibold text-slate-900")}>
                         {copy.strategies[row.setup]}
                       </td>
-                      <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                      <td className={dataTableCellClassName}>
                         {row.trades}
                       </td>
                       <td
                         className={cn(
-                          "bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                          dataTableCellClassName,
+                          "font-semibold",
                           row.netPnl >= 0
                             ? "text-emerald-600"
                             : "text-rose-600",
@@ -155,12 +143,13 @@ export default function ReportBreakdownCards({
                       >
                         {formatCurrency(row.netPnl, settings.currency)}
                       </td>
-                      <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                      <td className={dataTableCellClassName}>
                         {formatPercent(row.winRate)}
                       </td>
                       <td
                         className={cn(
-                          "rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                          dataTableCellClassName,
+                          "font-semibold",
                           row.avgR > 0
                             ? "text-emerald-600"
                             : row.avgR < 0
@@ -173,53 +162,50 @@ export default function ReportBreakdownCards({
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+            </DataTable>
           )}
         </div>
 
         <div>
-          <h2 className="panel-title">{copy.reportsPage.tagBreakdown}</h2>
+          <SectionHeader title={copy.reportsPage.tagBreakdown} />
           {tagBreakdown.length === 0 ? (
             <div className="mt-4">
-              <EmptyState label={copy.reportsPage.noData} />
+              <EmptyState title={copy.reportsPage.noData} className="min-h-[180px]" />
             </div>
           ) : (
-            <div className="mt-4 overflow-x-auto">
-              <table className="min-w-[620px] w-full border-separate border-spacing-y-2">
+            <DataTable minWidth={620} className="mt-4">
                 <thead>
-                  <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
-                    <th className="px-3 pb-1 font-medium">
+                  <tr>
+                    <th className={dataTableHeadCellClassName}>
                       {copy.analyticsPage.tag}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.analyticsPage.trades}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.metrics.netPnl.label}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.metrics.winRate.label}
                     </th>
-                    <th className="px-3 pb-1 font-medium">
+                    <th className={dataTableHeadCellClassName}>
                       {copy.analyticsPage.avgR}
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   {tagBreakdown.slice(0, 8).map((row) => (
-                    <tr key={row.tag} className="text-sm">
-                      <td className="rounded-l-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3">
-                        <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.09)] px-3 py-1 font-semibold text-[var(--accent)]">
-                          {row.tag}
-                        </span>
+                    <tr key={row.tag} className="group">
+                      <td className={dataTableCellClassName}>
+                        <Badge variant="purple">{row.tag}</Badge>
                       </td>
-                      <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                      <td className={dataTableCellClassName}>
                         {row.trades}
                       </td>
                       <td
                         className={cn(
-                          "bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                          dataTableCellClassName,
+                          "font-semibold",
                           row.netPnl >= 0
                             ? "text-emerald-600"
                             : "text-rose-600",
@@ -227,12 +213,13 @@ export default function ReportBreakdownCards({
                       >
                         {formatCurrency(row.netPnl, settings.currency)}
                       </td>
-                      <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                      <td className={dataTableCellClassName}>
                         {formatPercent(row.winRate)}
                       </td>
                       <td
                         className={cn(
-                          "rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                          dataTableCellClassName,
+                          "font-semibold",
                           row.avgR > 0
                             ? "text-emerald-600"
                             : row.avgR < 0
@@ -245,11 +232,10 @@ export default function ReportBreakdownCards({
                     </tr>
                   ))}
                 </tbody>
-              </table>
-            </div>
+            </DataTable>
           )}
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

@@ -213,7 +213,7 @@ export default function TradesTable({
                 const badge = getSymbolBadge(trade.symbol);
 
                 return (
-                  <tr key={trade.id} className="table-row-surface">
+                  <tr key={trade.id} className="group table-row-surface">
                     <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
                       {formatTradeTimestamp(trade.closedAt)}
                     </td>

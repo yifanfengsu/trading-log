@@ -4,9 +4,9 @@ import { RotateCcw, Search } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
+import Toolbar from "@/components/ui/Toolbar";
 import type { TradeFilters } from "@/lib/trade-filters";
 import type { TradeSetup, TradeSide } from "@/lib/trade-types";
 
@@ -45,7 +45,7 @@ export default function TradesToolbar({
   }
 
   return (
-    <Card density="compact">
+    <Toolbar>
       <div className="grid gap-3 xl:grid-cols-[minmax(220px,1.2fr)_repeat(5,minmax(140px,0.75fr))_auto]">
         <label className="relative">
           <span className="sr-only">{copy.tradesPage.searchSymbol}</span>
@@ -131,6 +131,6 @@ export default function TradesToolbar({
           {copy.tradesPage.reset}
         </Button>
       </div>
-    </Card>
+    </Toolbar>
   );
 }

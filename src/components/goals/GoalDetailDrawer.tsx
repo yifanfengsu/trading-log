@@ -8,12 +8,14 @@ import {
   Play,
   RotateCcw,
   Trash2,
-  X,
 } from "lucide-react";
 
 import GoalProgressBar from "@/components/goals/GoalProgressBar";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
 import { getGoalRelatedStats } from "@/lib/goal-calculations";
 import type { Goal, GoalProgress } from "@/lib/goal-types";
 import type { DailyReview } from "@/lib/review-types";
@@ -28,7 +30,6 @@ import {
   formatPercent,
   formatProfitFactor,
 } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface GoalDetailDrawerProps {
   goal: Goal;
@@ -125,8 +126,6 @@ export default function GoalDetailDrawer({
   const isPaused = goal.status === "paused";
   const isCompleted = goal.status === "completed";
 
-  useEscapeKey(onClose);
-
   function handleDelete() {
     if (window.confirm(copy.goalsPage.deleteConfirm)) {
       onDelete(goal);
@@ -134,59 +133,77 @@ export default function GoalDetailDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
-        onClick={onClose}
-        aria-label={copy.tradesPage.close}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="goal-detail-title"
-        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-                {copy.goalsPage.goalDetails}
-              </span>
-              <span
-                className={cn(
-                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset",
-                  goal.status === "active" &&
-                    "bg-violet-50 text-violet-600 ring-violet-100",
-                  goal.status === "paused" &&
-                    "bg-slate-100 text-slate-500 ring-slate-200",
-                  goal.status === "completed" &&
-                    "bg-emerald-50 text-emerald-700 ring-emerald-100",
-                  goal.status === "archived" &&
-                    "bg-slate-100 text-slate-500 ring-slate-200",
-                )}
-              >
-                {copy.goalStatus[goal.status]}
-              </span>
-            </div>
-            <h2
-              id="goal-detail-title"
-              className="mt-2 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+    <DrawerShell
+      title={goal.title}
+      eyebrow={copy.goalsPage.goalDetails}
+      closeLabel={copy.tradesPage.close}
+      labelledById="goal-detail-title"
+      onClose={onClose}
+      size="lg"
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+          <Button type="button" onClick={() => onEdit(goal)}>
+            <Pencil className="h-4 w-4" />
+            {copy.goalsPage.edit}
+          </Button>
+          {!isArchived && !isCompleted ? (
+            <Button
+              type="button"
+              onClick={() => (isPaused ? onResume(goal) : onPause(goal))}
+              variant="secondary"
             >
-              {goal.title}
-            </h2>
-          </div>
-          <button
+              {isPaused ? (
+                <Play className="h-4 w-4" />
+              ) : (
+                <Pause className="h-4 w-4" />
+              )}
+              {isPaused ? copy.goalsPage.resume : copy.goalsPage.pause}
+            </Button>
+          ) : null}
+          {!isArchived && !isCompleted ? (
+            <Button
+              type="button"
+              onClick={() => onComplete(goal)}
+              variant="outline"
+              className="border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+            >
+              <CheckCircle2 className="h-4 w-4" />
+              {copy.goalsPage.markComplete}
+            </Button>
+          ) : null}
+          <Button
             type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            aria-label={copy.tradesPage.close}
+            onClick={() => (isArchived ? onRestore(goal) : onArchive(goal))}
+            variant="secondary"
           >
-            <X className="h-5 w-5" />
-          </button>
+            {isArchived ? (
+              <RotateCcw className="h-4 w-4" />
+            ) : (
+              <Archive className="h-4 w-4" />
+            )}
+            {isArchived ? copy.goalsPage.restore : copy.goalsPage.archive}
+          </Button>
+          <Button type="button" onClick={handleDelete} variant="danger">
+            <Trash2 className="h-4 w-4" />
+            {copy.goalsPage.delete}
+          </Button>
         </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+      }
+    >
+        <div className="space-y-5">
+          <div className="flex flex-wrap gap-2">
+            <Badge
+              variant={
+                goal.status === "completed"
+                  ? "green"
+                  : goal.status === "active"
+                    ? "purple"
+                    : "gray"
+              }
+            >
+              {copy.goalStatus[goal.status]}
+            </Badge>
+          </div>
           <section className="rounded-[20px] bg-[rgba(250,250,255,0.86)] px-4">
             <DetailRow
               label={copy.goalsPage.category}
@@ -337,62 +354,6 @@ export default function GoalDetailDrawer({
             </div>
           </section>
         </div>
-
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <button
-            type="button"
-            onClick={() => onEdit(goal)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
-          >
-            <Pencil className="h-4 w-4" />
-            {copy.goalsPage.edit}
-          </button>
-          {!isArchived && !isCompleted ? (
-            <button
-              type="button"
-              onClick={() => (isPaused ? onResume(goal) : onPause(goal))}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-            >
-              {isPaused ? (
-                <Play className="h-4 w-4" />
-              ) : (
-                <Pause className="h-4 w-4" />
-              )}
-              {isPaused ? copy.goalsPage.resume : copy.goalsPage.pause}
-            </button>
-          ) : null}
-          {!isArchived && !isCompleted ? (
-            <button
-              type="button"
-              onClick={() => onComplete(goal)}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-5 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100"
-            >
-              <CheckCircle2 className="h-4 w-4" />
-              {copy.goalsPage.markComplete}
-            </button>
-          ) : null}
-          <button
-            type="button"
-            onClick={() => (isArchived ? onRestore(goal) : onArchive(goal))}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-          >
-            {isArchived ? (
-              <RotateCcw className="h-4 w-4" />
-            ) : (
-              <Archive className="h-4 w-4" />
-            )}
-            {isArchived ? copy.goalsPage.restore : copy.goalsPage.archive}
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-rose-50 px-5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-100"
-          >
-            <Trash2 className="h-4 w-4" />
-            {copy.goalsPage.delete}
-          </button>
-        </div>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

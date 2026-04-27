@@ -12,10 +12,10 @@ interface DataTableProps {
 }
 
 export const dataTableHeadCellClassName =
-  "px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-500";
+  "bg-slate-50 px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-500 first:rounded-l-[16px] last:rounded-r-[16px]";
 
 export const dataTableCellClassName =
-  "border-b border-slate-100 bg-white px-3 py-4 text-sm text-slate-600 first:rounded-l-[16px] last:rounded-r-[16px]";
+  "border-b border-slate-100 bg-white px-3 py-4 text-sm text-slate-600 transition-colors first:rounded-l-[16px] last:rounded-r-[16px] group-hover:bg-slate-50/70";
 
 export default function DataTable({
   children,
@@ -30,7 +30,7 @@ export default function DataTable({
   return (
     <div
       className={cn(
-        "overflow-x-auto rounded-[20px] border border-slate-200 bg-white/70 p-1",
+        "overflow-x-auto rounded-[20px] border border-slate-200 bg-white/78 p-1 shadow-[0_8px_24px_rgba(30,41,59,0.035)]",
         className,
       )}
     >

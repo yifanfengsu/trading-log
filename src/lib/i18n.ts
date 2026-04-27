@@ -962,7 +962,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     tradesPage: {
       title: "交易记录",
-      subtitle: "查看、筛选和复盘所有已记录的交易。",
+      subtitle: "查看、筛选和管理所有已记录的交易。",
       totalTrades: "总交易数",
       totalPnl: "总盈亏",
       avgR: "平均 R",

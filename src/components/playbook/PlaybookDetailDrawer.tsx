@@ -1,12 +1,15 @@
 "use client";
 
-import { Archive, Pencil, RotateCcw, Trash2, X } from "lucide-react";
+import { Archive, Pencil, RotateCcw, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import LinkedNotesPreview from "@/components/notes/LinkedNotesPreview";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
 import {
   getPlaybookStats,
   getRecentPlaybookTrades,
@@ -21,7 +24,6 @@ import {
   formatRMultiple,
   formatTradeTimestamp,
 } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface PlaybookDetailDrawerProps {
   playbook: Playbook;
@@ -112,8 +114,6 @@ export default function PlaybookDetailDrawer({
   const linkedNotes = getNotesForPlaybook(playbook.id);
   const isArchived = playbook.status === "archived";
 
-  useEscapeKey(onClose);
-
   function handleDelete() {
     if (window.confirm(copy.playbookPage.deleteConfirm)) {
       onDelete(playbook);
@@ -126,54 +126,44 @@ export default function PlaybookDetailDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
-        onClick={onClose}
-        aria-label={copy.tradesPage.close}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="playbook-detail-title"
-        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-                {copy.strategies[playbook.setup]}
-              </span>
-              <span
-                className={cn(
-                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset",
-                  isArchived
-                    ? "bg-slate-100 text-slate-500 ring-slate-200"
-                    : "bg-emerald-50 text-emerald-700 ring-emerald-100",
-                )}
-              >
-                {copy.playbookStatus[playbook.status]}
-              </span>
-            </div>
-            <h2
-              id="playbook-detail-title"
-              className="mt-2 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {playbook.name}
-            </h2>
-          </div>
-          <button
+    <DrawerShell
+      title={playbook.name}
+      eyebrow={copy.strategies[playbook.setup]}
+      closeLabel={copy.tradesPage.close}
+      labelledById="playbook-detail-title"
+      onClose={onClose}
+      size="lg"
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+          <Button type="button" onClick={() => onEdit(playbook)}>
+            <Pencil className="h-4 w-4" />
+            {copy.playbookPage.edit}
+          </Button>
+          <Button
             type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            aria-label={copy.tradesPage.close}
+            onClick={() => (isArchived ? onRestore(playbook) : onArchive(playbook))}
+            variant="secondary"
           >
-            <X className="h-5 w-5" />
-          </button>
+            {isArchived ? (
+              <RotateCcw className="h-4 w-4" />
+            ) : (
+              <Archive className="h-4 w-4" />
+            )}
+            {isArchived ? copy.playbookPage.restore : copy.playbookPage.archive}
+          </Button>
+          <Button type="button" onClick={handleDelete} variant="danger">
+            <Trash2 className="h-4 w-4" />
+            {copy.playbookPage.delete}
+          </Button>
         </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+      }
+    >
+        <div className="space-y-5">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant={isArchived ? "gray" : "green"}>
+              {copy.playbookStatus[playbook.status]}
+            </Badge>
+          </div>
           <section className="rounded-[20px] bg-[rgba(250,250,255,0.86)] px-4">
             <DetailRow
               label={copy.playbookPage.market}
@@ -358,38 +348,6 @@ export default function PlaybookDetailDrawer({
 
           <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />
         </div>
-
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <button
-            type="button"
-            onClick={() => onEdit(playbook)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
-          >
-            <Pencil className="h-4 w-4" />
-            {copy.playbookPage.edit}
-          </button>
-          <button
-            type="button"
-            onClick={() => (isArchived ? onRestore(playbook) : onArchive(playbook))}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-          >
-            {isArchived ? (
-              <RotateCcw className="h-4 w-4" />
-            ) : (
-              <Archive className="h-4 w-4" />
-            )}
-            {isArchived ? copy.playbookPage.restore : copy.playbookPage.archive}
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-rose-50 px-5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-100"
-          >
-            <Trash2 className="h-4 w-4" />
-            {copy.playbookPage.delete}
-          </button>
-        </div>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

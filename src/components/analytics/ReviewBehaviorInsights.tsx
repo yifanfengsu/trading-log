@@ -2,6 +2,13 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Card from "@/components/ui/Card";
+import DataTable, {
+  dataTableCellClassName,
+  dataTableHeadCellClassName,
+} from "@/components/ui/DataTable";
+import EmptyState from "@/components/ui/EmptyState";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type { ReviewBehaviorInsights as ReviewBehaviorInsightsData } from "@/lib/analytics-calculations";
 import { cn, formatCurrency } from "@/lib/utils";
 
@@ -60,8 +67,8 @@ export default function ReviewBehaviorInsights({
   const { settings } = useUserSettings();
 
   return (
-    <section className="panel-card p-5 lg:p-6">
-      <h2 className="panel-title">{copy.analyticsPage.reviewBehaviorInsights}</h2>
+    <Card as="section">
+      <SectionHeader title={copy.analyticsPage.reviewBehaviorInsights} />
 
       <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
         <InsightMetric
@@ -91,43 +98,44 @@ export default function ReviewBehaviorInsights({
       </div>
 
       {insights.emotionStats.length === 0 ? (
-        <div className="mt-5 rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(250,250,255,0.72)] px-4 py-10 text-center text-sm font-medium text-slate-400">
-          {copy.analyticsPage.noReviewData}
-        </div>
+        <EmptyState
+          title={copy.analyticsPage.noReviewData}
+          className="mt-5 min-h-[180px]"
+        />
       ) : (
-        <div className="mt-5 overflow-x-auto">
-          <table className="min-w-[680px] border-separate border-spacing-y-2">
+        <DataTable minWidth={680} className="mt-5">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
-                <th className="px-3 pb-2 font-medium">
+              <tr>
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.emotion}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.reviewedDays}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.metrics.netPnl.label}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.avgDailyPnl}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.avgScore}
                 </th>
               </tr>
             </thead>
             <tbody>
               {insights.emotionStats.map((row) => (
-                <tr key={row.emotion} className="text-sm">
-                  <td className="rounded-l-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold text-slate-900">
+                <tr key={row.emotion} className="group">
+                  <td className={cn(dataTableCellClassName, "font-semibold text-slate-900")}>
                     {copy.calendarPage.emotions[row.emotion]}
                   </td>
-                  <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                  <td className={dataTableCellClassName}>
                     {row.reviewedDays}
                   </td>
                   <td
                     className={cn(
-                      "bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                      dataTableCellClassName,
+                      "font-semibold",
                       row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
                     )}
                   >
@@ -135,7 +143,8 @@ export default function ReviewBehaviorInsights({
                   </td>
                   <td
                     className={cn(
-                      "bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                      dataTableCellClassName,
+                      "font-semibold",
                       row.avgDailyPnl >= 0
                         ? "text-emerald-600"
                         : "text-rose-600",
@@ -143,15 +152,14 @@ export default function ReviewBehaviorInsights({
                   >
                     {formatCurrency(row.avgDailyPnl, settings.currency)}
                   </td>
-                  <td className="rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                  <td className={dataTableCellClassName}>
                     {formatScore(row.avgScore)}
                   </td>
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </DataTable>
       )}
-    </section>
+    </Card>
   );
 }

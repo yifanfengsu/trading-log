@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check } from "lucide-react";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -8,6 +8,11 @@ import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Textarea from "@/components/ui/Textarea";
 import {
   isNoteDateKey,
   noteLinkTypes,
@@ -20,12 +25,10 @@ import {
   type NoteType,
 } from "@/lib/note-types";
 import {
-  cn,
   formatCurrency,
   formatDateTime,
   getTodayDateKey,
 } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 type NoteEditorMode = "create" | "edit";
 
@@ -50,9 +53,6 @@ interface NoteFormState {
   date: string;
   playbookId: string;
 }
-
-const inputClass =
-  "mt-2 h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
 function parseTags(value: string) {
   return value
@@ -153,8 +153,6 @@ export default function NoteEditorDrawer({
     (playbook) => playbook.id === form.playbookId,
   );
 
-  useEscapeKey(onClose);
-
   useEffect(
     () => () => {
       if (timerRef.current !== null) {
@@ -242,53 +240,38 @@ export default function NoteEditorDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-[70] flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
-        onClick={onClose}
-        aria-label={copy.tradeForm.cancel}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="note-editor-title"
-        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-              {copy.notesPage.type}: {copy.noteTypes[form.type]}
-            </p>
-            <h2
-              id="note-editor-title"
-              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            aria-label={copy.tradeForm.cancel}
-          >
-            <X className="h-5 w-5" />
-          </button>
+    <DrawerShell
+      title={title}
+      eyebrow={`${copy.notesPage.type}: ${copy.noteTypes[form.type]}`}
+      closeLabel={copy.tradeForm.cancel}
+      labelledById="note-editor-title"
+      onClose={onClose}
+      size="lg"
+      zIndexClassName="z-[70]"
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button type="button" onClick={onClose} variant="secondary">
+            {copy.tradeForm.cancel}
+          </Button>
+          <Button type="submit" form="note-editor-form">
+            {saved ? <Check className="h-4 w-4" /> : null}
+            {saveLabel}
+          </Button>
         </div>
-
+      }
+    >
         <form
+          id="note-editor-form"
           onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto px-6 py-5"
+          className="grid gap-4"
         >
-          <div className="grid gap-4">
             <label className="block text-sm font-medium text-slate-600">
               {copy.notesPage.titleField}
-              <input
+              <Input
                 type="text"
                 value={form.title}
                 onChange={(event) => updateField("title", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 required
               />
             </label>
@@ -296,55 +279,55 @@ export default function NoteEditorDrawer({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.notesPage.type}
-                <select
+                <Select
                   value={form.type}
                   onChange={(event) =>
                     updateField("type", event.target.value as NoteType)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {noteTypes.map((type) => (
                     <option key={type} value={type}>
                       {copy.noteTypes[type]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.notesPage.status}
-                <select
+                <Select
                   value={form.status}
                   onChange={(event) =>
                     updateField("status", event.target.value as NoteStatus)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {noteStatuses.map((status) => (
                     <option key={status} value={status}>
                       {copy.noteStatus[status]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             </div>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.notesPage.content}
-              <textarea
+              <Textarea
                 value={form.content}
                 onChange={(event) => updateField("content", event.target.value)}
-                className={cn(inputClass, "min-h-40 resize-y py-3 leading-6")}
+                className="mt-2 min-h-40 resize-y leading-6"
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.notesPage.tags}
-              <input
+              <Input
                 type="text"
                 value={form.tags}
                 onChange={(event) => updateField("tags", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 placeholder={copy.playbookPage.tagsPlaceholder}
               />
             </label>
@@ -362,30 +345,30 @@ export default function NoteEditorDrawer({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.notesPage.linkType}
-                <select
+                <Select
                   value={form.linkType}
                   onChange={(event) =>
                     handleLinkTypeChange(event.target.value as NoteLink["type"])
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {noteLinkTypes.map((linkType) => (
                     <option key={linkType} value={linkType}>
                       {copy.noteLinkTypes[linkType]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               {form.linkType === "trade" ? (
                 <label className="block text-sm font-medium text-slate-600">
                   {copy.notesPage.selectTrade}
-                  <select
+                  <Select
                     value={form.tradeId}
                     onChange={(event) =>
                       updateField("tradeId", event.target.value)
                     }
-                    className={inputClass}
+                    className="mt-2"
                   >
                     <option value="">{copy.notesPage.selectTrade}</option>
                     {trades.map((trade) => (
@@ -402,18 +385,18 @@ export default function NoteEditorDrawer({
                         {copy.notesPage.deletedTrade}
                       </option>
                     ) : null}
-                  </select>
+                  </Select>
                 </label>
               ) : null}
 
               {form.linkType === "date" ? (
                 <label className="block text-sm font-medium text-slate-600">
                   {copy.notesPage.selectDate}
-                  <input
+                  <Input
                     type="date"
                     value={form.date}
                     onChange={(event) => updateField("date", event.target.value)}
-                    className={inputClass}
+                    className="mt-2"
                   />
                 </label>
               ) : null}
@@ -421,12 +404,12 @@ export default function NoteEditorDrawer({
               {form.linkType === "playbook" ? (
                 <label className="block text-sm font-medium text-slate-600">
                   {copy.notesPage.selectPlaybook}
-                  <select
+                  <Select
                     value={form.playbookId}
                     onChange={(event) =>
                       updateField("playbookId", event.target.value)
                     }
-                    className={inputClass}
+                    className="mt-2"
                   >
                     <option value="">{copy.notesPage.selectPlaybook}</option>
                     {playbooks.map((playbook) => (
@@ -439,36 +422,17 @@ export default function NoteEditorDrawer({
                         {copy.notesPage.deletedPlaybook}
                       </option>
                     ) : null}
-                  </select>
+                  </Select>
                 </label>
               ) : null}
             </div>
-          </div>
 
           {error ? (
             <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
               {error}
             </p>
           ) : null}
-
-          <div className="sticky bottom-0 -mx-6 mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-            >
-              {copy.tradeForm.cancel}
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
-            >
-              {saved ? <Check className="h-4 w-4" /> : null}
-              {saveLabel}
-            </button>
-          </div>
         </form>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

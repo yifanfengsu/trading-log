@@ -6,18 +6,19 @@ import {
   RotateCcw,
   Star,
   Trash2,
-  X,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import LinkedEntityBadge from "@/components/notes/LinkedEntityBadge";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useNotes } from "@/components/providers/NotesStoreProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
 import type { Note } from "@/lib/note-types";
 import type { Playbook } from "@/lib/playbook-types";
 import type { Trade } from "@/lib/trade-types";
 import { cn, formatDateTime } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface NoteDetailDrawerProps {
   note: Note;
@@ -54,8 +55,6 @@ export default function NoteDetailDrawer({
   const { archiveNote, restoreNote, deleteNote, togglePinNote } = useNotes();
   const isArchived = note.status === "archived";
 
-  useEscapeKey(onClose);
-
   function handleDelete() {
     if (!window.confirm(copy.notesPage.deleteConfirm)) {
       return;
@@ -66,54 +65,54 @@ export default function NoteDetailDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
-        onClick={onClose}
-        aria-label={copy.tradesPage.close}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="note-detail-title"
-        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">
-                {copy.noteTypes[note.type]}
-              </span>
-              <span
-                className={cn(
-                  "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset",
-                  isArchived
-                    ? "bg-slate-100 text-slate-500 ring-slate-200"
-                    : "bg-emerald-50 text-emerald-700 ring-emerald-100",
-                )}
-              >
-                {copy.noteStatus[note.status]}
-              </span>
-            </div>
-            <h2
-              id="note-detail-title"
-              className="mt-2 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {note.title}
-            </h2>
-          </div>
-          <button
+    <DrawerShell
+      title={note.title}
+      eyebrow={copy.noteTypes[note.type]}
+      closeLabel={copy.tradesPage.close}
+      labelledById="note-detail-title"
+      onClose={onClose}
+      size="lg"
+      zIndexClassName="z-[60]"
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+          <Button type="button" onClick={() => onEdit(note)}>
+            <Pencil className="h-4 w-4" />
+            {copy.playbookPage.edit}
+          </Button>
+          <Button
             type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            aria-label={copy.tradesPage.close}
+            onClick={() => togglePinNote(note.id)}
+            variant="secondary"
           >
-            <X className="h-5 w-5" />
-          </button>
+            <Star className={cn("h-4 w-4", note.pinned && "fill-current")} />
+            {note.pinned ? copy.notesPage.unpinNote : copy.notesPage.pinNote}
+          </Button>
+          <Button
+            type="button"
+            onClick={() => (isArchived ? restoreNote(note.id) : archiveNote(note.id))}
+            variant="secondary"
+          >
+            {isArchived ? (
+              <RotateCcw className="h-4 w-4" />
+            ) : (
+              <Archive className="h-4 w-4" />
+            )}
+            {isArchived ? copy.notesPage.restore : copy.notesPage.archive}
+          </Button>
+          <Button type="button" onClick={handleDelete} variant="danger">
+            <Trash2 className="h-4 w-4" />
+            {copy.playbookPage.delete}
+          </Button>
         </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5">
+      }
+    >
+        <div className="space-y-5">
+          <div className="flex flex-wrap gap-2">
+            <Badge variant="purple">{copy.noteTypes[note.type]}</Badge>
+            <Badge variant={isArchived ? "gray" : "green"}>
+              {copy.noteStatus[note.status]}
+            </Badge>
+          </div>
           <section className="rounded-[20px] bg-[rgba(250,250,255,0.86)] px-4">
             <DetailRow label={copy.notesPage.created}>
               {formatDateTime(note.createdAt, locale)}
@@ -164,46 +163,6 @@ export default function NoteDetailDrawer({
             </div>
           </section>
         </div>
-
-        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
-          <button
-            type="button"
-            onClick={() => onEdit(note)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
-          >
-            <Pencil className="h-4 w-4" />
-            {copy.playbookPage.edit}
-          </button>
-          <button
-            type="button"
-            onClick={() => togglePinNote(note.id)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-          >
-            <Star className={cn("h-4 w-4", note.pinned && "fill-current")} />
-            {note.pinned ? copy.notesPage.unpinNote : copy.notesPage.pinNote}
-          </button>
-          <button
-            type="button"
-            onClick={() => (isArchived ? restoreNote(note.id) : archiveNote(note.id))}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-          >
-            {isArchived ? (
-              <RotateCcw className="h-4 w-4" />
-            ) : (
-              <Archive className="h-4 w-4" />
-            )}
-            {isArchived ? copy.notesPage.restore : copy.notesPage.archive}
-          </button>
-          <button
-            type="button"
-            onClick={handleDelete}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-rose-50 px-5 text-sm font-semibold text-rose-600 transition-colors hover:bg-rose-100"
-          >
-            <Trash2 className="h-4 w-4" />
-            {copy.playbookPage.delete}
-          </button>
-        </div>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

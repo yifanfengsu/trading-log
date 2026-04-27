@@ -2,6 +2,14 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import DataTable, {
+  dataTableCellClassName,
+  dataTableHeadCellClassName,
+} from "@/components/ui/DataTable";
+import EmptyState from "@/components/ui/EmptyState";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type { TagImpactRow } from "@/lib/analytics-calculations";
 import {
   cn,
@@ -20,60 +28,57 @@ export default function TagImpactTable({ rows }: TagImpactTableProps) {
   const displayRows = rows.slice(0, 8);
 
   return (
-    <section className="panel-card p-5 lg:p-6">
-      <h2 className="panel-title">{copy.analyticsPage.tagImpact}</h2>
+    <Card as="section">
+      <SectionHeader title={copy.analyticsPage.tagImpact} />
 
       {displayRows.length === 0 ? (
-        <div className="mt-5 flex min-h-[300px] items-center justify-center rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(250,250,255,0.72)] text-sm font-medium text-slate-400">
-          {copy.analyticsPage.noTagData}
-        </div>
+        <EmptyState title={copy.analyticsPage.noTagData} className="mt-5 min-h-[300px]" />
       ) : (
-        <div className="mt-5 overflow-x-auto">
-          <table className="min-w-[680px] border-separate border-spacing-y-2">
+        <DataTable minWidth={680} className="mt-5">
             <thead>
-              <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
-                <th className="px-3 pb-2 font-medium">
+              <tr>
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.tag}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.trades}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.metrics.netPnl.label}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.metrics.winRate.label}
                 </th>
-                <th className="px-3 pb-2 font-medium">
+                <th className={dataTableHeadCellClassName}>
                   {copy.analyticsPage.avgR}
                 </th>
               </tr>
             </thead>
             <tbody>
               {displayRows.map((row) => (
-                <tr key={row.tag} className="text-sm">
-                  <td className="rounded-l-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3">
-                    <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.09)] px-3 py-1 font-semibold text-[var(--accent)]">
-                      {row.tag}
-                    </span>
+                <tr key={row.tag} className="group">
+                  <td className={dataTableCellClassName}>
+                    <Badge variant="purple">{row.tag}</Badge>
                   </td>
-                  <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                  <td className={dataTableCellClassName}>
                     {row.totalTrades}
                   </td>
                   <td
                     className={cn(
-                      "bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                      dataTableCellClassName,
+                      "font-semibold",
                       row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
                     )}
                   >
                     {formatCurrency(row.netPnl, settings.currency)}
                   </td>
-                  <td className="bg-[rgba(250,250,255,0.88)] px-3 py-3 font-medium text-slate-600">
+                  <td className={dataTableCellClassName}>
                     {formatPercent(row.winRate)}
                   </td>
                   <td
                     className={cn(
-                      "rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-3 font-semibold",
+                      dataTableCellClassName,
+                      "font-semibold",
                       row.avgR > 0
                         ? "text-emerald-600"
                         : row.avgR < 0
@@ -86,9 +91,8 @@ export default function TagImpactTable({ rows }: TagImpactTableProps) {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </DataTable>
       )}
-    </section>
+    </Card>
   );
 }

@@ -1,10 +1,14 @@
 "use client";
 
-import { X } from "lucide-react";
 import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import { useGoals } from "@/components/providers/GoalStoreProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Textarea from "@/components/ui/Textarea";
 import {
   goalCategories,
   goalDirections,
@@ -23,12 +27,10 @@ import {
   type GoalUnit,
 } from "@/lib/goal-types";
 import {
-  cn,
   getCurrentMonthKey,
   getDateKeyFromLocalDate,
   getMonthRangeFromMonthKey,
 } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface GoalEditorDrawerProps {
   mode: "create" | "edit";
@@ -51,9 +53,6 @@ interface GoalFormState {
   description: string;
   notes: string;
 }
-
-const inputClass =
-  "mt-2 h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
 function getWeekRange(date: Date) {
   const dayOfWeek = date.getDay();
@@ -179,8 +178,6 @@ export default function GoalEditorDrawer({
         ? copy.goalsPage.saveGoal
         : copy.goalsPage.saveChanges;
 
-  useEscapeKey(onClose);
-
   useEffect(
     () => () => {
       if (closeTimerRef.current !== null) {
@@ -299,53 +296,36 @@ export default function GoalEditorDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
-        onClick={onClose}
-        aria-label={copy.tradeForm.cancel}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="goal-editor-title"
-        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
-      >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-              {copy.menu.goals}
-            </p>
-            <h2
-              id="goal-editor-title"
-              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            aria-label={copy.tradeForm.cancel}
-          >
-            <X className="h-5 w-5" />
-          </button>
+    <DrawerShell
+      title={title}
+      eyebrow={copy.menu.goals}
+      closeLabel={copy.tradeForm.cancel}
+      labelledById="goal-editor-title"
+      onClose={onClose}
+      size="lg"
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button type="button" onClick={onClose} variant="secondary">
+            {copy.tradeForm.cancel}
+          </Button>
+          <Button type="submit" form="goal-editor-form">
+            {saveLabel}
+          </Button>
         </div>
-
+      }
+    >
         <form
+          id="goal-editor-form"
           onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto px-6 py-5"
+          className="grid gap-4"
         >
-          <div className="grid gap-4">
             <label className="block text-sm font-medium text-slate-600">
               {copy.goalsPage.goalTitle}
-              <input
+              <Input
                 type="text"
                 value={form.title}
                 onChange={(event) => updateField("title", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 required
               />
             </label>
@@ -353,78 +333,78 @@ export default function GoalEditorDrawer({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.category}
-                <select
+                <Select
                   value={form.category}
                   onChange={(event) =>
                     updateField("category", event.target.value as GoalCategory)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {goalCategories.map((category) => (
                     <option key={category} value={category}>
                       {copy.goalCategories[category]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.metric}
-                <select
+                <Select
                   value={form.metric}
                   onChange={(event) =>
                     handleMetricChange(event.target.value as GoalMetric)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {goalMetrics.map((metric) => (
                     <option key={metric} value={metric}>
                       {copy.goalMetrics[metric]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.direction}
-                <select
+                <Select
                   value={form.direction}
                   onChange={(event) =>
                     updateField("direction", event.target.value as GoalDirection)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {goalDirections.map((direction) => (
                     <option key={direction} value={direction}>
                       {copy.goalDirections[direction]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.unit}
-                <select
+                <Select
                   value={form.unit}
                   onChange={(event) =>
                     updateField("unit", event.target.value as GoalUnit)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {goalUnits.map((unit) => (
                     <option key={unit} value={unit}>
                       {copy.goalUnits[unit]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             </div>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.goalsPage.targetValue}
-              <input
+              <Input
                 type="number"
                 min="0"
                 step="any"
@@ -432,7 +412,7 @@ export default function GoalEditorDrawer({
                 onChange={(event) =>
                   updateField("targetValue", event.target.value)
                 }
-                className={inputClass}
+                className="mt-2"
                 required
               />
             </label>
@@ -440,43 +420,43 @@ export default function GoalEditorDrawer({
             <div className="grid gap-4 sm:grid-cols-3">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.periodType}
-                <select
+                <Select
                   value={form.periodType}
                   onChange={(event) =>
                     handlePeriodTypeChange(event.target.value as GoalPeriodType)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {goalPeriodTypes.map((periodType) => (
                     <option key={periodType} value={periodType}>
                       {copy.goalPeriodTypes[periodType]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.startDate}
-                <input
+                <Input
                   type="date"
                   value={form.startDate}
                   onChange={(event) =>
                     updateField("startDate", event.target.value)
                   }
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.endDate}
-                <input
+                <Input
                   type="date"
                   value={form.endDate}
                   onChange={(event) =>
                     updateField("endDate", event.target.value)
                   }
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
@@ -484,80 +464,62 @@ export default function GoalEditorDrawer({
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.goalsPage.status}
-              <select
+              <Select
                 value={form.status}
                 onChange={(event) =>
                   updateField("status", event.target.value as GoalStatus)
                 }
-                className={inputClass}
+                className="mt-2"
               >
                 {goalStatuses.map((status) => (
                   <option key={status} value={status}>
                     {copy.goalStatus[status]}
                   </option>
                 ))}
-              </select>
+              </Select>
             </label>
 
             {form.metric === "custom" ? (
               <label className="block text-sm font-medium text-slate-600">
                 {copy.goalsPage.manualCurrentValue}
-                <input
+                <Input
                   type="number"
                   step="any"
                   value={form.manualCurrentValue}
                   onChange={(event) =>
                     updateField("manualCurrentValue", event.target.value)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 />
               </label>
             ) : null}
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.goalsPage.description}
-              <textarea
+              <Textarea
                 value={form.description}
                 onChange={(event) =>
                   updateField("description", event.target.value)
                 }
-                className={cn(inputClass, "h-24 resize-none py-3")}
+                className="mt-2 h-24 resize-none"
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.goalsPage.notes}
-              <textarea
+              <Textarea
                 value={form.notes}
                 onChange={(event) => updateField("notes", event.target.value)}
-                className={cn(inputClass, "h-24 resize-none py-3")}
+                className="mt-2 h-24 resize-none"
               />
             </label>
-          </div>
 
           {error ? (
             <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
               {error}
             </p>
           ) : null}
-
-          <div className="sticky bottom-0 -mx-6 mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-            >
-              {copy.tradeForm.cancel}
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
-            >
-              {saveLabel}
-            </button>
-          </div>
         </form>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

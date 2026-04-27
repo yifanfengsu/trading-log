@@ -4,8 +4,8 @@ import { Clipboard, Download, Save } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
+import Toolbar from "@/components/ui/Toolbar";
 import type { ReportPeriodType } from "@/lib/report-types";
 import { cn } from "@/lib/utils";
 
@@ -41,7 +41,7 @@ export default function ReportFilters({
   ];
 
   return (
-    <Card density="compact">
+    <Toolbar>
       <div className="grid gap-4 xl:grid-cols-[minmax(240px,0.78fr)_minmax(190px,0.56fr)_minmax(240px,0.9fr)_auto] xl:items-end">
         <div className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
@@ -114,6 +114,6 @@ export default function ReportFilters({
           </Button>
         </div>
       </div>
-    </Card>
+    </Toolbar>
   );
 }

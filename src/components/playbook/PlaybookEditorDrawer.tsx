@@ -1,10 +1,14 @@
 "use client";
 
-import { X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Textarea from "@/components/ui/Textarea";
 import type {
   Playbook,
   PlaybookChecklistItem,
@@ -12,8 +16,6 @@ import type {
   PlaybookStatus,
 } from "@/lib/playbook-types";
 import type { TradeSetup } from "@/lib/trade-types";
-import { cn } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface PlaybookEditorDrawerProps {
   mode: "create" | "edit";
@@ -43,9 +45,6 @@ const setupOptions: TradeSetup[] = [
   "meanReversion",
   "other",
 ];
-
-const inputClass =
-  "mt-2 h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
 function getInitialFormState(playbook?: Playbook): PlaybookFormState {
   if (!playbook) {
@@ -134,8 +133,6 @@ export default function PlaybookEditorDrawer({
       ? copy.playbookPage.savePlaybook
       : copy.playbookPage.saveChanges;
 
-  useEscapeKey(onClose);
-
   function updateField<Key extends keyof PlaybookFormState>(
     key: Key,
     value: PlaybookFormState[Key],
@@ -183,53 +180,36 @@ export default function PlaybookEditorDrawer({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
-        onClick={onClose}
-        aria-label={copy.tradeForm.cancel}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="playbook-editor-title"
-        className="relative flex h-full w-full max-w-[600px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
-      >
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
-              {copy.playbookPage.playbook}
-            </p>
-            <h2
-              id="playbook-editor-title"
-              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
-            aria-label={copy.tradeForm.cancel}
-          >
-            <X className="h-5 w-5" />
-          </button>
+    <DrawerShell
+      title={title}
+      eyebrow={copy.playbookPage.playbook}
+      closeLabel={copy.tradeForm.cancel}
+      labelledById="playbook-editor-title"
+      onClose={onClose}
+      size="lg"
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button type="button" onClick={onClose} variant="secondary">
+            {copy.tradeForm.cancel}
+          </Button>
+          <Button type="submit" form="playbook-editor-form">
+            {saveLabel}
+          </Button>
         </div>
-
+      }
+    >
         <form
+          id="playbook-editor-form"
           onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto px-6 py-5"
+          className="grid gap-4"
         >
-          <div className="grid gap-4">
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.playbookName}
-              <input
+              <Input
                 type="text"
                 value={form.name}
                 onChange={(event) => updateField("name", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 required
               />
             </label>
@@ -237,160 +217,142 @@ export default function PlaybookEditorDrawer({
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.playbookPage.setupType}
-                <select
+                <Select
                   value={form.setup}
                   onChange={(event) =>
                     updateField("setup", event.target.value as TradeSetup)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {setupOptions.map((setup) => (
                     <option key={setup} value={setup}>
                       {copy.strategies[setup]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.recentTrades.columns.status}
-                <select
+                <Select
                   value={form.status}
                   onChange={(event) =>
                     updateField("status", event.target.value as PlaybookStatus)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   <option value="active">{copy.playbookStatus.active}</option>
                   <option value="archived">{copy.playbookStatus.archived}</option>
-                </select>
+                </Select>
               </label>
             </div>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.market}
-              <input
+              <Input
                 type="text"
                 value={form.market}
                 onChange={(event) => updateField("market", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 placeholder={copy.playbookPage.marketPlaceholder}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.timeframes}
-              <input
+              <Input
                 type="text"
                 value={form.timeframes}
                 onChange={(event) =>
                   updateField("timeframes", event.target.value)
                 }
-                className={inputClass}
+                className="mt-2"
                 placeholder={copy.playbookPage.timeframesPlaceholder}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.description}
-              <textarea
+              <Textarea
                 value={form.description}
                 onChange={(event) =>
                   updateField("description", event.target.value)
                 }
-                className={cn(inputClass, "h-24 resize-none py-3")}
+                className="mt-2 h-24 resize-none"
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.entryRules}
-              <textarea
+              <Textarea
                 value={form.entryRules}
                 onChange={(event) =>
                   updateField("entryRules", event.target.value)
                 }
-                className={cn(inputClass, "h-28 resize-none py-3")}
+                className="mt-2 h-28 resize-none"
                 placeholder={copy.playbookPage.oneRulePerLine}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.exitRules}
-              <textarea
+              <Textarea
                 value={form.exitRules}
                 onChange={(event) => updateField("exitRules", event.target.value)}
-                className={cn(inputClass, "h-28 resize-none py-3")}
+                className="mt-2 h-28 resize-none"
                 placeholder={copy.playbookPage.oneRulePerLine}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.riskRules}
-              <textarea
+              <Textarea
                 value={form.riskRules}
                 onChange={(event) => updateField("riskRules", event.target.value)}
-                className={cn(inputClass, "h-28 resize-none py-3")}
+                className="mt-2 h-28 resize-none"
                 placeholder={copy.playbookPage.oneRulePerLine}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.avoidConditions}
-              <textarea
+              <Textarea
                 value={form.invalidationRules}
                 onChange={(event) =>
                   updateField("invalidationRules", event.target.value)
                 }
-                className={cn(inputClass, "h-28 resize-none py-3")}
+                className="mt-2 h-28 resize-none"
                 placeholder={copy.playbookPage.oneRulePerLine}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.playbookPage.executionChecklist}
-              <textarea
+              <Textarea
                 value={form.checklist}
                 onChange={(event) => updateField("checklist", event.target.value)}
-                className={cn(inputClass, "h-28 resize-none py-3")}
+                className="mt-2 h-28 resize-none"
                 placeholder={copy.playbookPage.oneChecklistItemPerLine}
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.tradesPage.tags}
-              <input
+              <Input
                 type="text"
                 value={form.tags}
                 onChange={(event) => updateField("tags", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 placeholder={copy.playbookPage.tagsPlaceholder}
               />
             </label>
-          </div>
 
           {error ? (
             <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
               {error}
             </p>
           ) : null}
-
-          <div className="sticky bottom-0 -mx-6 mt-6 flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-            >
-              {copy.tradeForm.cancel}
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
-            >
-              {saveLabel}
-            </button>
-          </div>
         </form>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

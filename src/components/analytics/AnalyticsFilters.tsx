@@ -4,9 +4,9 @@ import { RotateCcw } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import Button from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
+import Toolbar from "@/components/ui/Toolbar";
 import type { AnalyticsFilters as AnalyticsFiltersState } from "@/lib/trade-filters";
 import type { TradeSetup, TradeSide } from "@/lib/trade-types";
 
@@ -51,7 +51,7 @@ export default function AnalyticsFilters({
   }
 
   return (
-    <Card density="compact">
+    <Toolbar>
       <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-[minmax(150px,0.72fr)_repeat(4,minmax(150px,0.9fr))_auto]">
         <label className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
@@ -165,6 +165,6 @@ export default function AnalyticsFilters({
           </Button>
         </div>
       </div>
-    </Card>
+    </Toolbar>
   );
 }

@@ -23,8 +23,8 @@ interface DrawerShellProps {
 
 const sizeClassMap: Record<DrawerSize, string> = {
   md: "max-w-[520px]",
-  lg: "max-w-[620px]",
-  xl: "max-w-[720px]",
+  lg: "max-w-[640px]",
+  xl: "max-w-[760px]",
 };
 
 export default function DrawerShell({
@@ -53,7 +53,7 @@ export default function DrawerShell({
         aria-modal="true"
         aria-labelledby={labelledById}
         className={cn(
-          "relative flex h-full w-full flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]",
+          "relative flex h-full w-full max-w-[100vw] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]",
           sizeClassMap[size],
         )}
       >

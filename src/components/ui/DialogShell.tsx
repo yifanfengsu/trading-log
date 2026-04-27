@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import type { ReactNode } from "react";
 
 import Button from "@/components/ui/Button";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface DialogShellProps {
   title: string;
@@ -24,6 +25,8 @@ export default function DialogShell({
   footer,
   labelledById = "dialog-title",
 }: DialogShellProps) {
+  useEscapeKey(onClose);
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto px-4 py-4 sm:py-6">
       <button
