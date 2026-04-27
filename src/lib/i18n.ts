@@ -3,6 +3,14 @@ import type {
   ReviewId,
   SidebarMenuId,
 } from "@/lib/mock-data";
+import type {
+  GoalCategory,
+  GoalDirection,
+  GoalMetric,
+  GoalPeriodType,
+  GoalStatus,
+  GoalUnit,
+} from "@/lib/goal-types";
 import type { NoteLink, NoteStatus, NoteType } from "@/lib/note-types";
 import type { PlaybookStatus } from "@/lib/playbook-types";
 import type { ReviewEmotion } from "@/lib/review-types";
@@ -240,6 +248,12 @@ export interface Dictionary {
   noteTypes: Record<NoteType, string>;
   noteStatus: Record<NoteStatus, string>;
   noteLinkTypes: Record<NoteLink["type"], string>;
+  goalCategories: Record<GoalCategory, string>;
+  goalMetrics: Record<GoalMetric, string>;
+  goalStatus: Record<GoalStatus, string>;
+  goalDirections: Record<GoalDirection, string>;
+  goalUnits: Record<GoalUnit, string>;
+  goalPeriodTypes: Record<GoalPeriodType, string>;
   playbookPage: {
     title: string;
     subtitle: string;
@@ -396,6 +410,75 @@ export interface Dictionary {
     titleRequired: string;
     linkRequired: string;
   };
+  goalsPage: {
+    title: string;
+    subtitle: string;
+    newGoal: string;
+    editGoal: string;
+    saveGoal: string;
+    saveChanges: string;
+    totalGoals: string;
+    activeGoals: string;
+    achieved: string;
+    atRisk: string;
+    avgProgress: string;
+    noGoalsYet: string;
+    noFilterResults: string;
+    searchPlaceholder: string;
+    allCategories: string;
+    allStatuses: string;
+    allMetrics: string;
+    allPeriods: string;
+    resetFilters: string;
+    pause: string;
+    resume: string;
+    markComplete: string;
+    goalTitle: string;
+    category: string;
+    metric: string;
+    direction: string;
+    targetValue: string;
+    currentValue: string;
+    remaining: string;
+    unit: string;
+    periodType: string;
+    startDate: string;
+    endDate: string;
+    description: string;
+    notes: string;
+    manualCurrentValue: string;
+    titleRequired: string;
+    invalidTargetValue: string;
+    startDateRequired: string;
+    endDateRequired: string;
+    endDateBeforeStart: string;
+    goalDetails: string;
+    progress: string;
+    completed: string;
+    notCompleted: string;
+    normal: string;
+    warning: string;
+    exceeded: string;
+    riskGuardrails: string;
+    noActiveRiskGoals: string;
+    deleteConfirm: string;
+    periodTrades: string;
+    periodNetPnl: string;
+    periodWinRate: string;
+    periodReviewCompletion: string;
+    relatedData: string;
+    current: string;
+    target: string;
+    limit: string;
+    status: string;
+    view: string;
+    edit: string;
+    delete: string;
+    archive: string;
+    restore: string;
+    saved: string;
+    noData: string;
+  };
   settingsPage: {
     title: string;
     subtitle: string;
@@ -440,12 +523,16 @@ export interface Dictionary {
     periodReportsCount: string;
     playbooksCount: string;
     notesCount: string;
+    goalsCount: string;
     clearPlaybooks: string;
     clearNotes: string;
+    clearGoals: string;
     clearPlaybooksConfirm: string;
     clearNotesConfirm: string;
+    clearGoalsConfirm: string;
     backupIncludesPlaybooks: string;
     backupIncludesNotes: string;
+    backupIncludesGoals: string;
     chooseBackupFile: string;
     restoreData: string;
     backupAndRestore: string;
@@ -762,6 +849,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
       date: "关联日期",
       playbook: "关联策略手册",
     },
+    goalCategories: {
+      performance: "表现",
+      risk: "风控",
+      process: "流程",
+      behavior: "行为",
+      custom: "自定义",
+    },
+    goalMetrics: {
+      netPnl: "净盈亏",
+      winRate: "胜率",
+      profitFactor: "盈利因子",
+      avgR: "平均 R",
+      maxDrawdownPercent: "最大回撤",
+      maxDailyLoss: "最大单日亏损",
+      totalTrades: "交易次数",
+      reviewCompletionRate: "复盘完成率",
+      reviewedDays: "已复盘天数",
+      custom: "自定义",
+    },
+    goalStatus: {
+      active: "启用",
+      paused: "暂停",
+      completed: "已达成",
+      archived: "已归档",
+    },
+    goalDirections: {
+      atLeast: "至少达到",
+      atMost: "不超过",
+    },
+    goalUnits: {
+      currency: "货币",
+      percent: "百分比",
+      number: "数字",
+      r: "R 倍数",
+      trades: "交易笔数",
+      days: "天数",
+    },
+    goalPeriodTypes: {
+      weekly: "周度",
+      monthly: "月度",
+      quarterly: "季度",
+      custom: "自定义周期",
+    },
     playbookPage: {
       title: "交易手册",
       subtitle: "管理交易策略规则、执行清单，并分析每套策略的真实表现。",
@@ -919,6 +1049,75 @@ export const dictionaries: Record<Locale, Dictionary> = {
       titleRequired: "标题不能为空",
       linkRequired: "请选择关联对象",
     },
+    goalsPage: {
+      title: "目标",
+      subtitle: "设定交易目标、风控限制，并跟踪执行进度。",
+      newGoal: "新增目标",
+      editGoal: "编辑目标",
+      saveGoal: "保存目标",
+      saveChanges: "保存修改",
+      totalGoals: "全部目标",
+      activeGoals: "启用目标",
+      achieved: "已达成",
+      atRisk: "有风险",
+      avgProgress: "平均进度",
+      noGoalsYet: "暂无目标",
+      noFilterResults: "没有符合筛选条件的目标",
+      searchPlaceholder: "搜索目标标题或说明",
+      allCategories: "全部分类",
+      allStatuses: "全部状态",
+      allMetrics: "全部指标",
+      allPeriods: "全部周期",
+      resetFilters: "重置筛选",
+      pause: "暂停",
+      resume: "恢复",
+      markComplete: "标记完成",
+      goalTitle: "目标标题",
+      category: "分类",
+      metric: "指标",
+      direction: "方向",
+      targetValue: "目标值",
+      currentValue: "当前值",
+      remaining: "剩余差距",
+      unit: "单位",
+      periodType: "周期类型",
+      startDate: "开始日期",
+      endDate: "结束日期",
+      description: "说明",
+      notes: "备注",
+      manualCurrentValue: "自定义当前值",
+      titleRequired: "目标标题不能为空",
+      invalidTargetValue: "请输入有效数字",
+      startDateRequired: "请选择开始日期",
+      endDateRequired: "请选择结束日期",
+      endDateBeforeStart: "结束日期不能早于开始日期",
+      goalDetails: "目标详情",
+      progress: "进度",
+      completed: "已完成",
+      notCompleted: "未完成",
+      normal: "正常",
+      warning: "警告",
+      exceeded: "已超限",
+      riskGuardrails: "风控限制",
+      noActiveRiskGoals: "暂无启用的风控目标",
+      deleteConfirm: "确定要删除这个目标吗？",
+      periodTrades: "周期交易数",
+      periodNetPnl: "周期净盈亏",
+      periodWinRate: "周期胜率",
+      periodReviewCompletion: "周期复盘完成率",
+      relatedData: "相关数据摘要",
+      current: "当前",
+      target: "目标",
+      limit: "限制",
+      status: "状态",
+      view: "查看",
+      edit: "编辑",
+      delete: "删除",
+      archive: "归档",
+      restore: "恢复",
+      saved: "已保存",
+      noData: "暂无数据",
+    },
     settingsPage: {
       title: "设置",
       subtitle: "配置交易日志偏好、默认交易参数和本地数据备份。",
@@ -948,7 +1147,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       imported: "已导入",
       restoreDemoData: "恢复演示数据",
       restoreDemoDataConfirm:
-        "确定要恢复演示数据吗？这会覆盖当前交易、每日复盘、策略手册和笔记数据。",
+        "确定要恢复演示数据吗？这会覆盖当前交易、每日复盘、策略手册、笔记和目标数据。",
       dangerZone: "危险操作",
       clearTrades: "清空交易数据",
       clearDailyReviews: "清空每日复盘",
@@ -958,19 +1157,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
       clearDailyReviewsConfirm: "确定要清空所有每日复盘吗？此操作不可撤销。",
       clearPeriodReportsConfirm: "确定要清空所有周期报告吗？此操作不可撤销。",
       clearAllDataConfirm:
-        "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告、策略手册和笔记并重置设置。",
+        "确定要清空全部本地数据吗？这会删除交易、每日复盘、周期报告、策略手册、笔记和目标并重置设置。",
       irreversible: "此操作不可撤销",
       tradesCount: "交易数量",
       dailyReviewsCount: "每日复盘数量",
       periodReportsCount: "周期报告数量",
       playbooksCount: "策略手册数量",
       notesCount: "笔记数量",
+      goalsCount: "目标数量",
       clearPlaybooks: "清空策略手册",
       clearNotes: "清空笔记",
+      clearGoals: "清空目标",
       clearPlaybooksConfirm: "确定要清空所有策略手册吗？此操作不可撤销。",
       clearNotesConfirm: "确定要清空所有笔记吗？此操作不可撤销。",
+      clearGoalsConfirm: "确定要清空所有目标吗？此操作不可撤销。",
       backupIncludesPlaybooks: "策略手册数据会包含在备份文件中",
       backupIncludesNotes: "笔记数据会包含在备份文件中",
+      backupIncludesGoals: "目标数据会包含在备份文件中",
       chooseBackupFile: "请选择备份文件",
       restoreData: "恢复数据",
       backupAndRestore: "备份与恢复",
@@ -1295,6 +1498,49 @@ export const dictionaries: Record<Locale, Dictionary> = {
       date: "Linked Date",
       playbook: "Linked Playbook",
     },
+    goalCategories: {
+      performance: "Performance",
+      risk: "Risk",
+      process: "Process",
+      behavior: "Behavior",
+      custom: "Custom",
+    },
+    goalMetrics: {
+      netPnl: "Net P&L",
+      winRate: "Win Rate",
+      profitFactor: "Profit Factor",
+      avgR: "Avg R",
+      maxDrawdownPercent: "Max Drawdown",
+      maxDailyLoss: "Max Daily Loss",
+      totalTrades: "Total Trades",
+      reviewCompletionRate: "Review Completion",
+      reviewedDays: "Reviewed Days",
+      custom: "Custom",
+    },
+    goalStatus: {
+      active: "Active",
+      paused: "Paused",
+      completed: "Completed",
+      archived: "Archived",
+    },
+    goalDirections: {
+      atLeast: "At least",
+      atMost: "At most",
+    },
+    goalUnits: {
+      currency: "Currency",
+      percent: "Percent",
+      number: "Number",
+      r: "R-Multiple",
+      trades: "Trades",
+      days: "Days",
+    },
+    goalPeriodTypes: {
+      weekly: "Weekly",
+      monthly: "Monthly",
+      quarterly: "Quarterly",
+      custom: "Custom Period",
+    },
     playbookPage: {
       title: "Playbook",
       subtitle: "Manage strategy rules, execution checklists, and real performance.",
@@ -1453,6 +1699,75 @@ export const dictionaries: Record<Locale, Dictionary> = {
       titleRequired: "Title is required",
       linkRequired: "Select a linked entity",
     },
+    goalsPage: {
+      title: "Goals",
+      subtitle: "Set trading goals, risk limits, and track execution progress.",
+      newGoal: "New Goal",
+      editGoal: "Edit Goal",
+      saveGoal: "Save Goal",
+      saveChanges: "Save Changes",
+      totalGoals: "Total Goals",
+      activeGoals: "Active Goals",
+      achieved: "Achieved",
+      atRisk: "At Risk",
+      avgProgress: "Avg Progress",
+      noGoalsYet: "No goals yet",
+      noFilterResults: "No goals match your filters",
+      searchPlaceholder: "Search goal title or description",
+      allCategories: "All Categories",
+      allStatuses: "All Statuses",
+      allMetrics: "All Metrics",
+      allPeriods: "All Periods",
+      resetFilters: "Reset filters",
+      pause: "Pause",
+      resume: "Resume",
+      markComplete: "Mark Complete",
+      goalTitle: "Goal Title",
+      category: "Category",
+      metric: "Metric",
+      direction: "Direction",
+      targetValue: "Target Value",
+      currentValue: "Current Value",
+      remaining: "Remaining",
+      unit: "Unit",
+      periodType: "Period Type",
+      startDate: "Start Date",
+      endDate: "End Date",
+      description: "Description",
+      notes: "Notes",
+      manualCurrentValue: "Manual Current Value",
+      titleRequired: "Goal title is required",
+      invalidTargetValue: "Enter a valid number",
+      startDateRequired: "Select a start date",
+      endDateRequired: "Select an end date",
+      endDateBeforeStart: "End date cannot be earlier than start date",
+      goalDetails: "Goal Details",
+      progress: "Progress",
+      completed: "Completed",
+      notCompleted: "Not Completed",
+      normal: "Normal",
+      warning: "Warning",
+      exceeded: "Exceeded",
+      riskGuardrails: "Risk Guardrails",
+      noActiveRiskGoals: "No active risk goals",
+      deleteConfirm: "Delete this goal?",
+      periodTrades: "Period Trades",
+      periodNetPnl: "Period Net P&L",
+      periodWinRate: "Period Win Rate",
+      periodReviewCompletion: "Period Review Completion",
+      relatedData: "Related Data",
+      current: "Current",
+      target: "Target",
+      limit: "Limit",
+      status: "Status",
+      view: "View",
+      edit: "Edit",
+      delete: "Delete",
+      archive: "Archive",
+      restore: "Restore",
+      saved: "Saved",
+      noData: "No data",
+    },
     settingsPage: {
       title: "Settings",
       subtitle: "Configure preferences, trade defaults, and local data backups.",
@@ -1482,7 +1797,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       imported: "Imported",
       restoreDemoData: "Restore Demo Data",
       restoreDemoDataConfirm:
-        "Restore demo data? This will replace current trades, daily reviews, playbooks, and notes.",
+        "Restore demo data? This will replace current trades, daily reviews, playbooks, notes, and goals.",
       dangerZone: "Danger Zone",
       clearTrades: "Clear Trades",
       clearDailyReviews: "Clear Daily Reviews",
@@ -1492,19 +1807,23 @@ export const dictionaries: Record<Locale, Dictionary> = {
       clearDailyReviewsConfirm: "Clear all daily reviews? This cannot be undone.",
       clearPeriodReportsConfirm: "Clear all period reports? This cannot be undone.",
       clearAllDataConfirm:
-        "Clear all local data? This will delete trades, daily reviews, period reports, playbooks, notes, and reset settings.",
+        "Clear all local data? This will delete trades, daily reviews, period reports, playbooks, notes, goals, and reset settings.",
       irreversible: "This action cannot be undone",
       tradesCount: "Trades Count",
       dailyReviewsCount: "Daily Reviews Count",
       periodReportsCount: "Period Reports Count",
       playbooksCount: "Playbooks Count",
       notesCount: "Notes Count",
+      goalsCount: "Goals Count",
       clearPlaybooks: "Clear Playbooks",
       clearNotes: "Clear Notes",
+      clearGoals: "Clear Goals",
       clearPlaybooksConfirm: "Clear all playbooks? This cannot be undone.",
       clearNotesConfirm: "Clear all notes? This cannot be undone.",
+      clearGoalsConfirm: "Clear all goals? This cannot be undone.",
       backupIncludesPlaybooks: "Playbook data will be included in backup files",
       backupIncludesNotes: "Notes data will be included in backup files",
+      backupIncludesGoals: "Goals data will be included in backup files",
       chooseBackupFile: "Choose backup file",
       restoreData: "Restore Data",
       backupAndRestore: "Backup & Restore",

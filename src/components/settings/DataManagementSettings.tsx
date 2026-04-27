@@ -3,6 +3,7 @@
 import { Download, RotateCcw, Upload } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { useGoals } from "@/components/providers/GoalStoreProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvider";
@@ -35,6 +36,7 @@ export default function DataManagementSettings() {
     usePeriodReports();
   const { playbooks, replacePlaybooks, resetPlaybooksToSeed } = usePlaybooks();
   const { notes, replaceNotes, resetNotesToSeed } = useNotes();
+  const { goals, replaceGoals, resetGoalsToSeed } = useGoals();
   const [pendingBackup, setPendingBackup] = useState<BackupFile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<ActionStatus>(null);
@@ -71,6 +73,7 @@ export default function DataManagementSettings() {
       periodReports,
       playbooks,
       notes,
+      goals,
     });
 
     downloadTextFile(
@@ -112,6 +115,7 @@ export default function DataManagementSettings() {
     replacePeriodReports(pendingBackup.data.periodReports);
     replacePlaybooks(pendingBackup.data.playbooks);
     replaceNotes(pendingBackup.data.notes ?? []);
+    replaceGoals(pendingBackup.data.goals ?? []);
     setPendingBackup(null);
     setError(null);
     if (fileInputRef.current) {
@@ -136,6 +140,7 @@ export default function DataManagementSettings() {
     resetDailyReviewsToSeed();
     resetPlaybooksToSeed();
     resetNotesToSeed();
+    resetGoalsToSeed();
     clearPeriodReports();
     setError(null);
   }
@@ -187,6 +192,8 @@ export default function DataManagementSettings() {
         {copy.settingsPage.backupIncludesPlaybooks}
         <br />
         {copy.settingsPage.backupIncludesNotes}
+        <br />
+        {copy.settingsPage.backupIncludesGoals}
       </p>
 
       {error ? (

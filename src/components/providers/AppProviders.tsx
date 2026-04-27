@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 
+import { GoalStoreProvider } from "@/components/providers/GoalStoreProvider";
 import { LanguageProvider } from "@/components/providers/LanguageProvider";
 import { NotesStoreProvider } from "@/components/providers/NotesStoreProvider";
 import { PeriodReportStoreProvider } from "@/components/providers/PeriodReportStoreProvider";
@@ -22,7 +23,9 @@ export default function AppProviders({ children }: { children: ReactNode }) {
               <PlaybookStoreProvider>
                 <SelectedMonthProvider>
                   <NotesStoreProvider>
-                    <TradeDrawerProvider>{children}</TradeDrawerProvider>
+                    <GoalStoreProvider>
+                      <TradeDrawerProvider>{children}</TradeDrawerProvider>
+                    </GoalStoreProvider>
                   </NotesStoreProvider>
                 </SelectedMonthProvider>
               </PlaybookStoreProvider>

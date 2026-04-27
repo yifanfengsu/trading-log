@@ -102,6 +102,10 @@ export default function ImportBackupDialog({
               value={String(summary.notesCount)}
             />
             <SummaryRow
+              label={copy.settingsPage.goalsCount}
+              value={String(summary.goalsCount)}
+            />
+            <SummaryRow
               label={copy.settingsPage.exportedAt}
               value={formatDateTime(summary.exportedAt, locale)}
             />

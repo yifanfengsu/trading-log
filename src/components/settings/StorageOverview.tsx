@@ -6,6 +6,7 @@ import {
   FileText,
   NotebookPen,
   NotebookTabs,
+  Target,
   Wallet,
   type LucideIcon,
 } from "lucide-react";
@@ -16,6 +17,7 @@ import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useNotes } from "@/components/providers/NotesStoreProvider";
+import { useGoals } from "@/components/providers/GoalStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { formatCurrency } from "@/lib/utils";
 
@@ -47,6 +49,7 @@ export default function StorageOverview() {
   const { periodReports } = usePeriodReports();
   const { playbooks } = usePlaybooks();
   const { notes } = useNotes();
+  const { goals } = useGoals();
 
   return (
     <section className="panel-card p-5 lg:p-6">
@@ -76,6 +79,11 @@ export default function StorageOverview() {
           icon={NotebookPen}
           label={copy.settingsPage.notesCount}
           value={String(notes.length)}
+        />
+        <OverviewItem
+          icon={Target}
+          label={copy.settingsPage.goalsCount}
+          value={String(goals.length)}
         />
         <OverviewItem
           icon={Wallet}

@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+import type { GoalUnit } from "@/lib/goal-types";
 import type { Locale } from "@/lib/i18n";
 import type { MetricFormat } from "@/lib/mock-data";
 import type { CurrencyCode } from "@/lib/settings-types";
@@ -234,6 +235,39 @@ export function formatProfitFactor(value: number | null | undefined) {
   }
 
   return value.toFixed(2);
+}
+
+export function formatGoalValue(
+  value: number,
+  unit: GoalUnit,
+  locale: Locale,
+  currency: CurrencyCode = "USD",
+) {
+  if (unit === "currency") {
+    return formatCurrency(value, currency);
+  }
+
+  if (unit === "percent") {
+    return formatPercent(value);
+  }
+
+  if (unit === "r") {
+    return formatRMultiple(value);
+  }
+
+  if (unit === "trades") {
+    return `${formatNumber(value, { digits: 0 })} ${
+      locale === "zh" ? "笔" : "trades"
+    }`;
+  }
+
+  if (unit === "days") {
+    return `${formatNumber(value, { digits: 0 })} ${
+      locale === "zh" ? "天" : "days"
+    }`;
+  }
+
+  return formatNumber(value);
 }
 
 const englishMonthNames = [

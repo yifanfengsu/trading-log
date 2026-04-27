@@ -1,4 +1,5 @@
 import type { DailyReview } from "@/lib/review-types";
+import type { Goal } from "@/lib/goal-types";
 import type { Note } from "@/lib/note-types";
 import type { Playbook } from "@/lib/playbook-types";
 import type { PeriodReport } from "@/lib/report-types";
@@ -16,5 +17,6 @@ export type BackupFile = {
     periodReports: PeriodReport[];
     playbooks: Playbook[];
     notes: Note[];
+    goals: Goal[];
   };
 };

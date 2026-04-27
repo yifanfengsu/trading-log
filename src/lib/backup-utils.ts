@@ -1,5 +1,6 @@
 import type { BackupFile } from "@/lib/backup-types";
 import { isValidDateKey } from "@/lib/calendar-utils";
+import { normalizeGoals, type Goal } from "@/lib/goal-types";
 import { normalizeNotes, type Note } from "@/lib/note-types";
 import { isPlaybook, type Playbook } from "@/lib/playbook-types";
 import type { DailyReview, DailyReviewScore, ReviewEmotion } from "@/lib/review-types";
@@ -19,12 +20,14 @@ interface CreateBackupParams {
   periodReports: PeriodReport[];
   playbooks: Playbook[];
   notes: Note[];
+  goals: Goal[];
 }
 
 type BackupFileWithOptionalCollections = Omit<BackupFile, "data"> & {
-  data: Omit<BackupFile["data"], "playbooks" | "notes"> & {
+  data: Omit<BackupFile["data"], "playbooks" | "notes" | "goals"> & {
     playbooks?: Playbook[];
     notes?: Note[];
+    goals?: Goal[];
   };
 };
 
@@ -169,7 +172,8 @@ function isBackupFile(value: unknown): value is BackupFileWithOptionalCollection
     data.periodReports.every(isPeriodReport) &&
     (data.playbooks === undefined ||
       (Array.isArray(data.playbooks) && data.playbooks.every(isPlaybook))) &&
-    (data.notes === undefined || normalizeNotes(data.notes) !== null)
+    (data.notes === undefined || normalizeNotes(data.notes) !== null) &&
+    (data.goals === undefined || normalizeGoals(data.goals) !== null)
   );
 }
 
@@ -180,6 +184,7 @@ export function createBackupFile({
   periodReports,
   playbooks,
   notes,
+  goals,
 }: CreateBackupParams): BackupFile {
   return {
     app: "trade-journal",
@@ -192,6 +197,7 @@ export function createBackupFile({
       periodReports,
       playbooks,
       notes,
+      goals,
     },
   };
 }
@@ -215,6 +221,7 @@ export function parseBackupJson(json: string): BackupFile | null {
         settings: normalizeUserSettings(parsed.data.settings) ?? parsed.data.settings,
         playbooks: parsed.data.playbooks ?? [],
         notes: normalizeNotes(parsed.data.notes ?? []) ?? [],
+        goals: normalizeGoals(parsed.data.goals ?? []) ?? [],
       },
     };
   } catch {
@@ -229,6 +236,7 @@ export function getBackupSummary(backup: BackupFile) {
     periodReportsCount: backup.data.periodReports.length,
     playbooksCount: backup.data.playbooks.length,
     notesCount: backup.data.notes.length,
+    goalsCount: backup.data.goals.length,
     exportedAt: backup.exportedAt,
   };
 }
