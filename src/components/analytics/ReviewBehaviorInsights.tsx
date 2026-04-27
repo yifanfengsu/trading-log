@@ -96,7 +96,7 @@ export default function ReviewBehaviorInsights({
         </div>
       ) : (
         <div className="mt-5 overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-2">
+          <table className="min-w-[680px] border-separate border-spacing-y-2">
             <thead>
               <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
                 <th className="px-3 pb-2 font-medium">

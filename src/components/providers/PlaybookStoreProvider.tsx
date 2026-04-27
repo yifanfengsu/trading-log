@@ -13,7 +13,7 @@ import {
 
 import { seedPlaybooks } from "@/lib/playbook-seed";
 import {
-  isPlaybook,
+  normalizePlaybooks,
   type Playbook,
   type PlaybookInput,
 } from "@/lib/playbook-types";
@@ -44,7 +44,7 @@ function parseStoredPlaybooks(value: string | null) {
 
   try {
     const parsed: unknown = JSON.parse(value);
-    return Array.isArray(parsed) && parsed.every(isPlaybook) ? parsed : null;
+    return normalizePlaybooks(parsed);
   } catch {
     return null;
   }

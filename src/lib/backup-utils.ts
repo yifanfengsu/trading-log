@@ -2,10 +2,11 @@ import type { BackupFile } from "@/lib/backup-types";
 import { isValidDateKey } from "@/lib/calendar-utils";
 import { normalizeGoals, type Goal } from "@/lib/goal-types";
 import { normalizeNotes, type Note } from "@/lib/note-types";
-import { isPlaybook, type Playbook } from "@/lib/playbook-types";
+import { normalizePlaybooks, type Playbook } from "@/lib/playbook-types";
 import type { DailyReview, DailyReviewScore, ReviewEmotion } from "@/lib/review-types";
 import type { PeriodReport, ReportPeriodType } from "@/lib/report-types";
 import {
+  DEFAULT_USER_SETTINGS,
   isTradeSetup,
   isTradeSide,
   normalizeUserSettings,
@@ -23,12 +24,11 @@ interface CreateBackupParams {
   goals: Goal[];
 }
 
-type BackupFileWithOptionalCollections = Omit<BackupFile, "data"> & {
-  data: Omit<BackupFile["data"], "playbooks" | "notes" | "goals"> & {
-    playbooks?: Playbook[];
-    notes?: Note[];
-    goals?: Goal[];
-  };
+type BackupShell = {
+  app: "trade-journal";
+  version: 1;
+  exportedAt: string;
+  data: Record<string, unknown>;
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -146,7 +146,18 @@ function isPeriodReport(value: unknown): value is PeriodReport {
   );
 }
 
-function isBackupFile(value: unknown): value is BackupFileWithOptionalCollections {
+function normalizeArray<T>(
+  value: unknown,
+  guard: (item: unknown) => item is T,
+): T[] | null {
+  if (value === undefined) {
+    return [];
+  }
+
+  return Array.isArray(value) && value.every(guard) ? value : null;
+}
+
+function isBackupShell(value: unknown): value is BackupShell {
   if (!isRecord(value)) {
     return false;
   }
@@ -157,23 +168,10 @@ function isBackupFile(value: unknown): value is BackupFileWithOptionalCollection
     return false;
   }
 
-  const settings = normalizeUserSettings(data.settings);
-
   return (
     value.app === "trade-journal" &&
     value.version === 1 &&
-    isIsoDateTime(value.exportedAt) &&
-    settings !== null &&
-    Array.isArray(data.trades) &&
-    data.trades.every(isTrade) &&
-    Array.isArray(data.dailyReviews) &&
-    data.dailyReviews.every(isDailyReview) &&
-    Array.isArray(data.periodReports) &&
-    data.periodReports.every(isPeriodReport) &&
-    (data.playbooks === undefined ||
-      (Array.isArray(data.playbooks) && data.playbooks.every(isPlaybook))) &&
-    (data.notes === undefined || normalizeNotes(data.notes) !== null) &&
-    (data.goals === undefined || normalizeGoals(data.goals) !== null)
+    isIsoDateTime(value.exportedAt)
   );
 }
 
@@ -210,18 +208,51 @@ export function parseBackupJson(json: string): BackupFile | null {
   try {
     const parsed: unknown = JSON.parse(json);
 
-    if (!isBackupFile(parsed)) {
+    if (!isBackupShell(parsed)) {
+      return null;
+    }
+
+    const settings =
+      parsed.data.settings === undefined
+        ? DEFAULT_USER_SETTINGS
+        : normalizeUserSettings(parsed.data.settings);
+    const trades = normalizeArray(parsed.data.trades, isTrade);
+    const dailyReviews = normalizeArray(
+      parsed.data.dailyReviews,
+      isDailyReview,
+    );
+    const periodReports = normalizeArray(
+      parsed.data.periodReports,
+      isPeriodReport,
+    );
+    const playbooks = normalizePlaybooks(parsed.data.playbooks ?? []);
+    const notes = normalizeNotes(parsed.data.notes ?? []);
+    const goals = normalizeGoals(parsed.data.goals ?? []);
+
+    if (
+      settings === null ||
+      trades === null ||
+      dailyReviews === null ||
+      periodReports === null ||
+      playbooks === null ||
+      notes === null ||
+      goals === null
+    ) {
       return null;
     }
 
     return {
-      ...parsed,
+      app: parsed.app,
+      version: parsed.version,
+      exportedAt: parsed.exportedAt,
       data: {
-        ...parsed.data,
-        settings: normalizeUserSettings(parsed.data.settings) ?? parsed.data.settings,
-        playbooks: parsed.data.playbooks ?? [],
-        notes: normalizeNotes(parsed.data.notes ?? []) ?? [],
-        goals: normalizeGoals(parsed.data.goals ?? []) ?? [],
+        settings,
+        trades,
+        dailyReviews,
+        periodReports,
+        playbooks,
+        notes,
+        goals,
       },
     };
   } catch {

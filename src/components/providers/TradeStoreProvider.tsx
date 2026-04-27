@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { seedTrades } from "@/lib/mock-data";
+import { getSeedTrades } from "@/lib/mock-data";
 import type {
   Trade,
   TradeInput,
@@ -125,8 +125,8 @@ function persistTrades(trades: Trade[]) {
 }
 
 export function TradeStoreProvider({ children }: { children: ReactNode }) {
-  const [trades, setTrades] = useState<Trade[]>(seedTrades);
-  const tradesRef = useRef<Trade[]>(seedTrades);
+  const [trades, setTrades] = useState<Trade[]>([]);
+  const tradesRef = useRef<Trade[]>([]);
 
   const commitTrades = useCallback((nextTrades: Trade[]) => {
     tradesRef.current = nextTrades;
@@ -139,16 +139,18 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
       window.localStorage.getItem(TRADE_STORAGE_KEY),
     );
 
-    if (storedTrades) {
-      const timeoutId = window.setTimeout(() => {
-        tradesRef.current = storedTrades;
-        setTrades(storedTrades);
-      }, 0);
+    const nextTrades = storedTrades !== null ? storedTrades : getSeedTrades();
 
-      return () => window.clearTimeout(timeoutId);
+    if (storedTrades === null) {
+      persistTrades(nextTrades);
     }
 
-    persistTrades(seedTrades);
+    const timeoutId = window.setTimeout(() => {
+      tradesRef.current = nextTrades;
+      setTrades(nextTrades);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   const addTrade = useCallback((trade: TradeInput) => {
@@ -196,7 +198,7 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
   }, [commitTrades]);
 
   const resetTradesToSeed = useCallback(() => {
-    commitTrades(seedTrades);
+    commitTrades(getSeedTrades());
   }, [commitTrades]);
 
   const value = useMemo(

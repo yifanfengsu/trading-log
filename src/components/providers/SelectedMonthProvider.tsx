@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from "react";
 
+import { getCurrentMonthKey } from "@/lib/utils";
+
 interface SelectedMonthContextValue {
   selectedMonth: string;
   setSelectedMonth: (selectedMonth: string) => void;
@@ -18,7 +20,9 @@ const SelectedMonthContext = createContext<SelectedMonthContextValue | null>(
 );
 
 export function SelectedMonthProvider({ children }: { children: ReactNode }) {
-  const [selectedMonth, setSelectedMonth] = useState("2025-05");
+  const [selectedMonth, setSelectedMonth] = useState(() =>
+    getCurrentMonthKey(),
+  );
 
   const value = useMemo(
     () => ({

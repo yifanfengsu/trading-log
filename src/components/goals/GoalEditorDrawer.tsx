@@ -5,7 +5,6 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import { useGoals } from "@/components/providers/GoalStoreProvider";
 import { useLanguage } from "@/components/providers/LanguageProvider";
-import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
 import {
   goalCategories,
   goalDirections,
@@ -23,8 +22,13 @@ import {
   type GoalStatus,
   type GoalUnit,
 } from "@/lib/goal-types";
-import { getMonthEndDateKey } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import {
+  cn,
+  getCurrentMonthKey,
+  getDateKeyFromLocalDate,
+  getMonthRangeFromMonthKey,
+} from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface GoalEditorDrawerProps {
   mode: "create" | "edit";
@@ -51,13 +55,6 @@ interface GoalFormState {
 const inputClass =
   "mt-2 h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
-function toDateKey(date: Date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-    2,
-    "0",
-  )}-${String(date.getDate()).padStart(2, "0")}`;
-}
-
 function getWeekRange(date: Date) {
   const dayOfWeek = date.getDay();
   const mondayOffset = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
@@ -73,8 +70,8 @@ function getWeekRange(date: Date) {
   );
 
   return {
-    startDate: toDateKey(startDate),
-    endDate: toDateKey(endDate),
+    startDate: getDateKeyFromLocalDate(startDate),
+    endDate: getDateKeyFromLocalDate(endDate),
   };
 }
 
@@ -84,25 +81,22 @@ function getQuarterRange(date: Date) {
   const endDate = new Date(date.getFullYear(), quarterStartMonth + 3, 0);
 
   return {
-    startDate: toDateKey(startDate),
-    endDate: toDateKey(endDate),
+    startDate: getDateKeyFromLocalDate(startDate),
+    endDate: getDateKeyFromLocalDate(endDate),
   };
 }
 
-function getMonthlyRange(selectedMonth: string) {
-  return {
-    startDate: `${selectedMonth}-01`,
-    endDate: getMonthEndDateKey(selectedMonth),
-  };
+function getMonthlyRange() {
+  return getMonthRangeFromMonthKey(getCurrentMonthKey());
 }
 
-function getPeriodRange(periodType: GoalPeriodType, selectedMonth: string) {
+function getPeriodRange(periodType: GoalPeriodType) {
   if (periodType === "weekly") {
     return getWeekRange(new Date());
   }
 
   if (periodType === "monthly") {
-    return getMonthlyRange(selectedMonth);
+    return getMonthlyRange();
   }
 
   if (periodType === "quarterly") {
@@ -112,7 +106,7 @@ function getPeriodRange(periodType: GoalPeriodType, selectedMonth: string) {
   return null;
 }
 
-function getInitialFormState(goal: Goal | undefined, selectedMonth: string): GoalFormState {
+function getInitialFormState(goal: Goal | undefined): GoalFormState {
   if (goal) {
     return {
       title: goal.title,
@@ -135,7 +129,7 @@ function getInitialFormState(goal: Goal | undefined, selectedMonth: string): Goa
   }
 
   const metricDefaults = getGoalMetricDefaults("netPnl");
-  const monthlyRange = getMonthlyRange(selectedMonth);
+  const monthlyRange = getMonthlyRange();
 
   return {
     title: "",
@@ -169,10 +163,9 @@ export default function GoalEditorDrawer({
   onClose,
 }: GoalEditorDrawerProps) {
   const { dictionary: copy } = useLanguage();
-  const { selectedMonth } = useSelectedMonth();
   const { addGoal, updateGoal } = useGoals();
   const [form, setForm] = useState<GoalFormState>(() =>
-    getInitialFormState(mode === "edit" ? goal : undefined, selectedMonth),
+    getInitialFormState(mode === "edit" ? goal : undefined),
   );
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -185,6 +178,8 @@ export default function GoalEditorDrawer({
       : mode === "create"
         ? copy.goalsPage.saveGoal
         : copy.goalsPage.saveChanges;
+
+  useEscapeKey(onClose);
 
   useEffect(
     () => () => {
@@ -219,7 +214,7 @@ export default function GoalEditorDrawer({
   }
 
   function handlePeriodTypeChange(periodType: GoalPeriodType) {
-    const range = getPeriodRange(periodType, selectedMonth);
+    const range = getPeriodRange(periodType);
     setForm((currentForm) => ({
       ...currentForm,
       periodType,
@@ -311,13 +306,21 @@ export default function GoalEditorDrawer({
         onClick={onClose}
         aria-label={copy.tradeForm.cancel}
       />
-      <aside className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="goal-editor-title"
+        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+      >
         <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
               {copy.menu.goals}
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="goal-editor-title"
+              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {title}
             </h2>
           </div>
@@ -538,7 +541,7 @@ export default function GoalEditorDrawer({
             </p>
           ) : null}
 
-          <div className="sticky bottom-0 -mx-6 mt-6 flex items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur">
+          <div className="sticky bottom-0 -mx-6 mt-6 flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
             <button
               type="button"
               onClick={onClose}

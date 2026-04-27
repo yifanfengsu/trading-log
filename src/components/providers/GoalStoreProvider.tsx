@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { seedGoals } from "@/lib/goal-seed";
+import { getSeedGoals } from "@/lib/goal-seed";
 import type { Goal, GoalInput, GoalPatch } from "@/lib/goal-types";
 import { normalizeGoals } from "@/lib/goal-types";
 
@@ -65,8 +65,8 @@ function persistGoals(goals: Goal[]) {
 }
 
 export function GoalStoreProvider({ children }: { children: ReactNode }) {
-  const [goals, setGoals] = useState<Goal[]>(seedGoals);
-  const goalsRef = useRef<Goal[]>(seedGoals);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const goalsRef = useRef<Goal[]>([]);
 
   const commitGoals = useCallback((nextGoals: Goal[]) => {
     const normalizedGoals = normalizeGoals(nextGoals) ?? [];
@@ -81,17 +81,19 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
       window.localStorage.getItem(GOALS_STORAGE_KEY),
     );
 
-    if (storedGoals !== null) {
-      const timeoutId = window.setTimeout(() => {
-        const sortedGoals = sortGoals(storedGoals);
-        goalsRef.current = sortedGoals;
-        setGoals(sortedGoals);
-      }, 0);
+    const nextGoals = storedGoals !== null ? storedGoals : getSeedGoals();
 
-      return () => window.clearTimeout(timeoutId);
+    if (storedGoals === null) {
+      persistGoals(sortGoals(nextGoals));
     }
 
-    persistGoals(seedGoals);
+    const timeoutId = window.setTimeout(() => {
+      const sortedGoals = sortGoals(nextGoals);
+      goalsRef.current = sortedGoals;
+      setGoals(sortedGoals);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   const addGoal = useCallback(
@@ -189,7 +191,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
   }, [commitGoals]);
 
   const resetGoalsToSeed = useCallback(() => {
-    commitGoals(seedGoals);
+    commitGoals(getSeedGoals());
   }, [commitGoals]);
 
   const getGoalById = useCallback(

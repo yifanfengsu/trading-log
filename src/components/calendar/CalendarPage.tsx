@@ -26,6 +26,9 @@ import {
   formatCurrency,
   formatPercent,
   formatShortDateLabel,
+  getCurrentMonthKey,
+  getMonthKeyFromDateKey,
+  getTodayDateKey,
   parseSelectedMonth,
 } from "@/lib/utils";
 
@@ -63,10 +66,12 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
   const initialSelectedDate =
     initialDate && isValidDateKey(initialDate) ? initialDate : null;
   const [selectedMonth, setSelectedMonth] = useState(() =>
-    initialSelectedDate ? initialSelectedDate.slice(0, 7) : "2025-05",
+    initialSelectedDate
+      ? getMonthKeyFromDateKey(initialSelectedDate)
+      : getCurrentMonthKey(),
   );
-  const [selectedDate, setSelectedDate] = useState<string | null>(
-    initialSelectedDate,
+  const [selectedDate, setSelectedDate] = useState<string | null>(() =>
+    initialSelectedDate ?? getTodayDateKey(),
   );
   const [isDrawerOpen, setIsDrawerOpen] = useState(Boolean(initialSelectedDate));
   const { year, month } = parseSelectedMonth(selectedMonth);

@@ -1,3 +1,5 @@
+import { isValidDateKey } from "@/lib/utils";
+
 export type NoteType =
   | "general"
   | "marketObservation"
@@ -70,7 +72,7 @@ export function isNoteStatus(value: unknown): value is NoteStatus {
 }
 
 export function isNoteDateKey(value: unknown): value is string {
-  return typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+  return typeof value === "string" && isValidDateKey(value);
 }
 
 export function isNoteLink(value: unknown): value is NoteLink {
@@ -102,31 +104,27 @@ export function normalizeNote(value: unknown): Note | null {
     return null;
   }
 
-  if (
-    typeof value.id !== "string" ||
-    typeof value.title !== "string" ||
-    typeof value.content !== "string" ||
-    !isNoteType(value.type) ||
-    !isNoteStatus(value.status) ||
-    typeof value.pinned !== "boolean" ||
-    !isStringArray(value.tags) ||
-    typeof value.createdAt !== "string" ||
-    typeof value.updatedAt !== "string"
-  ) {
+  if (typeof value.id !== "string" || typeof value.title !== "string") {
     return null;
   }
 
   return {
     id: value.id,
     title: value.title,
-    content: value.content,
-    type: value.type,
-    status: value.status,
-    pinned: value.pinned,
-    tags: value.tags,
+    content: typeof value.content === "string" ? value.content : "",
+    type: isNoteType(value.type) ? value.type : "general",
+    status: isNoteStatus(value.status) ? value.status : "active",
+    pinned: typeof value.pinned === "boolean" ? value.pinned : false,
+    tags: isStringArray(value.tags) ? value.tags : [],
     link: isNoteLink(value.link) ? value.link : { type: "none" },
-    createdAt: value.createdAt,
-    updatedAt: value.updatedAt,
+    createdAt:
+      typeof value.createdAt === "string"
+        ? value.createdAt
+        : new Date().toISOString(),
+    updatedAt:
+      typeof value.updatedAt === "string"
+        ? value.updatedAt
+        : new Date().toISOString(),
   };
 }
 

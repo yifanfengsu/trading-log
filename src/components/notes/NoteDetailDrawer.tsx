@@ -17,6 +17,7 @@ import type { Note } from "@/lib/note-types";
 import type { Playbook } from "@/lib/playbook-types";
 import type { Trade } from "@/lib/trade-types";
 import { cn, formatDateTime } from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface NoteDetailDrawerProps {
   note: Note;
@@ -53,6 +54,8 @@ export default function NoteDetailDrawer({
   const { archiveNote, restoreNote, deleteNote, togglePinNote } = useNotes();
   const isArchived = note.status === "archived";
 
+  useEscapeKey(onClose);
+
   function handleDelete() {
     if (!window.confirm(copy.notesPage.deleteConfirm)) {
       return;
@@ -70,7 +73,12 @@ export default function NoteDetailDrawer({
         onClick={onClose}
         aria-label={copy.tradesPage.close}
       />
-      <aside className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="note-detail-title"
+        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+      >
         <div className="flex items-start justify-between gap-4 border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
@@ -88,7 +96,10 @@ export default function NoteDetailDrawer({
                 {copy.noteStatus[note.status]}
               </span>
             </div>
-            <h2 className="mt-2 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="note-detail-title"
+              className="mt-2 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {note.title}
             </h2>
           </div>
@@ -154,7 +165,7 @@ export default function NoteDetailDrawer({
           </section>
         </div>
 
-        <div className="flex flex-wrap items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur">
+        <div className="flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={() => onEdit(note)}

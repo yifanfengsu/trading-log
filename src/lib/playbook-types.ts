@@ -61,27 +61,88 @@ export function isPlaybookChecklistItem(
   );
 }
 
-export function isPlaybook(value: unknown): value is Playbook {
+function normalizeChecklistItem(
+  value: unknown,
+  index: number,
+): PlaybookChecklistItem | null {
   if (!isRecord(value)) {
-    return false;
+    return null;
   }
 
-  return (
-    typeof value.id === "string" &&
-    typeof value.name === "string" &&
-    isTradeSetup(value.setup) &&
-    typeof value.market === "string" &&
-    isStringArray(value.timeframes) &&
-    typeof value.description === "string" &&
-    isStringArray(value.entryRules) &&
-    isStringArray(value.exitRules) &&
-    isStringArray(value.riskRules) &&
-    isStringArray(value.invalidationRules) &&
-    Array.isArray(value.checklist) &&
-    value.checklist.every(isPlaybookChecklistItem) &&
-    isStringArray(value.tags) &&
-    isPlaybookStatus(value.status) &&
-    typeof value.createdAt === "string" &&
-    typeof value.updatedAt === "string"
-  );
+  if (typeof value.text !== "string") {
+    return null;
+  }
+
+  return {
+    id:
+      typeof value.id === "string" && value.id.trim().length > 0
+        ? value.id
+        : `checklist-${index}`,
+    text: value.text,
+    required:
+      typeof value.required === "boolean" ? value.required : true,
+  };
+}
+
+function normalizeChecklist(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value
+    .map(normalizeChecklistItem)
+    .filter((item): item is PlaybookChecklistItem => item !== null);
+}
+
+export function normalizePlaybook(value: unknown, index = 0): Playbook | null {
+  if (!isRecord(value)) {
+    return null;
+  }
+
+  return {
+    id:
+      typeof value.id === "string" && value.id.trim().length > 0
+        ? value.id
+        : `playbook-${index}`,
+    name:
+      typeof value.name === "string" && value.name.trim().length > 0
+        ? value.name
+        : "Untitled Playbook",
+    setup: isTradeSetup(value.setup) ? value.setup : "other",
+    market: typeof value.market === "string" ? value.market : "",
+    timeframes: isStringArray(value.timeframes) ? value.timeframes : [],
+    description:
+      typeof value.description === "string" ? value.description : "",
+    entryRules: isStringArray(value.entryRules) ? value.entryRules : [],
+    exitRules: isStringArray(value.exitRules) ? value.exitRules : [],
+    riskRules: isStringArray(value.riskRules) ? value.riskRules : [],
+    invalidationRules: isStringArray(value.invalidationRules)
+      ? value.invalidationRules
+      : [],
+    checklist: normalizeChecklist(value.checklist),
+    tags: isStringArray(value.tags) ? value.tags : [],
+    status: isPlaybookStatus(value.status) ? value.status : "active",
+    createdAt:
+      typeof value.createdAt === "string"
+        ? value.createdAt
+        : new Date().toISOString(),
+    updatedAt:
+      typeof value.updatedAt === "string"
+        ? value.updatedAt
+        : new Date().toISOString(),
+  };
+}
+
+export function normalizePlaybooks(value: unknown): Playbook[] | null {
+  if (!Array.isArray(value)) {
+    return null;
+  }
+
+  return value
+    .map((item, index) => normalizePlaybook(item, index))
+    .filter((playbook): playbook is Playbook => playbook !== null);
+}
+
+export function isPlaybook(value: unknown): value is Playbook {
+  return normalizePlaybook(value) !== null;
 }

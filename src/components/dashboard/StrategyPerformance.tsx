@@ -1,11 +1,17 @@
 "use client";
 
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import type { StrategyStats } from "@/lib/trade-calculations";
-import { cn, formatCurrency, formatNumber, formatPercent } from "@/lib/utils";
+import {
+  cn,
+  formatCurrency,
+  formatPercent,
+  formatProfitFactor,
+} from "@/lib/utils";
 
 interface StrategyPerformanceProps {
   rows: StrategyStats[];
@@ -26,13 +32,13 @@ export default function StrategyPerformance({
             {copy.strategyPerformance.subtitle}
           </p>
         </div>
-        <button
-          type="button"
+        <Link
+          href="/analytics"
           className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)]"
         >
           {copy.strategyPerformance.viewAll}
           <ArrowRight className="h-4 w-4" />
-        </button>
+        </Link>
       </div>
 
       {rows.length === 0 ? (
@@ -41,7 +47,7 @@ export default function StrategyPerformance({
         </div>
       ) : (
         <div className="mt-5 overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-y-2">
+          <table className="min-w-[640px] border-separate border-spacing-y-2">
             <thead>
               <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
                 <th className="px-3 pb-2 font-medium">
@@ -109,7 +115,7 @@ export default function StrategyPerformance({
                                 : "text-slate-900",
                             )}
                           >
-                            {formatNumber(row.profitFactor)}
+                            {formatProfitFactor(row.profitFactor)}
                           </span>
                         </div>
                         <div className="mt-2 h-2 rounded-full bg-[rgba(108,77,255,0.08)]">

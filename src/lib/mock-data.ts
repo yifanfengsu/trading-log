@@ -1,4 +1,9 @@
 import type { Trade, TradeSetup, TradeSide } from "@/lib/trade-types";
+import {
+  getCurrentMonthKey,
+  getMonthRangeFromMonthKey,
+  pad2,
+} from "@/lib/utils";
 
 export const sidebarMenuIds = [
   "dashboard",
@@ -56,8 +61,8 @@ export const todayReviewItems: ReviewItemData[] = [
 ];
 
 interface SeedTradeRow {
-  id: string;
-  closedAt: string;
+  day: number;
+  time: string;
   symbol: string;
   side: TradeSide;
   setup: TradeSetup;
@@ -72,8 +77,8 @@ interface SeedTradeRow {
 
 const seedTradeRows: SeedTradeRow[] = [
   {
-    id: "seed-2025-05-01",
-    closedAt: "2025-05-01T10:12:00",
+    day: 1,
+    time: "10:12:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -82,8 +87,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 620,
   },
   {
-    id: "seed-2025-05-02",
-    closedAt: "2025-05-02T14:08:00",
+    day: 2,
+    time: "14:08:00",
     symbol: "ETHUSDT",
     side: "long",
     setup: "breakout",
@@ -92,8 +97,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -180,
   },
   {
-    id: "seed-2025-05-03",
-    closedAt: "2025-05-03T11:20:00",
+    day: 3,
+    time: "11:20:00",
     symbol: "SOLUSDT",
     side: "short",
     setup: "meanReversion",
@@ -102,8 +107,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 510,
   },
   {
-    id: "seed-2025-05-04",
-    closedAt: "2025-05-04T15:35:00",
+    day: 4,
+    time: "15:35:00",
     symbol: "BTCUSDT",
     side: "short",
     setup: "scalping",
@@ -112,8 +117,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -240,
   },
   {
-    id: "seed-2025-05-05",
-    closedAt: "2025-05-05T09:48:00",
+    day: 5,
+    time: "09:48:00",
     symbol: "ETHUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -122,8 +127,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 530,
   },
   {
-    id: "seed-2025-05-06",
-    closedAt: "2025-05-06T13:16:00",
+    day: 6,
+    time: "13:16:00",
     symbol: "LINKUSDT",
     side: "long",
     setup: "breakout",
@@ -132,8 +137,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 345,
   },
   {
-    id: "seed-2025-05-07",
-    closedAt: "2025-05-07T11:06:00",
+    day: 7,
+    time: "11:06:00",
     symbol: "SOLUSDT",
     side: "short",
     setup: "scalping",
@@ -142,8 +147,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -120,
   },
   {
-    id: "seed-2025-05-08",
-    closedAt: "2025-05-08T16:44:00",
+    day: 8,
+    time: "16:44:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -152,8 +157,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 530,
   },
   {
-    id: "seed-2025-05-09",
-    closedAt: "2025-05-09T10:18:00",
+    day: 9,
+    time: "10:18:00",
     symbol: "ETHUSDT",
     side: "short",
     setup: "meanReversion",
@@ -162,8 +167,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -60,
   },
   {
-    id: "seed-2025-05-10",
-    closedAt: "2025-05-10T12:04:00",
+    day: 10,
+    time: "12:04:00",
     symbol: "DOGEUSDT",
     side: "long",
     setup: "scalping",
@@ -172,8 +177,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 275,
   },
   {
-    id: "seed-2025-05-11",
-    closedAt: "2025-05-11T09:34:00",
+    day: 11,
+    time: "09:34:00",
     symbol: "SOLUSDT",
     side: "long",
     setup: "breakout",
@@ -182,8 +187,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 315,
   },
   {
-    id: "seed-2025-05-12",
-    closedAt: "2025-05-12T14:28:00",
+    day: 12,
+    time: "14:28:00",
     symbol: "ETHUSDT",
     side: "long",
     setup: "scalping",
@@ -192,8 +197,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -95,
   },
   {
-    id: "seed-2025-05-13",
-    closedAt: "2025-05-13T10:42:00",
+    day: 13,
+    time: "10:42:00",
     symbol: "BTCUSDT",
     side: "short",
     setup: "meanReversion",
@@ -202,8 +207,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 510,
   },
   {
-    id: "seed-2025-05-14",
-    closedAt: "2025-05-14T15:10:00",
+    day: 14,
+    time: "15:10:00",
     symbol: "ETHUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -212,8 +217,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 680,
   },
   {
-    id: "seed-2025-05-15",
-    closedAt: "2025-05-15T11:58:00",
+    day: 15,
+    time: "11:58:00",
     symbol: "SOLUSDT",
     side: "long",
     setup: "breakout",
@@ -222,8 +227,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -210,
   },
   {
-    id: "seed-2025-05-16",
-    closedAt: "2025-05-16T13:22:00",
+    day: 16,
+    time: "13:22:00",
     symbol: "LINKUSDT",
     side: "short",
     setup: "meanReversion",
@@ -232,8 +237,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 360,
   },
   {
-    id: "seed-2025-05-17",
-    closedAt: "2025-05-17T10:16:00",
+    day: 17,
+    time: "10:16:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -242,8 +247,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 405,
   },
   {
-    id: "seed-2025-05-18",
-    closedAt: "2025-05-18T12:40:00",
+    day: 18,
+    time: "12:40:00",
     symbol: "ETHUSDT",
     side: "short",
     setup: "scalping",
@@ -252,8 +257,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -110,
   },
   {
-    id: "seed-2025-05-19",
-    closedAt: "2025-05-19T09:55:00",
+    day: 19,
+    time: "09:55:00",
     symbol: "SOLUSDT",
     side: "long",
     setup: "breakout",
@@ -262,8 +267,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 320,
   },
   {
-    id: "seed-2025-05-20",
-    closedAt: "2025-05-20T15:02:00",
+    day: 20,
+    time: "15:02:00",
     symbol: "BTCUSDT",
     side: "short",
     setup: "meanReversion",
@@ -272,8 +277,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 445,
   },
   {
-    id: "seed-2025-05-21",
-    closedAt: "2025-05-21T13:32:00",
+    day: 21,
+    time: "13:32:00",
     symbol: "ETHUSDT",
     side: "long",
     setup: "scalping",
@@ -282,8 +287,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -130,
   },
   {
-    id: "seed-2025-05-22",
-    closedAt: "2025-05-22T10:26:00",
+    day: 22,
+    time: "10:26:00",
     symbol: "SOLUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -292,8 +297,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 410,
   },
   {
-    id: "seed-2025-05-23",
-    closedAt: "2025-05-23T14:46:00",
+    day: 23,
+    time: "14:46:00",
     symbol: "LINKUSDT",
     side: "short",
     setup: "breakout",
@@ -302,8 +307,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 285,
   },
   {
-    id: "seed-2025-05-24",
-    closedAt: "2025-05-24T11:18:00",
+    day: 24,
+    time: "11:18:00",
     symbol: "DOGEUSDT",
     side: "long",
     setup: "scalping",
@@ -312,8 +317,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -70,
   },
   {
-    id: "seed-2025-05-25",
-    closedAt: "2025-05-25T16:12:00",
+    day: 25,
+    time: "16:12:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -322,8 +327,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 590,
   },
   {
-    id: "seed-2025-05-26",
-    closedAt: "2025-05-26T09:40:00",
+    day: 26,
+    time: "09:40:00",
     symbol: "ETHUSDT",
     side: "short",
     setup: "meanReversion",
@@ -332,8 +337,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -40,
   },
   {
-    id: "seed-2025-05-27",
-    closedAt: "2025-05-27T13:08:00",
+    day: 27,
+    time: "13:08:00",
     symbol: "SOLUSDT",
     side: "long",
     setup: "breakout",
@@ -342,8 +347,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 430,
   },
   {
-    id: "seed-2025-05-28",
-    closedAt: "2025-05-28T15:24:00",
+    day: 28,
+    time: "15:24:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "other",
@@ -352,8 +357,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: -125,
   },
   {
-    id: "seed-2025-05-29",
-    closedAt: "2025-05-29T10:52:00",
+    day: 29,
+    time: "10:52:00",
     symbol: "ETHUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -362,8 +367,8 @@ const seedTradeRows: SeedTradeRow[] = [
     pnl: 325.15,
   },
   {
-    id: "seed-2025-05-30-btc",
-    closedAt: "2025-05-30T11:08:00",
+    day: 30,
+    time: "11:08:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "trendFollowing",
@@ -374,8 +379,8 @@ const seedTradeRows: SeedTradeRow[] = [
     rMultiple: 1.66,
   },
   {
-    id: "seed-2025-05-30-sol",
-    closedAt: "2025-05-30T16:42:00",
+    day: 30,
+    time: "16:42:00",
     symbol: "SOLUSDT",
     side: "long",
     setup: "scalping",
@@ -386,8 +391,8 @@ const seedTradeRows: SeedTradeRow[] = [
     rMultiple: -0.8,
   },
   {
-    id: "seed-2025-05-31-eth",
-    closedAt: "2025-05-31T09:15:00",
+    day: 31,
+    time: "09:15:00",
     symbol: "ETHUSDT",
     side: "short",
     setup: "trendFollowing",
@@ -398,8 +403,8 @@ const seedTradeRows: SeedTradeRow[] = [
     rMultiple: 0.75,
   },
   {
-    id: "seed-2025-05-31-btc",
-    closedAt: "2025-05-31T10:24:00",
+    day: 31,
+    time: "10:24:00",
     symbol: "BTCUSDT",
     side: "long",
     setup: "breakout",
@@ -427,18 +432,36 @@ function getDerivedRMultiple(row: SeedTradeRow) {
   return row.rMultiple ?? Number((row.pnl / 300).toFixed(2));
 }
 
-export const seedTrades: Trade[] = seedTradeRows.map((row) => ({
-  id: row.id,
-  closedAt: row.closedAt,
-  symbol: row.symbol.toUpperCase(),
-  side: row.side,
-  setup: row.setup,
-  entryPrice: row.entryPrice,
-  exitPrice: getDerivedExitPrice(row),
-  riskPercent: row.riskPercent,
-  pnl: row.pnl,
-  rMultiple: getDerivedRMultiple(row),
-  status: "closed",
-  notes: row.notes,
-  tags: row.tags,
-}));
+function getSeedDateKey(baseMonthKey: string, day: number) {
+  const range = getMonthRangeFromMonthKey(baseMonthKey);
+  const monthKey = range.startDate.slice(0, 7);
+  const endDay = Number(range.endDate.slice(8, 10));
+
+  return `${monthKey}-${pad2(Math.min(day, endDay))}`;
+}
+
+export function getSeedTrades(
+  baseMonthKey = getCurrentMonthKey(),
+): Trade[] {
+  return seedTradeRows.map((row, index) => {
+    const dateKey = getSeedDateKey(baseMonthKey, row.day);
+
+    return {
+      id: `seed-${dateKey}-${index + 1}`,
+      closedAt: `${dateKey}T${row.time}`,
+      symbol: row.symbol.toUpperCase(),
+      side: row.side,
+      setup: row.setup,
+      entryPrice: row.entryPrice,
+      exitPrice: getDerivedExitPrice(row),
+      riskPercent: row.riskPercent,
+      pnl: row.pnl,
+      rMultiple: getDerivedRMultiple(row),
+      status: "closed",
+      notes: row.notes,
+      tags: row.tags,
+    };
+  });
+}
+
+export const seedTrades: Trade[] = getSeedTrades();

@@ -1,6 +1,6 @@
 import type { Playbook } from "@/lib/playbook-types";
 
-const seedTimestamp = "2025-05-01T00:00:00.000Z";
+const seedTimestamp = new Date().toISOString();
 
 export const seedPlaybooks: Playbook[] = [
   {

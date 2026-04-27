@@ -16,11 +16,12 @@ import type { Trade } from "@/lib/trade-types";
 import {
   cn,
   formatCurrency,
-  formatNumber,
   formatPercent,
+  formatProfitFactor,
   formatRMultiple,
   formatTradeTimestamp,
 } from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface DayDetailDrawerProps {
   date: string;
@@ -53,10 +54,6 @@ function StatCard({ label, value, tone = "neutral" }: StatCardProps) {
   );
 }
 
-function formatProfitFactor(value: number | null) {
-  return value === null ? "—" : formatNumber(value, { digits: 2 });
-}
-
 export default function DayDetailDrawer({
   date,
   trades,
@@ -74,6 +71,8 @@ export default function DayDetailDrawer({
     b.closedAt.localeCompare(a.closedAt),
   );
 
+  useEscapeKey(onClose);
+
   function handleAddNote() {
     onClose();
     router.push(`/notes?date=${encodeURIComponent(date)}`);
@@ -87,13 +86,21 @@ export default function DayDetailDrawer({
         onClick={onClose}
         aria-label={copy.calendarPage.close}
       />
-      <aside className="relative flex h-full w-full max-w-[560px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="day-detail-title"
+        className="relative flex h-full w-full max-w-[560px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+      >
         <div className="flex items-start justify-between gap-4 border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
               {copy.calendarPage.dailyReview}
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="day-detail-title"
+              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {getDateDisplay(date, locale)}
             </h2>
           </div>
@@ -183,7 +190,10 @@ export default function DayDetailDrawer({
                         </div>
                         <button
                           type="button"
-                          onClick={() => openEditTrade(trade)}
+                          onClick={() => {
+                            onClose();
+                            openEditTrade(trade);
+                          }}
                           className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white text-slate-400 shadow-[0_8px_18px_rgba(31,15,86,0.06)] transition-colors hover:text-[var(--accent)]"
                           aria-label={copy.tradesPage.editTrade}
                         >

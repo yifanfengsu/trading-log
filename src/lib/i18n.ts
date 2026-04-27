@@ -24,10 +24,7 @@ export interface Dictionary {
   appTitle: string;
   pageTitle: string;
   appSubtitle: string;
-  periodRange: string;
-  previousPeriod: string;
   basedOnCurrentTrades: string;
-  monthLabel: string;
   monthlyLabel: string;
   allAccounts: string;
   allMarkets: string;
@@ -36,7 +33,6 @@ export interface Dictionary {
   chooseMetric: string;
   lineChart: string;
   emptyState: string;
-  reviewDate: string;
   promo: {
     title: string;
     subtitle: string;
@@ -210,7 +206,6 @@ export interface Dictionary {
   };
   equityCurve: {
     title: string;
-    xAxisTicks: Record<string, string>;
   };
   strategyPerformance: {
     title: string;
@@ -549,10 +544,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     appTitle: "交易日志",
     pageTitle: "个人交易日志 Dashboard",
     appSubtitle: "个人交易仪表盘",
-    periodRange: "2025年5月1日 - 2025年5月31日",
-    previousPeriod: "较 4月1日 - 4月30日",
     basedOnCurrentTrades: "基于当前交易数据",
-    monthLabel: "2025年5月",
     monthlyLabel: "按月",
     allAccounts: "全部账户",
     allMarkets: "全部市场",
@@ -561,7 +553,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
     chooseMetric: "选择指标",
     lineChart: "折线图",
     emptyState: "暂无交易数据",
-    reviewDate: "2025年5月31日",
     promo: {
       title: "稳定一致，才有优势。",
       subtitle: "复盘、优化、重复。",
@@ -775,13 +766,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     equityCurve: {
       title: "资金曲线",
-      xAxisTicks: {
-        "2025-05-01": "5月1日",
-        "2025-05-08": "5月8日",
-        "2025-05-15": "5月15日",
-        "2025-05-22": "5月22日",
-        "2025-05-31": "5月31日",
-      },
     },
     strategyPerformance: {
       title: "策略表现",
@@ -1188,10 +1172,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     appTitle: "Trade Journal",
     pageTitle: "Trade Journal Dashboard",
     appSubtitle: "Personal trading workspace",
-    periodRange: "May 1 - May 31, 2025",
-    previousPeriod: "vs Apr 1 - Apr 30",
     basedOnCurrentTrades: "Based on current trades",
-    monthLabel: "May 2025",
     monthlyLabel: "Monthly",
     allAccounts: "All Accounts",
     allMarkets: "All Markets",
@@ -1200,7 +1181,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
     chooseMetric: "Choose metric",
     lineChart: "Line",
     emptyState: "No trade data yet",
-    reviewDate: "May 31, 2025",
     promo: {
       title: "Consistency is an edge.",
       subtitle: "Review. Improve. Repeat.",
@@ -1424,13 +1404,6 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     equityCurve: {
       title: "Equity Curve",
-      xAxisTicks: {
-        "2025-05-01": "May 1",
-        "2025-05-08": "May 8",
-        "2025-05-15": "May 15",
-        "2025-05-22": "May 22",
-        "2025-05-31": "May 31",
-      },
     },
     strategyPerformance: {
       title: "Strategy Performance",

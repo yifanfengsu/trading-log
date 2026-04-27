@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { isValidDateKey } from "@/lib/calendar-utils";
+import { getSeedDailyReviews } from "@/lib/review-seed";
 import type {
   DailyReview,
   DailyReviewScore,
@@ -19,19 +20,6 @@ import type {
 } from "@/lib/review-types";
 
 export const REVIEW_STORAGE_KEY = "trade-journal-daily-reviews-v1";
-
-const seedDailyReviews: DailyReview[] = [
-  {
-    date: "2025-05-31",
-    rulesFollowed: "风险控制到位，无报复交易，耐心等待符合计划的机会。",
-    mainMistake: "过早平仓 BTC 短线头寸，错失后续行情。",
-    marketCondition: "震荡区间，低波动，方向不明，需谨慎。",
-    tomorrowFocus: "保持耐心，只做 A+ 级别机会，让盈利奔跑。",
-    emotion: "calm",
-    score: 4,
-    updatedAt: "2025-05-31T18:00:00.000Z",
-  },
-];
 
 interface ReviewStoreContextValue {
   dailyReviews: DailyReview[];
@@ -106,8 +94,8 @@ function persistReviews(reviews: DailyReview[]) {
 }
 
 export function ReviewStoreProvider({ children }: { children: ReactNode }) {
-  const [dailyReviews, setDailyReviews] = useState<DailyReview[]>(seedDailyReviews);
-  const reviewsRef = useRef<DailyReview[]>(seedDailyReviews);
+  const [dailyReviews, setDailyReviews] = useState<DailyReview[]>([]);
+  const reviewsRef = useRef<DailyReview[]>([]);
 
   const commitReviews = useCallback((nextReviews: DailyReview[]) => {
     const sortedReviews = sortReviews(nextReviews);
@@ -121,17 +109,20 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
       window.localStorage.getItem(REVIEW_STORAGE_KEY),
     );
 
-    if (storedReviews) {
-      const timeoutId = window.setTimeout(() => {
-        const sortedReviews = sortReviews(storedReviews);
-        reviewsRef.current = sortedReviews;
-        setDailyReviews(sortedReviews);
-      }, 0);
+    const nextReviews =
+      storedReviews !== null ? storedReviews : getSeedDailyReviews();
 
-      return () => window.clearTimeout(timeoutId);
+    if (storedReviews === null) {
+      persistReviews(sortReviews(nextReviews));
     }
 
-    persistReviews(seedDailyReviews);
+    const timeoutId = window.setTimeout(() => {
+      const sortedReviews = sortReviews(nextReviews);
+      reviewsRef.current = sortedReviews;
+      setDailyReviews(sortedReviews);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   const getReviewByDate = useCallback(
@@ -175,7 +166,7 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
   }, [commitReviews]);
 
   const resetDailyReviewsToSeed = useCallback(() => {
-    commitReviews(seedDailyReviews);
+    commitReviews(getSeedDailyReviews());
   }, [commitReviews]);
 
   const value = useMemo(

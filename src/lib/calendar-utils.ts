@@ -2,9 +2,12 @@ import type { Locale } from "@/lib/i18n";
 import {
   formatDateLabel,
   formatMonthLabel,
-  getMonthEndDay,
+  getMonthRangeFromMonthKey,
+  getNextMonthKey,
+  getPreviousMonthKey,
+  isValidDateKey,
+  pad2,
   parseSelectedMonth,
-  shiftSelectedMonth,
 } from "@/lib/utils";
 
 export interface MonthMatrixCell {
@@ -14,22 +17,7 @@ export interface MonthMatrixCell {
 }
 
 function toDateKey(year: number, month: number, day: number) {
-  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
-}
-
-export function isValidDateKey(value: string | undefined): value is string {
-  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
-    return false;
-  }
-
-  const [year, month, day] = value.split("-").map(Number);
-  const date = new Date(year, month - 1, day);
-
-  return (
-    date.getFullYear() === year &&
-    date.getMonth() === month - 1 &&
-    date.getDate() === day
-  );
+  return `${year}-${pad2(month)}-${pad2(day)}`;
 }
 
 export function getMonthMatrix(year: number, month: number) {
@@ -57,10 +45,11 @@ export function getMonthMatrix(year: number, month: number) {
 
 export function getMonthStartEnd(selectedMonth: string) {
   const { year, month } = parseSelectedMonth(selectedMonth);
+  const range = getMonthRangeFromMonthKey(selectedMonth);
 
   return {
-    startDate: `${selectedMonth}-01`,
-    endDate: `${selectedMonth}-${String(getMonthEndDay(selectedMonth)).padStart(2, "0")}`,
+    startDate: range.startDate,
+    endDate: range.endDate,
     year,
     month,
   };
@@ -68,8 +57,8 @@ export function getMonthStartEnd(selectedMonth: string) {
 
 export function getMonthNavigation(selectedMonth: string) {
   return {
-    prevMonth: shiftSelectedMonth(selectedMonth, -1),
-    nextMonth: shiftSelectedMonth(selectedMonth, 1),
+    prevMonth: getPreviousMonthKey(selectedMonth),
+    nextMonth: getNextMonthKey(selectedMonth),
   };
 }
 
@@ -80,3 +69,5 @@ export function getDateDisplay(dateKey: string, locale: Locale) {
 export function getMonthLabel(selectedMonth: string, locale: Locale) {
   return formatMonthLabel(selectedMonth, locale);
 }
+
+export { isValidDateKey };

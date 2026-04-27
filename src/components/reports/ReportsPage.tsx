@@ -25,7 +25,6 @@ import {
   getReportTopTrades,
   getSetupReportBreakdown,
   getTagReportBreakdown,
-  getWeekKeyFromDateKey,
 } from "@/lib/report-calculations";
 import { generateReportMarkdown } from "@/lib/report-markdown";
 import type {
@@ -35,6 +34,8 @@ import type {
 } from "@/lib/report-types";
 import {
   formatDateRange,
+  getCurrentMonthKey,
+  getCurrentWeekKey,
   formatMonthLabel,
   formatWeekLabel,
 } from "@/lib/utils";
@@ -104,8 +105,8 @@ export default function ReportsPage() {
   const { periodReports, getReport, upsertReport, deleteReport } =
     usePeriodReports();
   const defaultSelection = useMemo(
-    () => getDefaultReportSelection(trades),
-    [trades],
+    () => getDefaultReportSelection(),
+    [],
   );
   const [periodType, setPeriodType] = useState<ReportPeriodType>(
     defaultSelection.periodType,
@@ -264,8 +265,8 @@ export default function ReportsPage() {
     setPeriodType(nextPeriodType);
     setPeriodKey(
       nextPeriodType === "weekly"
-        ? getWeekKeyFromDateKey(range.endDate)
-        : range.startDate.slice(0, 7),
+        ? getCurrentWeekKey()
+        : getCurrentMonthKey(),
     );
   }
 

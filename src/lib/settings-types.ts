@@ -81,12 +81,30 @@ export function isUserSettings(value: unknown): value is UserSettings {
 }
 
 export function normalizeUserSettings(value: unknown): UserSettings | null {
-  if (!isUserSettings(value)) {
+  if (!isRecord(value)) {
     return null;
   }
 
   return {
-    ...value,
-    defaultSymbol: value.defaultSymbol.trim().toUpperCase(),
+    currency: isCurrencyCode(value.currency)
+      ? value.currency
+      : DEFAULT_USER_SETTINGS.currency,
+    startingBalance: isNonNegativeNumber(value.startingBalance)
+      ? value.startingBalance
+      : DEFAULT_USER_SETTINGS.startingBalance,
+    defaultSymbol:
+      typeof value.defaultSymbol === "string" &&
+      value.defaultSymbol.trim().length > 0
+        ? value.defaultSymbol.trim().toUpperCase()
+        : DEFAULT_USER_SETTINGS.defaultSymbol,
+    defaultSide: isTradeSide(value.defaultSide)
+      ? value.defaultSide
+      : DEFAULT_USER_SETTINGS.defaultSide,
+    defaultSetup: isTradeSetup(value.defaultSetup)
+      ? value.defaultSetup
+      : DEFAULT_USER_SETTINGS.defaultSetup,
+    defaultRiskPercent: isNonNegativeNumber(value.defaultRiskPercent)
+      ? value.defaultRiskPercent
+      : DEFAULT_USER_SETTINGS.defaultRiskPercent,
   };
 }

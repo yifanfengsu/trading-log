@@ -13,6 +13,8 @@ import {
   formatCompactCurrency,
   formatCurrency,
   formatMonthLabel,
+  getNextMonthKey,
+  getPreviousMonthKey,
   formatPercent,
   parseSelectedMonth,
 } from "@/lib/utils";
@@ -43,9 +45,10 @@ export default function PnlCalendar({
     tradedDays > 0 ? (summary.losingDays / tradedDays) * 100 : 0;
 
   function shiftMonth(offset: number) {
-    const nextDate = new Date(year, month - 1 + offset, 1);
     onMonthChange(
-      `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`,
+      offset < 0
+        ? getPreviousMonthKey(selectedMonth)
+        : getNextMonthKey(selectedMonth),
     );
   }
 
@@ -59,7 +62,7 @@ export default function PnlCalendar({
               type="button"
               onClick={() => shiftMonth(-1)}
               className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
-              aria-label="Previous month"
+              aria-label={copy.calendarPage.previousMonth}
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
@@ -70,29 +73,30 @@ export default function PnlCalendar({
               type="button"
               onClick={() => shiftMonth(1)}
               className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
-              aria-label="Next month"
+              aria-label={copy.calendarPage.nextMonth}
             >
               <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         </div>
-        <button type="button" className="soft-pill w-fit">
+        <div className="soft-pill w-fit cursor-default" aria-hidden="true">
           <span>{copy.monthlyLabel}</span>
           <ChevronDown className="h-4 w-4 text-slate-400" />
-        </button>
+        </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-7 gap-2">
-        {copy.calendar.weekdays.map((day) => (
-          <div
-            key={day}
-            className="px-2 py-2 text-center text-xs font-semibold uppercase tracking-[0.08em] text-slate-400"
-          >
-            {day}
-          </div>
-        ))}
+      <div className="mt-6 overflow-x-auto pb-1">
+        <div className="grid min-w-[640px] grid-cols-7 gap-2">
+          {copy.calendar.weekdays.map((day) => (
+            <div
+              key={day}
+              className="px-2 py-2 text-center text-xs font-semibold uppercase tracking-[0.08em] text-slate-400"
+            >
+              {day}
+            </div>
+          ))}
 
-        {cells.map((cell) => {
+          {cells.map((cell) => {
           const dateKey =
             cell.inCurrentMonth && cell.day
               ? `${selectedMonth}-${String(cell.day).padStart(2, "0")}`
@@ -160,7 +164,8 @@ export default function PnlCalendar({
               {content}
             </div>
           );
-        })}
+          })}
+        </div>
       </div>
 
       <div className="mt-6 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">

@@ -23,7 +23,9 @@ import {
   cn,
   formatCurrency,
   formatDateTime,
+  getTodayDateKey,
 } from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 type NoteEditorMode = "create" | "edit";
 
@@ -151,6 +153,8 @@ export default function NoteEditorDrawer({
     (playbook) => playbook.id === form.playbookId,
   );
 
+  useEscapeKey(onClose);
+
   useEffect(
     () => () => {
       if (timerRef.current !== null) {
@@ -167,6 +171,18 @@ export default function NoteEditorDrawer({
     setForm((currentForm) => ({
       ...currentForm,
       [key]: value,
+    }));
+    setError(null);
+  }
+
+  function handleLinkTypeChange(linkType: NoteLink["type"]) {
+    setForm((currentForm) => ({
+      ...currentForm,
+      linkType,
+      date:
+        linkType === "date" && !currentForm.date
+          ? getTodayDateKey()
+          : currentForm.date,
     }));
     setError(null);
   }
@@ -233,13 +249,21 @@ export default function NoteEditorDrawer({
         onClick={onClose}
         aria-label={copy.tradeForm.cancel}
       />
-      <aside className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="note-editor-title"
+        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+      >
         <div className="flex items-start justify-between gap-4 border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
               {copy.notesPage.type}: {copy.noteTypes[form.type]}
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="note-editor-title"
+              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {title}
             </h2>
           </div>
@@ -341,7 +365,7 @@ export default function NoteEditorDrawer({
                 <select
                   value={form.linkType}
                   onChange={(event) =>
-                    updateField("linkType", event.target.value as NoteLink["type"])
+                    handleLinkTypeChange(event.target.value as NoteLink["type"])
                   }
                   className={inputClass}
                 >

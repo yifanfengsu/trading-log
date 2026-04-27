@@ -1,5 +1,5 @@
 import type { Trade, TradeSetup, TradeSide } from "@/lib/trade-types";
-import { getDateKey } from "@/lib/utils";
+import { getCurrentMonthKey, getDateKey } from "@/lib/utils";
 
 export type TradeResultFilter = "all" | "winner" | "loser";
 
@@ -37,13 +37,15 @@ export const defaultTradeFilters: TradeFilters = {
   endDate: "",
 };
 
-export const defaultAnalyticsFilters: AnalyticsFilters = {
-  selectedMonth: "2025-05",
-  symbol: "all",
-  side: "all",
-  setup: "all",
-  result: "all",
-};
+export function getDefaultAnalyticsFilters(): AnalyticsFilters {
+  return {
+    selectedMonth: getCurrentMonthKey(),
+    symbol: "all",
+    side: "all",
+    setup: "all",
+    result: "all",
+  };
+}
 
 export function filterAnalyticsTrades(
   trades: Trade[],

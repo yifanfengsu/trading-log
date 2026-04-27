@@ -25,7 +25,13 @@ import {
   getTradesByMonth,
 } from "@/lib/trade-calculations";
 import type { Trade } from "@/lib/trade-types";
-import { getDateKey, getMonthEndDateKey, parseSelectedMonth } from "@/lib/utils";
+import {
+  getCurrentMonthKey,
+  getDateKey,
+  getMonthEndDateKey,
+  getTodayDateKey,
+  parseSelectedMonth,
+} from "@/lib/utils";
 
 function getValueTone(value: number): Tone {
   if (value > 0) {
@@ -103,7 +109,10 @@ export default function DashboardPage() {
     .sort((a, b) => b.closedAt.localeCompare(a.closedAt))
     .slice(0, 6);
   const activeDate =
-    getLatestTradeDate(monthTrades) ?? getMonthEndDateKey(selectedMonth);
+    getLatestTradeDate(monthTrades) ??
+    (selectedMonth === getCurrentMonthKey()
+      ? getTodayDateKey()
+      : getMonthEndDateKey(selectedMonth));
   const reviewPnlSummary = getDailyWeeklyMonthlyPnl(trades, activeDate);
 
   return (

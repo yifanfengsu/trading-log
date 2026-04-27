@@ -95,8 +95,14 @@ export function formatPercent(
     return value === Infinity ? "∞" : "—";
   }
 
-  const { digits, signed } = resolveNumberOptions(options);
-  const formatted = `${Math.abs(value).toFixed(digits)}%`;
+  const { digits, signed } = resolveNumberOptions(
+    options ?? {
+      digits: 1,
+    },
+  );
+  const formatted = `${new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: digits,
+  }).format(Math.abs(value))}%`;
 
   if (signed) {
     if (value > 0) {
@@ -234,7 +240,9 @@ export function formatProfitFactor(value: number | null | undefined) {
     return "—";
   }
 
-  return value.toFixed(2);
+  return new Intl.NumberFormat("en-US", {
+    maximumFractionDigits: 2,
+  }).format(value);
 }
 
 export function formatGoalValue(
@@ -300,8 +308,109 @@ const englishShortMonthNames = [
   "Dec",
 ] as const;
 
+const millisecondsPerDay = 24 * 60 * 60 * 1000;
+
+export function pad2(value: number): string {
+  return String(value).padStart(2, "0");
+}
+
 export function getDateKey(dateOrIso: string) {
   return dateOrIso.slice(0, 10);
+}
+
+export function getDateKeyFromLocalDate(date: Date): string {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(
+    date.getDate(),
+  )}`;
+}
+
+export function getTodayDateKey(): string {
+  return getDateKeyFromLocalDate(new Date());
+}
+
+export function getCurrentYear(): number {
+  return new Date().getFullYear();
+}
+
+export function getCurrentMonthNumber(): number {
+  return new Date().getMonth() + 1;
+}
+
+export function getCurrentMonthKey(): string {
+  const now = new Date();
+  return `${now.getFullYear()}-${pad2(now.getMonth() + 1)}`;
+}
+
+export function isValidDateKey(value: string | null | undefined): value is string {
+  if (!value || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const [year, month, day] = value.split("-").map(Number);
+  const date = new Date(year, month - 1, day);
+
+  return (
+    date.getFullYear() === year &&
+    date.getMonth() === month - 1 &&
+    date.getDate() === day
+  );
+}
+
+export function isValidMonthKey(value: string | null | undefined): value is string {
+  if (!value || !/^\d{4}-\d{2}$/.test(value)) {
+    return false;
+  }
+
+  const [year, month] = value.split("-").map(Number);
+
+  return Number.isFinite(year) && month >= 1 && month <= 12;
+}
+
+function parseDateKeyToLocalDate(dateKey: string) {
+  const fallbackDateKey = isValidDateKey(dateKey) ? dateKey : getTodayDateKey();
+  const [year, month, day] = fallbackDateKey.split("-").map(Number);
+
+  return new Date(year, month - 1, day);
+}
+
+function getWeekOneMonday(weekYear: number) {
+  const januaryFourth = new Date(weekYear, 0, 4);
+  const dayIndex = (januaryFourth.getDay() + 6) % 7;
+
+  return new Date(weekYear, 0, 4 - dayIndex);
+}
+
+export function getWeekKeyFromDateKey(dateKey: string): string {
+  const date = parseDateKeyToLocalDate(dateKey);
+  const dayIndex = (date.getDay() + 6) % 7;
+  const thursday = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() + 3 - dayIndex,
+  );
+  const weekYear = thursday.getFullYear();
+  const weekOneMonday = getWeekOneMonday(weekYear);
+  const currentWeekMonday = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate() - dayIndex,
+  );
+  const weekNumber =
+    Math.floor(
+      (currentWeekMonday.getTime() - weekOneMonday.getTime()) /
+        millisecondsPerDay /
+        7,
+    ) + 1;
+
+  return `${weekYear}-W${pad2(weekNumber)}`;
+}
+
+export function getCurrentWeekKey(): string {
+  return getWeekKeyFromDateKey(getTodayDateKey());
+}
+
+export function getMonthKeyFromDateKey(dateKey: string): string {
+  return isValidDateKey(dateKey) ? dateKey.slice(0, 7) : getCurrentMonthKey();
 }
 
 export function getWeekdayIndexFromDateKey(dateKey: string): 1 | 2 | 3 | 4 | 5 | 6 | 7 {
@@ -312,11 +421,14 @@ export function getWeekdayIndexFromDateKey(dateKey: string): 1 | 2 | 3 | 4 | 5 |
 }
 
 export function parseSelectedMonth(selectedMonth: string) {
+  const now = new Date();
   const [year, month] = selectedMonth.split("-").map(Number);
 
   return {
-    year,
-    month,
+    year: Number.isFinite(year) ? year : now.getFullYear(),
+    month: Number.isFinite(month) && month >= 1 && month <= 12
+      ? month
+      : now.getMonth() + 1,
   };
 }
 
@@ -326,45 +438,89 @@ export function getMonthEndDay(selectedMonth: string) {
 }
 
 export function getMonthEndDateKey(selectedMonth: string) {
-  return `${selectedMonth}-${String(getMonthEndDay(selectedMonth)).padStart(2, "0")}`;
+  const { endDate } = getMonthRangeFromMonthKey(selectedMonth);
+  return endDate;
 }
 
 export function shiftSelectedMonth(selectedMonth: string, offset: number) {
   const { year, month } = parseSelectedMonth(selectedMonth);
   const nextDate = new Date(year, month - 1 + offset, 1);
 
-  return `${nextDate.getFullYear()}-${String(nextDate.getMonth() + 1).padStart(2, "0")}`;
+  return `${nextDate.getFullYear()}-${pad2(nextDate.getMonth() + 1)}`;
+}
+
+export function getPreviousMonthKey(monthKey: string): string {
+  return shiftSelectedMonth(monthKey, -1);
+}
+
+export function getNextMonthKey(monthKey: string): string {
+  return shiftSelectedMonth(monthKey, 1);
+}
+
+export function getMonthRangeFromMonthKey(monthKey: string): {
+  startDate: string;
+  endDate: string;
+} {
+  const { year, month } = parseSelectedMonth(monthKey);
+  const normalizedMonthKey = `${year}-${pad2(month)}`;
+  const endDay = new Date(year, month, 0).getDate();
+
+  return {
+    startDate: `${normalizedMonthKey}-01`,
+    endDate: `${normalizedMonthKey}-${pad2(endDay)}`,
+  };
 }
 
 export function formatMonthRange(selectedMonth: string, locale: Locale) {
   const { year, month } = parseSelectedMonth(selectedMonth);
   const endDay = getMonthEndDay(selectedMonth);
+  const monthName = englishMonthNames[month - 1];
+
+  if (!monthName) {
+    return selectedMonth || "—";
+  }
 
   if (locale === "zh") {
     return `${year}年${month}月1日 - ${year}年${month}月${endDay}日`;
   }
 
-  return `${englishMonthNames[month - 1]} 1 - ${englishMonthNames[month - 1]} ${endDay}, ${year}`;
+  return `${monthName} 1 - ${monthName} ${endDay}, ${year}`;
 }
 
 export function formatMonthLabel(selectedMonth: string, locale: Locale) {
   const { year, month } = parseSelectedMonth(selectedMonth);
+  const monthName = englishMonthNames[month - 1];
+
+  if (!monthName) {
+    return selectedMonth || "—";
+  }
 
   if (locale === "zh") {
     return `${year}年${month}月`;
   }
 
-  return `${englishMonthNames[month - 1]} ${year}`;
+  return `${monthName} ${year}`;
 }
 
 export function formatDateLabel(dateKey: string, locale: Locale) {
   const [year, month, day] = dateKey.split("-").map(Number);
+  const monthName = englishMonthNames[month - 1];
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateKey) ||
+    !Number.isFinite(year) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day) ||
+    !monthName
+  ) {
+    return dateKey || "—";
+  }
 
   if (locale === "zh") {
     return `${year}年${month}月${day}日`;
   }
 
-  return `${englishMonthNames[month - 1]} ${day}, ${year}`;
+  return `${monthName} ${day}, ${year}`;
 }
 
 export function formatDateRange(
@@ -374,20 +530,33 @@ export function formatDateRange(
 ) {
   const [startYear, startMonth, startDay] = startDate.split("-").map(Number);
   const [endYear, endMonth, endDay] = endDate.split("-").map(Number);
+  const startMonthName = englishShortMonthNames[startMonth - 1];
+  const endMonthName = englishShortMonthNames[endMonth - 1];
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(startDate) ||
+    !/^\d{4}-\d{2}-\d{2}$/.test(endDate) ||
+    !Number.isFinite(startYear) ||
+    !Number.isFinite(startMonth) ||
+    !Number.isFinite(startDay) ||
+    !Number.isFinite(endYear) ||
+    !Number.isFinite(endMonth) ||
+    !Number.isFinite(endDay) ||
+    !startMonthName ||
+    !endMonthName
+  ) {
+    return startDate && endDate ? `${startDate} - ${endDate}` : "—";
+  }
 
   if (locale === "zh") {
     return `${startYear}年${startMonth}月${startDay}日 - ${endYear}年${endMonth}月${endDay}日`;
   }
 
   if (startYear === endYear) {
-    return `${englishShortMonthNames[startMonth - 1]} ${startDay} - ${
-      englishShortMonthNames[endMonth - 1]
-    } ${endDay}, ${endYear}`;
+    return `${startMonthName} ${startDay} - ${endMonthName} ${endDay}, ${endYear}`;
   }
 
-  return `${englishShortMonthNames[startMonth - 1]} ${startDay}, ${startYear} - ${
-    englishShortMonthNames[endMonth - 1]
-  } ${endDay}, ${endYear}`;
+  return `${startMonthName} ${startDay}, ${startYear} - ${endMonthName} ${endDay}, ${endYear}`;
 }
 
 export function formatWeekLabel(weekKey: string, locale: Locale) {
@@ -405,12 +574,22 @@ export function formatWeekLabel(weekKey: string, locale: Locale) {
 
 export function formatShortDateLabel(dateKey: string, locale: Locale) {
   const [, month, day] = dateKey.split("-").map(Number);
+  const monthName = englishShortMonthNames[month - 1];
+
+  if (
+    !/^\d{4}-\d{2}-\d{2}$/.test(dateKey) ||
+    !Number.isFinite(month) ||
+    !Number.isFinite(day) ||
+    !monthName
+  ) {
+    return dateKey || "—";
+  }
 
   if (locale === "zh") {
     return `${month}月${day}日`;
   }
 
-  return `${englishShortMonthNames[month - 1]} ${day}`;
+  return `${monthName} ${day}`;
 }
 
 export function formatTradeTimestamp(iso: string) {

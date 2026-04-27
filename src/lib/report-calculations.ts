@@ -20,9 +20,13 @@ import {
   formatCurrency,
   formatPercent,
   getDateKey,
+  getCurrentMonthKey,
+  getCurrentWeekKey,
+  getDateKeyFromLocalDate,
+  getMonthRangeFromMonthKey as getSharedMonthRangeFromMonthKey,
+  getWeekKeyFromDateKey as getSharedWeekKeyFromDateKey,
 } from "@/lib/utils";
 
-const millisecondsPerDay = 24 * 60 * 60 * 1000;
 const tradeSetupOrder: TradeSetup[] = [
   "trendFollowing",
   "breakout",
@@ -60,29 +64,6 @@ export interface ReportDateRange {
 export interface ReportSuggestionBreakdowns {
   setupBreakdown: SetupReportBreakdownRow[];
   tagBreakdown: TagReportBreakdownRow[];
-}
-
-function pad2(value: number) {
-  return String(value).padStart(2, "0");
-}
-
-function dateToDateKey(date: Date) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(
-    date.getDate(),
-  )}`;
-}
-
-function parseDateKey(dateKey: string) {
-  const [year, month, day] = dateKey.split("-").map(Number);
-  return new Date(year, month - 1, day);
-}
-
-function getMonthKeyFromDate(date: Date) {
-  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
-}
-
-function getCurrentMonthKey() {
-  return getMonthKeyFromDate(new Date());
 }
 
 function getWeekOneMonday(weekYear: number) {
@@ -127,44 +108,22 @@ function buildGroupStats(trades: Trade[]) {
   };
 }
 
-export function getDefaultReportSelection(trades: Trade[]): ReportSelection {
-  const latestTrade = [...trades].sort((a, b) =>
-    b.closedAt.localeCompare(a.closedAt),
-  )[0];
-
+export function getDefaultReportSelection(): ReportSelection {
   return {
     periodType: "monthly",
-    periodKey: latestTrade ? getDateKey(latestTrade.closedAt).slice(0, 7) : getCurrentMonthKey(),
+    periodKey: getCurrentMonthKey(),
   };
 }
 
 export function getWeekKeyFromDateKey(dateKey: string): string {
-  const date = parseDateKey(dateKey);
-  const dayIndex = (date.getDay() + 6) % 7;
-  const thursday = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() + 3 - dayIndex,
-  );
-  const weekYear = thursday.getFullYear();
-  const weekOneMonday = getWeekOneMonday(weekYear);
-  const currentWeekMonday = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() - dayIndex,
-  );
-  const weekNumber =
-    Math.floor((currentWeekMonday.getTime() - weekOneMonday.getTime()) / millisecondsPerDay / 7) +
-    1;
-
-  return `${weekYear}-W${pad2(weekNumber)}`;
+  return getSharedWeekKeyFromDateKey(dateKey);
 }
 
 export function getWeekRangeFromWeekKey(weekKey: string): ReportDateRange {
   const match = /^(\d{4})-W(\d{2})$/.exec(weekKey);
 
   if (!match) {
-    return getWeekRangeFromWeekKey(getWeekKeyFromDateKey(dateToDateKey(new Date())));
+    return getWeekRangeFromWeekKey(getCurrentWeekKey());
   }
 
   const weekYear = Number(match[1]);
@@ -182,26 +141,13 @@ export function getWeekRangeFromWeekKey(weekKey: string): ReportDateRange {
   );
 
   return {
-    startDate: dateToDateKey(startDate),
-    endDate: dateToDateKey(endDate),
+    startDate: getDateKeyFromLocalDate(startDate),
+    endDate: getDateKeyFromLocalDate(endDate),
   };
 }
 
 export function getMonthRangeFromMonthKey(monthKey: string): ReportDateRange {
-  const match = /^(\d{4})-(\d{2})$/.exec(monthKey);
-
-  if (!match) {
-    return getMonthRangeFromMonthKey(getCurrentMonthKey());
-  }
-
-  const year = Number(match[1]);
-  const month = Number(match[2]);
-  const endDay = new Date(year, month, 0).getDate();
-
-  return {
-    startDate: `${monthKey}-01`,
-    endDate: `${monthKey}-${pad2(endDay)}`,
-  };
+  return getSharedMonthRangeFromMonthKey(monthKey);
 }
 
 export function getReportRange(

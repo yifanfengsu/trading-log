@@ -13,6 +13,7 @@ import type {
 } from "@/lib/playbook-types";
 import type { TradeSetup } from "@/lib/trade-types";
 import { cn } from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface PlaybookEditorDrawerProps {
   mode: "create" | "edit";
@@ -133,6 +134,8 @@ export default function PlaybookEditorDrawer({
       ? copy.playbookPage.savePlaybook
       : copy.playbookPage.saveChanges;
 
+  useEscapeKey(onClose);
+
   function updateField<Key extends keyof PlaybookFormState>(
     key: Key,
     value: PlaybookFormState[Key],
@@ -187,13 +190,21 @@ export default function PlaybookEditorDrawer({
         onClick={onClose}
         aria-label={copy.tradeForm.cancel}
       />
-      <aside className="relative flex h-full w-full max-w-[600px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="playbook-editor-title"
+        className="relative flex h-full w-full max-w-[600px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+      >
         <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
               {copy.playbookPage.playbook}
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="playbook-editor-title"
+              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {title}
             </h2>
           </div>
@@ -363,7 +374,7 @@ export default function PlaybookEditorDrawer({
             </p>
           ) : null}
 
-          <div className="sticky bottom-0 -mx-6 mt-6 flex items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur">
+          <div className="sticky bottom-0 -mx-6 mt-6 flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
             <button
               type="button"
               onClick={onClose}

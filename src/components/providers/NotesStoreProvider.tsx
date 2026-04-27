@@ -11,7 +11,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { seedNotes } from "@/lib/note-seed";
+import { getSeedNotes } from "@/lib/note-seed";
 import type { Note, NoteInput, NotePatch } from "@/lib/note-types";
 import { normalizeNotes } from "@/lib/note-types";
 
@@ -83,8 +83,8 @@ function persistNotes(notes: Note[]) {
 }
 
 export function NotesStoreProvider({ children }: { children: ReactNode }) {
-  const [notes, setNotes] = useState<Note[]>(seedNotes);
-  const notesRef = useRef<Note[]>(seedNotes);
+  const [notes, setNotes] = useState<Note[]>([]);
+  const notesRef = useRef<Note[]>([]);
 
   const commitNotes = useCallback((nextNotes: Note[]) => {
     const sortedNotes = sortNotes(nextNotes);
@@ -98,17 +98,19 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
       window.localStorage.getItem(NOTES_STORAGE_KEY),
     );
 
-    if (storedNotes !== null) {
-      const timeoutId = window.setTimeout(() => {
-        const sortedNotes = sortNotes(storedNotes);
-        notesRef.current = sortedNotes;
-        setNotes(sortedNotes);
-      }, 0);
+    const nextNotes = storedNotes !== null ? storedNotes : getSeedNotes();
 
-      return () => window.clearTimeout(timeoutId);
+    if (storedNotes === null) {
+      persistNotes(sortNotes(nextNotes));
     }
 
-    persistNotes(seedNotes);
+    const timeoutId = window.setTimeout(() => {
+      const sortedNotes = sortNotes(nextNotes);
+      notesRef.current = sortedNotes;
+      setNotes(sortedNotes);
+    }, 0);
+
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   const addNote = useCallback(
@@ -198,7 +200,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
   }, [commitNotes]);
 
   const resetNotesToSeed = useCallback(() => {
-    commitNotes(seedNotes);
+    commitNotes(getSeedNotes());
   }, [commitNotes]);
 
   const getNoteById = useCallback(

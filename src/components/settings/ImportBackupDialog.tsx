@@ -7,6 +7,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import type { BackupFile } from "@/lib/backup-types";
 import { getBackupSummary } from "@/lib/backup-utils";
 import { formatDateTime } from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface ImportBackupDialogProps {
   open: boolean;
@@ -36,6 +37,8 @@ export default function ImportBackupDialog({
   onConfirm,
 }: ImportBackupDialogProps) {
   const { dictionary: copy, locale } = useLanguage();
+
+  useEscapeKey(onCancel, open);
 
   if (!open || !backup) {
     return null;

@@ -29,8 +29,8 @@ import {
   getWeekdayPerformance,
 } from "@/lib/analytics-calculations";
 import {
-  defaultAnalyticsFilters,
   filterAnalyticsTrades,
+  getDefaultAnalyticsFilters,
   type AnalyticsFilters as AnalyticsFiltersState,
 } from "@/lib/trade-filters";
 
@@ -49,8 +49,8 @@ export default function AnalyticsPage() {
   const { trades } = useTrades();
   const { settings } = useUserSettings();
   const { dailyReviews } = useDailyReviews();
-  const [filters, setFilters] = useState<AnalyticsFiltersState>(
-    defaultAnalyticsFilters,
+  const [filters, setFilters] = useState<AnalyticsFiltersState>(() =>
+    getDefaultAnalyticsFilters(),
   );
   const symbols = useMemo(
     () => Array.from(new Set(trades.map((trade) => trade.symbol))).sort(),
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
         filters={filters}
         symbols={symbols}
         onFiltersChange={setFilters}
-        onReset={() => setFilters(defaultAnalyticsFilters)}
+        onReset={() => setFilters(getDefaultAnalyticsFilters())}
       />
 
       {trades.length === 0 ? (

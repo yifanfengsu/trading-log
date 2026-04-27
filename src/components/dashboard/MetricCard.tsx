@@ -11,7 +11,7 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import { type MetricData, type MetricId } from "@/lib/mock-data";
-import { cn, formatMetricValue } from "@/lib/utils";
+import { cn, formatMetricValue, formatProfitFactor } from "@/lib/utils";
 
 interface MetricCardProps {
   metric: MetricData;
@@ -68,12 +68,14 @@ export default function MetricCard({ metric }: MetricCardProps) {
               valueToneMap[metric.valueTone],
             )}
           >
-            {formatMetricValue(
-              metric.value,
-              metric.valueFormat,
-              metric.valueDigits ?? 2,
-              settings.currency,
-            )}
+            {metric.id === "profitFactor"
+              ? formatProfitFactor(metric.value)
+              : formatMetricValue(
+                  metric.value,
+                  metric.valueFormat,
+                  metric.valueDigits ?? 2,
+                  settings.currency,
+                )}
           </p>
           <div className="mt-4 flex flex-wrap items-center gap-2">
             <span

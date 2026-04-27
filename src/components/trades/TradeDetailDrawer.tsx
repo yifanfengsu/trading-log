@@ -17,6 +17,7 @@ import {
   formatTradePrice,
   formatTradeTimestamp,
 } from "@/lib/utils";
+import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface TradeDetailDrawerProps {
   trade: Trade;
@@ -62,6 +63,8 @@ export default function TradeDetailDrawer({
       copy.playbookPage.deletedPlaybook)
     : "—";
 
+  useEscapeKey(onClose);
+
   function handleAddNote() {
     onClose();
     router.push(`/notes?tradeId=${encodeURIComponent(trade.id)}`);
@@ -75,13 +78,21 @@ export default function TradeDetailDrawer({
         onClick={onClose}
         aria-label={copy.tradesPage.close}
       />
-      <aside className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]">
+      <aside
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="trade-detail-title"
+        className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+      >
         <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
               {copy.tradesPage.viewDetails}
             </p>
-            <h2 className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950">
+            <h2
+              id="trade-detail-title"
+              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
+            >
               {trade.symbol}
             </h2>
           </div>
@@ -172,7 +183,7 @@ export default function TradeDetailDrawer({
           <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />
         </div>
 
-        <div className="flex items-center justify-end gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur">
+        <div className="flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={onClose}

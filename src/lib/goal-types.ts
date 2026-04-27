@@ -1,4 +1,8 @@
-import { isValidDateKey } from "@/lib/calendar-utils";
+import {
+  getCurrentMonthKey,
+  getMonthRangeFromMonthKey,
+  isValidDateKey,
+} from "@/lib/utils";
 
 export type GoalCategory =
   | "performance"
@@ -113,8 +117,6 @@ export const goalUnits = [
   "days",
 ] as const satisfies readonly GoalUnit[];
 
-const fallbackCreatedAt = "2025-05-01T00:00:00.000Z";
-
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
@@ -198,12 +200,14 @@ export function normalizeGoal(value: unknown, index = 0): Goal | null {
 
   const metric = isGoalMetric(value.metric) ? value.metric : "custom";
   const metricDefaults = getGoalMetricDefaults(metric);
+  const fallbackRange = getMonthRangeFromMonthKey(getCurrentMonthKey());
+  const fallbackCreatedAt = new Date().toISOString();
   const startDate = isValidDateKey(String(value.startDate))
     ? String(value.startDate)
-    : "2025-05-01";
+    : fallbackRange.startDate;
   const rawEndDate = isValidDateKey(String(value.endDate))
     ? String(value.endDate)
-    : "2025-05-31";
+    : fallbackRange.endDate;
   const endDate = rawEndDate >= startDate ? rawEndDate : startDate;
   const targetValue = isFiniteNumber(value.targetValue) ? value.targetValue : 0;
   const manualCurrentValue = isFiniteNumber(value.manualCurrentValue)

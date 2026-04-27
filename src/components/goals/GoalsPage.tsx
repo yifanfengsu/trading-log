@@ -60,19 +60,20 @@ export default function GoalsPage() {
   const [detailGoalId, setDetailGoalId] = useState<string | null>(null);
   const [editorState, setEditorState] = useState<EditorState | null>(null);
   const progressByGoalId = useMemo(
-    () =>
-      goals.reduce<Record<string, ReturnType<typeof getGoalProgress>>>(
-        (progressMap, goal) => ({
-          ...progressMap,
-          [goal.id]: getGoalProgress(
-            goal,
-            trades,
-            dailyReviews,
-            settings.startingBalance,
-          ),
-        }),
-        {},
-      ),
+    () => {
+      const progressMap: Record<string, ReturnType<typeof getGoalProgress>> = {};
+
+      for (const goal of goals) {
+        progressMap[goal.id] = getGoalProgress(
+          goal,
+          trades,
+          dailyReviews,
+          settings.startingBalance,
+        );
+      }
+
+      return progressMap;
+    },
     [dailyReviews, goals, settings.startingBalance, trades],
   );
   const summary = useMemo(
