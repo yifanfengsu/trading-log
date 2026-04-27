@@ -4,6 +4,9 @@ import { Archive, Eye, Pencil, RotateCcw } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 import type { PlaybookStats } from "@/lib/playbook-calculations";
 import type { Playbook } from "@/lib/playbook-types";
 import {
@@ -58,8 +61,10 @@ export default function PlaybookCard({
   const isArchived = playbook.status === "archived";
 
   return (
-    <article
-      className="panel-card flex min-h-full cursor-pointer flex-col p-5 transition-transform hover:-translate-y-0.5"
+    <Card
+      as="article"
+      hover
+      className="flex min-h-full cursor-pointer flex-col"
       onClick={() => onView(playbook)}
     >
       <div className="flex items-start justify-between gap-4">
@@ -68,19 +73,12 @@ export default function PlaybookCard({
             {playbook.name}
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.08)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
+            <Badge variant="purple">
               {copy.strategies[playbook.setup]}
-            </span>
-            <span
-              className={cn(
-                "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset",
-                isArchived
-                  ? "bg-slate-100 text-slate-500 ring-slate-200"
-                  : "bg-emerald-50 text-emerald-700 ring-emerald-100",
-              )}
-            >
+            </Badge>
+            <Badge variant={isArchived ? "gray" : "green"}>
               {copy.playbookStatus[playbook.status]}
-            </span>
+            </Badge>
           </div>
         </div>
       </div>
@@ -151,29 +149,31 @@ export default function PlaybookCard({
       </div>
 
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
-        <button
+        <Button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onView(playbook);
           }}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-slate-100 px-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-200"
+          variant="secondary"
+          size="sm"
         >
           <Eye className="h-4 w-4" />
           {copy.playbookPage.view}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onEdit(playbook);
           }}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[rgba(108,77,255,0.08)] px-3 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+          variant="outline"
+          size="sm"
         >
           <Pencil className="h-4 w-4" />
           {copy.playbookPage.edit}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
@@ -183,7 +183,8 @@ export default function PlaybookCard({
               onArchive(playbook);
             }
           }}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950"
+          variant="secondary"
+          size="sm"
         >
           {isArchived ? (
             <RotateCcw className="h-4 w-4" />
@@ -191,8 +192,8 @@ export default function PlaybookCard({
             <Archive className="h-4 w-4" />
           )}
           {isArchived ? copy.playbookPage.restore : copy.playbookPage.archive}
-        </button>
+        </Button>
       </div>
-    </article>
+    </Card>
   );
 }

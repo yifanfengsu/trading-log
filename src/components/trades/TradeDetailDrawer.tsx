@@ -1,6 +1,5 @@
 "use client";
 
-import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import LinkedNotesPreview from "@/components/notes/LinkedNotesPreview";
@@ -8,6 +7,9 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
 import type { Trade } from "@/lib/trade-types";
 import {
   cn,
@@ -17,7 +19,6 @@ import {
   formatTradePrice,
   formatTradeTimestamp,
 } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface TradeDetailDrawerProps {
   trade: Trade;
@@ -63,51 +64,31 @@ export default function TradeDetailDrawer({
       copy.playbookPage.deletedPlaybook)
     : "—";
 
-  useEscapeKey(onClose);
-
   function handleAddNote() {
     onClose();
     router.push(`/notes?tradeId=${encodeURIComponent(trade.id)}`);
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/24 backdrop-blur-[2px]"
-        onClick={onClose}
-        aria-label={copy.tradesPage.close}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="trade-detail-title"
-        className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
-      >
-        <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
-              {copy.tradesPage.viewDetails}
-            </p>
-            <h2
-              id="trade-detail-title"
-              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {trade.symbol}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(15,23,42,0.04)] text-slate-500 transition-colors hover:bg-[rgba(15,23,42,0.08)] hover:text-slate-900"
-            aria-label={copy.tradesPage.close}
-          >
-            <X className="h-5 w-5" />
-          </button>
+    <DrawerShell
+      title={trade.symbol}
+      eyebrow={copy.tradesPage.viewDetails}
+      closeLabel={copy.tradesPage.close}
+      labelledById="trade-detail-title"
+      onClose={onClose}
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            {copy.tradesPage.close}
+          </Button>
+          <Button type="button" onClick={() => onEdit(trade)}>
+            {copy.tradesPage.editTrade}
+          </Button>
         </div>
-
-        <div className="flex-1 overflow-y-auto px-6 py-5">
-          <div className="rounded-[20px] bg-[rgba(250,250,255,0.86)] px-4">
+      }
+    >
+        <div className="space-y-5">
+          <div className="rounded-[20px] border border-slate-100 bg-slate-50/70 px-4">
             <DetailRow
               label={copy.tradeForm.closeTime}
               value={formatTradeTimestamp(trade.closedAt)}
@@ -153,7 +134,7 @@ export default function TradeDetailDrawer({
             <p className="text-sm font-semibold text-slate-900">
               {copy.tradesPage.notes}
             </p>
-            <div className="mt-2 rounded-[18px] bg-[rgba(15,23,42,0.04)] p-4 text-sm leading-6 text-slate-600">
+            <div className="mt-2 rounded-[18px] border border-slate-100 bg-slate-50/80 p-4 text-sm leading-6 text-slate-600">
               {trade.notes || copy.tradesPage.noNotes}
             </div>
           </div>
@@ -165,12 +146,9 @@ export default function TradeDetailDrawer({
             <div className="mt-2 flex flex-wrap gap-2">
               {trade.tags && trade.tags.length > 0 ? (
                 trade.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="inline-flex rounded-full bg-[rgba(108,77,255,0.08)] px-3 py-1 text-sm font-medium text-[var(--accent)]"
-                  >
+                  <Badge key={tag} variant="purple" className="text-sm">
                     {tag}
-                  </span>
+                  </Badge>
                 ))
               ) : (
                 <span className="text-sm text-slate-400">
@@ -182,24 +160,6 @@ export default function TradeDetailDrawer({
 
           <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />
         </div>
-
-        <div className="flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-          >
-            {copy.tradesPage.close}
-          </button>
-          <button
-            type="button"
-            onClick={() => onEdit(trade)}
-            className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-          >
-            {copy.tradesPage.editTrade}
-          </button>
-        </div>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

@@ -15,6 +15,8 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Button from "@/components/ui/Button";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   filterGoals,
   getGoalProgress,
@@ -151,24 +153,16 @@ export default function GoalsPage() {
 
   return (
     <>
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-[30px]">
-            {copy.goalsPage.title}
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {copy.goalsPage.subtitle}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={openCreateEditor}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-        >
-          <Plus className="h-4 w-4" />
-          {copy.goalsPage.newGoal}
-        </button>
-      </section>
+      <PageHeader
+        title={copy.goalsPage.title}
+        description={copy.goalsPage.subtitle}
+        actions={
+          <Button onClick={openCreateEditor}>
+            <Plus className="h-4 w-4" />
+            {copy.goalsPage.newGoal}
+          </Button>
+        }
+      />
 
       <GoalsSummaryCards summary={summary} />
 

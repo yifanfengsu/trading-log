@@ -69,7 +69,7 @@ export default function NoteDetailDrawer({
     <div className="fixed inset-0 z-[60] flex justify-end">
       <button
         type="button"
-        className="absolute inset-0 bg-slate-950/24 backdrop-blur-[2px]"
+        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px]"
         onClick={onClose}
         aria-label={copy.tradesPage.close}
       />
@@ -77,12 +77,12 @@ export default function NoteDetailDrawer({
         role="dialog"
         aria-modal="true"
         aria-labelledby="note-detail-title"
-        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.97)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
+        className="relative flex h-full w-full max-w-[620px] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-5">
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.09)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
+              <span className="inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">
                 {copy.noteTypes[note.type]}
               </span>
               <span
@@ -106,7 +106,7 @@ export default function NoteDetailDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[rgba(15,23,42,0.04)] text-slate-500 transition-colors hover:bg-[rgba(15,23,42,0.08)] hover:text-slate-900"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-colors hover:bg-slate-100 hover:text-slate-950"
             aria-label={copy.tradesPage.close}
           >
             <X className="h-5 w-5" />
@@ -165,11 +165,11 @@ export default function NoteDetailDrawer({
           </section>
         </div>
 
-        <div className="flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
+        <div className="flex flex-col-reverse gap-3 border-t border-slate-200 bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:flex-wrap sm:items-center sm:justify-end">
           <button
             type="button"
             onClick={() => onEdit(note)}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-violet-600 px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-violet-700"
           >
             <Pencil className="h-4 w-4" />
             {copy.playbookPage.edit}

@@ -4,8 +4,9 @@ import { CalendarCheck2, CircleCheck, CircleX, LineChart, NotebookTabs } from "l
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import StatCard from "@/components/ui/StatCard";
 import type { CalendarMonthSummary } from "@/lib/review-calculations";
-import { cn, formatCurrency } from "@/lib/utils";
+import { formatCurrency } from "@/lib/utils";
 
 interface CalendarSummaryCardsProps {
   summary: CalendarMonthSummary;
@@ -61,30 +62,26 @@ export default function CalendarSummaryCards({
         const isNegative = card.key === "monthlyPnl" && value < 0;
 
         return (
-          <article key={card.key} className="panel-card p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-sm font-medium text-slate-500">
-                  {copy.calendarPage[card.key]}
-                </p>
-                <p
-                  className={cn(
-                    "mt-4 text-2xl font-semibold tracking-[-0.04em]",
-                    isPositive && "text-emerald-600",
-                    isNegative && "text-rose-600",
-                    !isPositive && !isNegative && "text-slate-950",
-                  )}
-                >
-                  {card.valueType === "currency"
-                    ? formatCurrency(value, settings.currency)
-                    : String(value)}
-                </p>
-              </div>
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[rgba(108,77,255,0.09)] text-[var(--accent)]">
-                <Icon className="h-5 w-5" />
-              </div>
-            </div>
-          </article>
+          <StatCard
+            key={card.key}
+            label={copy.calendarPage[card.key]}
+            value={
+              card.valueType === "currency"
+                ? formatCurrency(value, settings.currency)
+                : String(value)
+            }
+            tone={
+              isPositive
+                ? "positive"
+                : isNegative
+                  ? "negative"
+                  : card.key === "reviewedDays"
+                    ? "accent"
+                    : "neutral"
+            }
+            icon={Icon}
+            className="min-h-[132px]"
+          />
         );
       })}
     </section>

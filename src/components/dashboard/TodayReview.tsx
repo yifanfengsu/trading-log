@@ -12,6 +12,9 @@ import {
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Card from "@/components/ui/Card";
+import SectionHeader from "@/components/ui/SectionHeader";
 import { type ReviewItemData, type ReviewId } from "@/lib/mock-data";
 import type { PnlPeriodSummary } from "@/lib/trade-calculations";
 import { cn, formatCurrency, formatDateLabel } from "@/lib/utils";
@@ -82,27 +85,24 @@ export default function TodayReview({
     : null;
 
   return (
-    <section className="panel-card p-5 lg:p-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="panel-title">{copy.review.title}</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            {formatDateLabel(activeDate, locale)}
-          </p>
-        </div>
-        <Link
-          href={`/calendar?date=${activeDate}`}
-          className="inline-flex h-9 w-fit items-center justify-center rounded-full bg-[rgba(108,77,255,0.10)] px-3 text-xs font-semibold text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.16)]"
-        >
-          {copy.calendarPage.editReview}
-        </Link>
-      </div>
+    <Card>
+      <SectionHeader
+        title={copy.review.title}
+        description={formatDateLabel(activeDate, locale)}
+        action={
+          <Link href={`/calendar?date=${activeDate}`} className="inline-flex">
+            <Badge variant="purple" className="h-9 px-3">
+              {copy.calendarPage.editReview}
+            </Badge>
+          </Link>
+        }
+      />
 
       <div className="mt-5 grid gap-2 sm:grid-cols-3">
         {pnlItems.map((item) => (
           <div
             key={item.label}
-            className="rounded-[16px] bg-[rgba(108,77,255,0.06)] px-3 py-3"
+            className="rounded-[16px] border border-violet-100 bg-violet-50/70 px-3 py-3"
           >
             <p className="text-xs font-medium text-slate-500">{item.label}</p>
             <p
@@ -156,6 +156,6 @@ export default function TodayReview({
           );
         })}
       </div>
-    </section>
+    </Card>
   );
 }

@@ -3,6 +3,9 @@
 import { Clipboard, Download, Save } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
 import type { ReportPeriodType } from "@/lib/report-types";
 import { cn } from "@/lib/utils";
 
@@ -18,9 +21,6 @@ interface ReportFiltersProps {
   onCopyMarkdown: () => void;
   onDownloadMarkdown: () => void;
 }
-
-const fieldClass =
-  "h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm font-medium text-slate-600 outline-none transition-colors focus:border-[rgba(108,77,255,0.38)]";
 
 export default function ReportFilters({
   periodType,
@@ -41,7 +41,7 @@ export default function ReportFilters({
   ];
 
   return (
-    <section className="panel-card p-4 lg:p-5">
+    <Card density="compact">
       <div className="grid gap-4 xl:grid-cols-[minmax(240px,0.78fr)_minmax(190px,0.56fr)_minmax(240px,0.9fr)_auto] xl:items-end">
         <div className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
@@ -75,11 +75,10 @@ export default function ReportFilters({
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.reportsPage.period}
           </span>
-          <input
+          <Input
             type={periodType === "weekly" ? "week" : "month"}
             value={periodKey}
             onChange={(event) => onPeriodKeyChange(event.target.value)}
-            className={fieldClass}
           />
         </label>
 
@@ -93,32 +92,28 @@ export default function ReportFilters({
         </div>
 
         <div className="grid gap-2 sm:grid-cols-3 xl:flex xl:justify-end">
-          <button
-            type="button"
-            onClick={onSave}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-          >
+          <Button onClick={onSave} className="rounded-2xl">
             <Save className="h-4 w-4" />
             {saveLabel}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={onCopyMarkdown}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[rgba(108,77,255,0.22)] hover:text-slate-900"
+            variant="secondary"
+            className="rounded-2xl"
           >
             <Clipboard className="h-4 w-4" />
             {copyLabel}
-          </button>
-          <button
-            type="button"
+          </Button>
+          <Button
             onClick={onDownloadMarkdown}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[rgba(108,77,255,0.22)] hover:text-slate-900"
+            variant="secondary"
+            className="rounded-2xl"
           >
             <Download className="h-4 w-4" />
             {copy.reportsPage.downloadMarkdown}
-          </button>
+          </Button>
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

@@ -11,9 +11,12 @@ import TodayReview from "@/components/dashboard/TodayReview";
 import EquityCurve from "@/components/dashboard/EquityCurve";
 import StrategyPerformance from "@/components/dashboard/StrategyPerformance";
 import RecentTrades from "@/components/dashboard/RecentTrades";
+import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   getCalendarStats,
   getDailyPnlMap,
@@ -31,6 +34,7 @@ import {
   getMonthEndDateKey,
   getTodayDateKey,
   parseSelectedMonth,
+  formatMonthRange,
 } from "@/lib/utils";
 
 function getValueTone(value: number): Tone {
@@ -95,6 +99,7 @@ function buildMetrics(trades: Trade[], startingBalance: number): MetricData[] {
 }
 
 export default function DashboardPage() {
+  const { dictionary: copy, locale } = useLanguage();
   const { trades } = useTrades();
   const { settings } = useUserSettings();
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
@@ -117,6 +122,16 @@ export default function DashboardPage() {
 
   return (
     <>
+      <PageHeader
+        title={copy.dashboardPage.title}
+        description={copy.dashboardPage.subtitle}
+        actions={
+          <Badge variant="purple" className="h-10 px-4 text-sm">
+            {formatMonthRange(selectedMonth, locale)}
+          </Badge>
+        }
+      />
+
       <section className="grid gap-5 md:grid-cols-2 2xl:grid-cols-4">
         {dashboardMetrics.map((metric) => (
           <MetricCard key={metric.id} metric={metric} />

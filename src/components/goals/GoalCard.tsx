@@ -13,6 +13,9 @@ import {
 import GoalProgressBar from "@/components/goals/GoalProgressBar";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 import type { GoalProgress } from "@/lib/goal-types";
 import type { Goal } from "@/lib/goal-types";
 import type { CurrencyCode } from "@/lib/settings-types";
@@ -85,8 +88,10 @@ export default function GoalCard({
   );
 
   return (
-    <article
-      className="panel-card flex min-h-full cursor-pointer flex-col p-5 transition-transform hover:-translate-y-0.5"
+    <Card
+      as="article"
+      hover
+      className="flex min-h-full cursor-pointer flex-col"
       onClick={() => onView(goal)}
     >
       <div className="flex items-start justify-between gap-4">
@@ -95,27 +100,23 @@ export default function GoalCard({
             {goal.title}
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
-            <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.08)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
+            <Badge variant="purple">
               {copy.goalCategories[goal.category]}
-            </span>
-            <span className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-inset ring-slate-100">
+            </Badge>
+            <Badge variant="gray">
               {copy.goalMetrics[goal.metric]}
-            </span>
-            <span
-              className={cn(
-                "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset",
-                goal.status === "active" &&
-                  "bg-[rgba(108,77,255,0.08)] text-[var(--accent)] ring-[rgba(108,77,255,0.14)]",
-                goal.status === "paused" &&
-                  "bg-slate-100 text-slate-500 ring-slate-200",
-                goal.status === "completed" &&
-                  "bg-emerald-50 text-emerald-700 ring-emerald-100",
-                goal.status === "archived" &&
-                  "bg-slate-100 text-slate-500 ring-slate-200",
-              )}
+            </Badge>
+            <Badge
+              variant={
+                goal.status === "completed"
+                  ? "green"
+                  : goal.status === "active"
+                    ? "purple"
+                    : "gray"
+              }
             >
               {copy.goalStatus[goal.status]}
-            </span>
+            </Badge>
           </div>
         </div>
       </div>
@@ -199,30 +200,32 @@ export default function GoalCard({
       </div>
 
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
-        <button
+        <Button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onView(goal);
           }}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-slate-100 px-3 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-200"
+          variant="secondary"
+          size="sm"
         >
           <Eye className="h-4 w-4" />
           {copy.goalsPage.view}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onEdit(goal);
           }}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full bg-[rgba(108,77,255,0.08)] px-3 text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+          variant="outline"
+          size="sm"
         >
           <Pencil className="h-4 w-4" />
           {copy.goalsPage.edit}
-        </button>
+        </Button>
         {!isArchived && !isCompleted ? (
-          <button
+          <Button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
@@ -232,7 +235,8 @@ export default function GoalCard({
                 onPause(goal);
               }
             }}
-            className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950"
+            variant="secondary"
+            size="sm"
           >
             {isPaused ? (
               <Play className="h-4 w-4" />
@@ -240,22 +244,24 @@ export default function GoalCard({
               <Pause className="h-4 w-4" />
             )}
             {isPaused ? copy.goalsPage.resume : copy.goalsPage.pause}
-          </button>
+          </Button>
         ) : null}
         {!isArchived && !isCompleted ? (
-          <button
+          <Button
             type="button"
             onClick={(event) => {
               event.stopPropagation();
               onComplete(goal);
             }}
-            className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 text-sm font-semibold text-emerald-700 transition-colors hover:bg-emerald-100"
+            variant="outline"
+            size="sm"
+            className="border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
           >
             <CheckCircle2 className="h-4 w-4" />
             {copy.goalsPage.markComplete}
-          </button>
+          </Button>
         ) : null}
-        <button
+        <Button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
@@ -265,7 +271,8 @@ export default function GoalCard({
               onArchive(goal);
             }
           }}
-          className="inline-flex h-9 items-center justify-center gap-2 rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-950"
+          variant="secondary"
+          size="sm"
         >
           {isArchived ? (
             <RotateCcw className="h-4 w-4" />
@@ -273,8 +280,8 @@ export default function GoalCard({
             <Archive className="h-4 w-4" />
           )}
           {isArchived ? copy.goalsPage.restore : copy.goalsPage.archive}
-        </button>
+        </Button>
       </div>
-    </article>
+    </Card>
   );
 }

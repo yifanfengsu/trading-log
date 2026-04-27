@@ -9,6 +9,7 @@ import {
   CalendarDays,
   FileText,
   LayoutDashboard,
+  LineChart,
   type LucideIcon,
   NotebookPen,
   Settings2,
@@ -16,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Badge from "@/components/ui/Badge";
 import { sidebarMenuIds, type SidebarMenuId } from "@/lib/mock-data";
 import { cn } from "@/lib/utils";
 
@@ -36,20 +38,20 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="panel-card flex w-full shrink-0 flex-col gap-5 p-4 lg:sticky lg:top-4 lg:h-[calc(100vh-2rem)] lg:w-[280px] lg:p-5">
-      <div className="flex items-center gap-3 px-2">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#8a74ff_0%,#6c4dff_52%,#4d7dff_100%)] shadow-[0_12px_24px_rgba(108,77,255,0.22)]">
-          <div className="h-5 w-5 rounded-full border-2 border-white/90" />
+    <aside className="panel-card flex w-full shrink-0 flex-col gap-5 p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[276px] lg:p-5">
+      <div className="flex items-center gap-3 px-1">
+        <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#8B7CF6_0%,#6D5DF6_55%,#4F7CFF_100%)] shadow-[0_14px_28px_rgba(109,93,246,0.24)]">
+          <LineChart className="h-6 w-6 text-white" />
         </div>
         <div>
-          <p className="text-sm font-semibold tracking-[-0.02em] text-slate-900">
+          <p className="text-sm font-semibold tracking-normal text-slate-950">
             {copy.appTitle}
           </p>
-          <p className="text-xs text-slate-500">{copy.appSubtitle}</p>
+          <p className="mt-0.5 text-xs text-slate-500">{copy.appSubtitle}</p>
         </div>
       </div>
 
-      <nav className="grid gap-2 sm:grid-cols-2 lg:grid-cols-1">
+      <nav className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
         {sidebarMenuIds.map((item) => {
           const Icon = menuIconMap[item];
           const href =
@@ -86,8 +88,8 @@ export default function Sidebar() {
             <>
               <Icon
                 className={cn(
-                  "h-[18px] w-[18px] shrink-0",
-                  isActive ? "text-[var(--accent)]" : "text-slate-400",
+                "h-[18px] w-[18px] shrink-0",
+                  isActive ? "text-violet-600" : "text-slate-400",
                 )}
               />
               <span className="truncate">{copy.menu[item]}</span>
@@ -101,8 +103,8 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[linear-gradient(135deg,rgba(108,77,255,0.16),rgba(108,77,255,0.08))] text-[var(--accent)] shadow-[inset_0_0_0_1px_rgba(108,77,255,0.12)]"
-                  : "text-slate-600 hover:bg-white/70 hover:text-slate-900",
+                  ? "bg-violet-50 text-violet-600 shadow-[inset_0_0_0_1px_rgba(109,93,246,0.12)]"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-950",
               )}
             >
               {content}
@@ -114,8 +116,8 @@ export default function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[linear-gradient(135deg,rgba(108,77,255,0.16),rgba(108,77,255,0.08))] text-[var(--accent)] shadow-[inset_0_0_0_1px_rgba(108,77,255,0.12)]"
-                  : "text-slate-600 hover:bg-white/70 hover:text-slate-900",
+                  ? "bg-violet-50 text-violet-600 shadow-[inset_0_0_0_1px_rgba(109,93,246,0.12)]"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-950",
               )}
             >
               {content}
@@ -124,10 +126,11 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto rounded-[20px] border border-[rgba(108,77,255,0.12)] bg-[linear-gradient(180deg,rgba(108,77,255,0.10),rgba(255,255,255,0.96))] p-4">
+      <div className="mt-auto rounded-[20px] border border-violet-100 bg-[linear-gradient(180deg,rgba(109,93,246,0.08),rgba(255,255,255,0.98))] p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
-            <p className="text-sm font-semibold tracking-[-0.02em] text-slate-900">
+            <Badge variant="purple">{copy.monthlyLabel}</Badge>
+            <p className="mt-3 text-sm font-semibold tracking-normal text-slate-950">
               {copy.promo.title}
             </p>
             <p className="mt-1 text-sm text-slate-500">{copy.promo.subtitle}</p>
@@ -142,7 +145,7 @@ export default function Sidebar() {
           <defs>
             <linearGradient id="sidebar-line" x1="0%" x2="100%" y1="0%" y2="0%">
               <stop offset="0%" stopColor="#c7bcff" />
-              <stop offset="100%" stopColor="#6c4dff" />
+              <stop offset="100%" stopColor="#6d5df6" />
             </linearGradient>
           </defs>
           <path
@@ -151,7 +154,7 @@ export default function Sidebar() {
             strokeWidth="4"
             strokeLinecap="round"
           />
-          <circle cx="214" cy="16" r="5" fill="#6c4dff" />
+          <circle cx="214" cy="16" r="5" fill="#6d5df6" />
         </svg>
       </div>
     </aside>

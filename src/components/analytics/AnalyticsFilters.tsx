@@ -3,6 +3,10 @@
 import { RotateCcw } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
 import type { AnalyticsFilters as AnalyticsFiltersState } from "@/lib/trade-filters";
 import type { TradeSetup, TradeSide } from "@/lib/trade-types";
 
@@ -28,9 +32,6 @@ const resultOptions: AnalyticsFiltersState["result"][] = [
   "loser",
 ];
 
-const fieldClass =
-  "h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm font-medium text-slate-600 outline-none transition-colors focus:border-[rgba(108,77,255,0.38)]";
-
 export default function AnalyticsFilters({
   filters,
   symbols,
@@ -50,19 +51,18 @@ export default function AnalyticsFilters({
   }
 
   return (
-    <section className="panel-card p-4 lg:p-5">
+    <Card density="compact">
       <div className="grid gap-3 lg:grid-cols-2 xl:grid-cols-[minmax(150px,0.72fr)_repeat(4,minmax(150px,0.9fr))_auto]">
         <label className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.analyticsPage.month}
           </span>
-          <input
+          <Input
             type="month"
             value={filters.selectedMonth}
             onChange={(event) =>
               updateFilter("selectedMonth", event.target.value)
             }
-            className={fieldClass}
           />
         </label>
 
@@ -70,10 +70,9 @@ export default function AnalyticsFilters({
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.recentTrades.columns.symbol}
           </span>
-          <select
+          <Select
             value={filters.symbol}
             onChange={(event) => updateFilter("symbol", event.target.value)}
-            className={fieldClass}
           >
             <option value="all">{copy.analyticsPage.allSymbols}</option>
             {symbols.map((symbol) => (
@@ -81,33 +80,32 @@ export default function AnalyticsFilters({
                 {symbol}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
 
         <label className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.recentTrades.columns.side}
           </span>
-          <select
+          <Select
             value={filters.side}
             onChange={(event) =>
               updateFilter("side", event.target.value as AnalyticsFiltersState["side"])
             }
-            className={fieldClass}
           >
             {sideOptions.map((side) => (
               <option key={side} value={side}>
                 {side === "all" ? copy.tradesPage.allSides : copy.side[side]}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
 
         <label className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.recentTrades.columns.setup}
           </span>
-          <select
+          <Select
             value={filters.setup}
             onChange={(event) =>
               updateFilter(
@@ -115,7 +113,6 @@ export default function AnalyticsFilters({
                 event.target.value as AnalyticsFiltersState["setup"],
               )
             }
-            className={fieldClass}
           >
             {setupOptions.map((setup) => (
               <option key={setup} value={setup}>
@@ -124,14 +121,14 @@ export default function AnalyticsFilters({
                   : copy.strategies[setup]}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
 
         <label className="grid gap-1.5">
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.tradesPage.allResults}
           </span>
-          <select
+          <Select
             value={filters.result}
             onChange={(event) =>
               updateFilter(
@@ -139,7 +136,6 @@ export default function AnalyticsFilters({
                 event.target.value as AnalyticsFiltersState["result"],
               )
             }
-            className={fieldClass}
           >
             {resultOptions.map((result) => {
               const label =
@@ -155,20 +151,20 @@ export default function AnalyticsFilters({
                 </option>
               );
             })}
-          </select>
+          </Select>
         </label>
 
         <div className="flex items-end">
-          <button
-            type="button"
+          <Button
             onClick={onReset}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900 xl:w-auto"
+            variant="secondary"
+            className="w-full rounded-2xl xl:w-auto"
           >
             <RotateCcw className="h-4 w-4" />
             {copy.tradesPage.resetFilters}
-          </button>
+          </Button>
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

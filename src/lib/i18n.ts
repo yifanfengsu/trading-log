@@ -37,6 +37,10 @@ export interface Dictionary {
     title: string;
     subtitle: string;
   };
+  dashboardPage: {
+    title: string;
+    subtitle: string;
+  };
   menu: Record<SidebarMenuId, string>;
   metrics: Record<
     MetricId,
@@ -556,6 +560,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
     promo: {
       title: "稳定一致，才有优势。",
       subtitle: "复盘、优化、重复。",
+    },
+    dashboardPage: {
+      title: "交易日志",
+      subtitle: "追踪交易表现、复盘执行质量，并沉淀你的交易系统。",
     },
     menu: {
       dashboard: "仪表盘",
@@ -1184,6 +1192,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
     promo: {
       title: "Consistency is an edge.",
       subtitle: "Review. Improve. Repeat.",
+    },
+    dashboardPage: {
+      title: "Trade Journal",
+      subtitle:
+        "Track performance, review execution, and improve your trading system.",
     },
     menu: {
       dashboard: "Dashboard",

@@ -1,36 +1,14 @@
 "use client";
 
+import { AlertTriangle, CheckCircle2, Gauge, ListChecks, Target } from "lucide-react";
+
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import StatCard from "@/components/ui/StatCard";
 import type { GoalsSummary } from "@/lib/goal-calculations";
-import { cn, formatPercent } from "@/lib/utils";
+import { formatPercent } from "@/lib/utils";
 
 interface GoalsSummaryCardsProps {
   summary: GoalsSummary;
-}
-
-interface SummaryCardProps {
-  label: string;
-  value: string;
-  tone?: "neutral" | "positive" | "negative" | "accent";
-}
-
-function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
-  return (
-    <article className="panel-card p-5">
-      <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p
-        className={cn(
-          "mt-5 text-[30px] font-semibold tracking-[-0.04em]",
-          tone === "accent" && "text-[var(--accent)]",
-          tone === "positive" && "text-emerald-600",
-          tone === "negative" && "text-rose-600",
-          tone === "neutral" && "text-slate-950",
-        )}
-      >
-        {value}
-      </p>
-    </article>
-  );
 }
 
 export default function GoalsSummaryCards({ summary }: GoalsSummaryCardsProps) {
@@ -38,29 +16,34 @@ export default function GoalsSummaryCards({ summary }: GoalsSummaryCardsProps) {
 
   return (
     <section className="grid gap-5 md:grid-cols-2 2xl:grid-cols-5">
-      <SummaryCard
+      <StatCard
         label={copy.goalsPage.totalGoals}
         value={String(summary.totalGoals)}
+        icon={ListChecks}
       />
-      <SummaryCard
+      <StatCard
         label={copy.goalsPage.activeGoals}
         value={String(summary.activeGoals)}
         tone="accent"
+        icon={Target}
       />
-      <SummaryCard
+      <StatCard
         label={copy.goalsPage.achieved}
         value={String(summary.achievedGoals)}
         tone="positive"
+        icon={CheckCircle2}
       />
-      <SummaryCard
+      <StatCard
         label={copy.goalsPage.atRisk}
         value={String(summary.atRiskGoals)}
         tone={summary.atRiskGoals > 0 ? "negative" : "neutral"}
+        icon={AlertTriangle}
       />
-      <SummaryCard
+      <StatCard
         label={copy.goalsPage.avgProgress}
         value={formatPercent(summary.averageProgress, { digits: 0 })}
         tone="accent"
+        icon={Gauge}
       />
     </section>
   );

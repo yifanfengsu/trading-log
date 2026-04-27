@@ -4,15 +4,16 @@ import { type FormEvent, useEffect, useRef, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
 import {
   currencyOptions,
   DEFAULT_USER_SETTINGS,
   type CurrencyCode,
 } from "@/lib/settings-types";
 import { cn } from "@/lib/utils";
-
-const inputClass =
-  "mt-2 h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors focus:border-[rgba(108,77,255,0.38)]";
 
 export default function PreferencesSettings() {
   const { dictionary: copy, locale, setLocale } = useLanguage();
@@ -91,7 +92,7 @@ export default function PreferencesSettings() {
   }
 
   return (
-    <section className="panel-card p-5 lg:p-6">
+    <Card>
       <h2 className="panel-title">{copy.settingsPage.preferences}</h2>
 
       <form onSubmit={handleSubmit} className="mt-5 grid gap-5">
@@ -99,7 +100,7 @@ export default function PreferencesSettings() {
           <p className="text-sm font-medium text-slate-600">
             {copy.settingsPage.language}
           </p>
-          <div className="mt-2 inline-flex rounded-full bg-[rgba(108,77,255,0.10)] p-1">
+          <div className="mt-2 inline-flex rounded-full bg-violet-50 p-1 ring-1 ring-inset ring-violet-100">
             {(["zh", "en"] as const).map((item) => {
               const isActive = locale === item;
 
@@ -112,8 +113,8 @@ export default function PreferencesSettings() {
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-semibold transition-all",
                     isActive
-                      ? "bg-white text-[var(--accent)] shadow-[0_6px_16px_rgba(108,77,255,0.14)]"
-                      : "text-slate-500 hover:text-slate-900",
+                      ? "bg-white text-violet-600 shadow-[0_6px_16px_rgba(109,93,246,0.14)]"
+                      : "text-slate-500 hover:text-slate-950",
                   )}
                 >
                   {copy.language[item]}
@@ -125,28 +126,28 @@ export default function PreferencesSettings() {
 
         <label className="block text-sm font-medium text-slate-600">
           {copy.settingsPage.currency}
-          <select
+          <Select
             value={currency}
             onChange={(event) => setCurrency(event.target.value as CurrencyCode)}
-            className={inputClass}
+            className="mt-2"
           >
             {currencyOptions.map((option) => (
               <option key={option.code} value={option.code}>
                 {option.label}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
 
         <label className="block text-sm font-medium text-slate-600">
           {copy.settingsPage.startingBalance}
-          <input
+          <Input
             type="number"
             min="0"
             step="any"
             value={startingBalance}
             onChange={(event) => setStartingBalance(event.target.value)}
-            className={inputClass}
+            className="mt-2"
           />
         </label>
 
@@ -157,21 +158,18 @@ export default function PreferencesSettings() {
         ) : null}
 
         <div className="flex flex-wrap items-center justify-end gap-3">
-          <button
+          <Button
             type="button"
             onClick={handleReset}
-            className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
+            variant="secondary"
           >
             {copy.settingsPage.resetDefaults}
-          </button>
-          <button
-            type="submit"
-            className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-          >
+          </Button>
+          <Button type="submit">
             {isSaved ? copy.reportsPage.saved : copy.settingsPage.saveSettings}
-          </button>
+          </Button>
         </div>
       </form>
-    </section>
+    </Card>
   );
 }

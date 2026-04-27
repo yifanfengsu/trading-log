@@ -11,6 +11,9 @@ import type { KeyboardEvent, MouseEvent } from "react";
 
 import LinkedEntityBadge from "@/components/notes/LinkedEntityBadge";
 import { useLanguage } from "@/components/providers/LanguageProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 import type { Note } from "@/lib/note-types";
 import type { Playbook } from "@/lib/playbook-types";
 import type { Trade } from "@/lib/trade-types";
@@ -52,15 +55,17 @@ export default function NoteCard({
   }
 
   return (
-    <article
+    <Card
+      as="article"
       role="button"
       tabIndex={0}
       onClick={() => onView(note)}
       onKeyDown={handleKeyDown}
       className={cn(
-        "group relative flex min-h-[280px] cursor-pointer flex-col overflow-hidden rounded-[22px] border border-[rgba(255,255,255,0.72)] bg-white/95 p-5 shadow-[0_18px_48px_rgba(31,15,86,0.07)] transition-all hover:-translate-y-0.5 hover:shadow-[0_22px_54px_rgba(31,15,86,0.10)]",
+        "group relative flex min-h-[280px] cursor-pointer flex-col overflow-hidden",
         note.pinned && "ring-1 ring-[rgba(108,77,255,0.18)]",
       )}
+      hover
     >
       {note.pinned ? (
         <div className="absolute inset-x-0 top-0 h-1 bg-[var(--accent)]" />
@@ -83,19 +88,12 @@ export default function NoteCard({
       </div>
 
       <div className="mt-4 flex flex-wrap gap-2">
-        <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.09)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
+        <Badge variant="purple">
           {copy.noteTypes[note.type]}
-        </span>
-        <span
-          className={cn(
-            "inline-flex rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset",
-            isArchived
-              ? "bg-slate-100 text-slate-500 ring-slate-200"
-              : "bg-emerald-50 text-emerald-700 ring-emerald-100",
-          )}
-        >
+        </Badge>
+        <Badge variant={isArchived ? "gray" : "green"}>
           {copy.noteStatus[note.status]}
-        </span>
+        </Badge>
       </div>
 
       <p className="mt-4 line-clamp-3 min-h-[4.5rem] text-sm leading-6 text-slate-600">
@@ -132,40 +130,43 @@ export default function NoteCard({
       </div>
 
       <div className="mt-auto flex flex-wrap items-center gap-2 pt-5">
-        <button
+        <Button
           type="button"
           onClick={(event) => {
             stopEvent(event);
             onView(note);
           }}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-slate-100 px-3 text-xs font-semibold text-slate-600 transition-colors hover:bg-slate-200"
+          variant="secondary"
+          size="sm"
         >
           <Eye className="h-3.5 w-3.5" />
           {copy.playbookPage.view}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={(event) => {
             stopEvent(event);
             onEdit(note);
           }}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-[rgba(108,77,255,0.09)] px-3 text-xs font-semibold text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+          variant="outline"
+          size="sm"
         >
           <Pencil className="h-3.5 w-3.5" />
           {copy.playbookPage.edit}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={(event) => {
             stopEvent(event);
             onTogglePin(note);
           }}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-slate-600 ring-1 ring-inset ring-[rgba(148,163,184,0.18)] transition-colors hover:text-slate-950"
+          variant="secondary"
+          size="sm"
         >
           <Star className={cn("h-3.5 w-3.5", note.pinned && "fill-current")} />
           {note.pinned ? copy.notesPage.unpin : copy.notesPage.pin}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={(event) => {
             stopEvent(event);
@@ -176,7 +177,8 @@ export default function NoteCard({
 
             onArchive(note);
           }}
-          className="inline-flex h-9 items-center justify-center gap-1.5 rounded-full bg-white px-3 text-xs font-semibold text-slate-600 ring-1 ring-inset ring-[rgba(148,163,184,0.18)] transition-colors hover:text-slate-950"
+          variant="secondary"
+          size="sm"
         >
           {isArchived ? (
             <RotateCcw className="h-3.5 w-3.5" />
@@ -184,8 +186,8 @@ export default function NoteCard({
             <Archive className="h-3.5 w-3.5" />
           )}
           {isArchived ? copy.notesPage.restore : copy.notesPage.archive}
-        </button>
+        </Button>
       </div>
-    </article>
+    </Card>
   );
 }

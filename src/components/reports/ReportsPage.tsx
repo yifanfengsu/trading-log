@@ -14,6 +14,7 @@ import { usePeriodReports } from "@/components/providers/PeriodReportStoreProvid
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   buildSuggestedReportText,
   filterReviewsByDateRange,
@@ -333,16 +334,10 @@ export default function ReportsPage() {
 
   return (
     <>
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-[30px]">
-            {copy.reportsPage.title}
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {copy.reportsPage.subtitle}
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title={copy.reportsPage.title}
+        description={copy.reportsPage.subtitle}
+      />
 
       <ReportFilters
         periodType={periodType}

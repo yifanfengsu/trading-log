@@ -6,6 +6,10 @@ import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type { CalendarStats } from "@/lib/trade-calculations";
 import {
   buildCalendarGrid,
@@ -13,9 +17,10 @@ import {
   formatCompactCurrency,
   formatCurrency,
   formatMonthLabel,
+  formatPercent,
   getNextMonthKey,
   getPreviousMonthKey,
-  formatPercent,
+  getTodayDateKey,
   parseSelectedMonth,
 } from "@/lib/utils";
 
@@ -43,6 +48,7 @@ export default function PnlCalendar({
     tradedDays > 0 ? (summary.winningDays / tradedDays) * 100 : 0;
   const losingDayRate =
     tradedDays > 0 ? (summary.losingDays / tradedDays) * 100 : 0;
+  const todayDateKey = getTodayDateKey();
 
   function shiftMonth(offset: number) {
     onMonthChange(
@@ -53,40 +59,44 @@ export default function PnlCalendar({
   }
 
   return (
-    <section className="panel-card p-5 lg:p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <div>
-          <h2 className="panel-title">{copy.calendar.title}</h2>
-          <div className="mt-1 flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => shiftMonth(-1)}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
-              aria-label={copy.calendarPage.previousMonth}
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <p className="text-sm text-slate-500">
-              {formatMonthLabel(selectedMonth, locale)}
-            </p>
-            <button
-              type="button"
-              onClick={() => shiftMonth(1)}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
-              aria-label={copy.calendarPage.nextMonth}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-        <div className="soft-pill w-fit cursor-default" aria-hidden="true">
-          <span>{copy.monthlyLabel}</span>
-          <ChevronDown className="h-4 w-4 text-slate-400" />
-        </div>
+    <Card>
+      <SectionHeader
+        title={copy.calendar.title}
+        action={
+          <Badge variant="purple" className="h-9 px-3">
+            <span>{copy.monthlyLabel}</span>
+            <ChevronDown className="h-4 w-4 text-violet-400" />
+          </Badge>
+        }
+      />
+      <div className="mt-3 flex items-center gap-2">
+        <Button
+          onClick={() => shiftMonth(-1)}
+          variant="ghost"
+          size="icon"
+          aria-label={copy.calendarPage.previousMonth}
+          title={copy.calendarPage.previousMonth}
+          className="h-8 w-8 bg-violet-50 text-violet-600 hover:bg-violet-100"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+        <p className="text-sm font-medium text-slate-500">
+          {formatMonthLabel(selectedMonth, locale)}
+        </p>
+        <Button
+          onClick={() => shiftMonth(1)}
+          variant="ghost"
+          size="icon"
+          aria-label={copy.calendarPage.nextMonth}
+          title={copy.calendarPage.nextMonth}
+          className="h-8 w-8 bg-violet-50 text-violet-600 hover:bg-violet-100"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
 
       <div className="mt-6 overflow-x-auto pb-1">
-        <div className="grid min-w-[640px] grid-cols-7 gap-2">
+        <div className="grid min-w-[620px] grid-cols-7 gap-2">
           {copy.calendar.weekdays.map((day) => (
             <div
               key={day}
@@ -97,79 +107,80 @@ export default function PnlCalendar({
           ))}
 
           {cells.map((cell) => {
-          const dateKey =
-            cell.inCurrentMonth && cell.day
-              ? `${selectedMonth}-${String(cell.day).padStart(2, "0")}`
-              : null;
-          const hasTrade =
-            dateKey !== null &&
-            Object.prototype.hasOwnProperty.call(dailyPnlMap, dateKey);
-          const isReviewed = dateKey !== null && reviewedDates.has(dateKey);
-          const isProfit = (cell.pnl ?? 0) > 0;
-          const isLoss = (cell.pnl ?? 0) < 0;
-          const className = cn(
-            "flex min-h-[82px] flex-col rounded-[18px] border p-3 transition-colors lg:min-h-[96px]",
-            !cell.inCurrentMonth &&
-              "border-[rgba(151,161,184,0.14)] bg-[rgba(241,243,251,0.7)]",
-            cell.inCurrentMonth &&
-              !hasTrade &&
-              "border-[rgba(151,161,184,0.12)] bg-white/70",
-            isProfit &&
-              "border-emerald-100 bg-[linear-gradient(180deg,rgba(22,163,74,0.12),rgba(255,255,255,0.9))]",
-            isLoss &&
-              "border-rose-100 bg-[linear-gradient(180deg,rgba(244,63,94,0.12),rgba(255,255,255,0.92))]",
-          );
-          const content = (
-            <>
-              <span
-                className={cn(
-                  "text-sm font-semibold",
-                  cell.inCurrentMonth ? "text-slate-700" : "text-slate-300",
-                )}
-              >
-                {cell.day ?? ""}
-              </span>
-              <div className="mt-1 flex gap-1">
-                {isReviewed ? (
-                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-                ) : null}
-                {!isReviewed && hasTrade ? (
-                  <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
-                ) : null}
-              </div>
-              {hasTrade && cell.pnl !== null ? (
+            const dateKey =
+              cell.inCurrentMonth && cell.day
+                ? `${selectedMonth}-${String(cell.day).padStart(2, "0")}`
+                : null;
+            const hasTrade =
+              dateKey !== null &&
+              Object.prototype.hasOwnProperty.call(dailyPnlMap, dateKey);
+            const isReviewed = dateKey !== null && reviewedDates.has(dateKey);
+            const isToday = dateKey === todayDateKey;
+            const isProfit = (cell.pnl ?? 0) > 0;
+            const isLoss = (cell.pnl ?? 0) < 0;
+            const className = cn(
+              "flex min-h-[84px] flex-col rounded-[18px] border p-3 transition-all lg:min-h-[96px]",
+              !cell.inCurrentMonth && "border-slate-100 bg-slate-50/80",
+              cell.inCurrentMonth &&
+                !hasTrade &&
+                "border-slate-100 bg-white/80 hover:bg-white",
+              isProfit &&
+                "border-emerald-100 bg-[linear-gradient(180deg,#ECFDF5_0%,rgba(255,255,255,0.94)_100%)]",
+              isLoss &&
+                "border-rose-100 bg-[linear-gradient(180deg,#FFF1F2_0%,rgba(255,255,255,0.95)_100%)]",
+              isToday && "ring-2 ring-violet-200 ring-offset-1 ring-offset-white",
+            );
+            const content = (
+              <>
                 <span
                   className={cn(
-                    "mt-auto text-sm font-semibold tracking-[-0.02em]",
-                    isProfit && "text-emerald-700",
-                    isLoss && "text-rose-700",
+                    "text-sm font-semibold",
+                    cell.inCurrentMonth ? "text-slate-700" : "text-slate-300",
                   )}
                 >
-                  {formatCompactCurrency(cell.pnl, settings.currency)}
+                  {cell.day ?? ""}
                 </span>
-              ) : null}
-            </>
-          );
+                <div className="mt-1 flex gap-1">
+                  {isReviewed ? (
+                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                  ) : null}
+                  {!isReviewed && hasTrade ? (
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                  ) : null}
+                </div>
+                {hasTrade && cell.pnl !== null ? (
+                  <span
+                    className={cn(
+                      "mt-auto text-sm font-semibold tracking-normal",
+                      isProfit && "text-emerald-700",
+                      isLoss && "text-rose-700",
+                    )}
+                  >
+                    {formatCompactCurrency(cell.pnl, settings.currency)}
+                  </span>
+                ) : null}
+              </>
+            );
 
-          return dateKey ? (
-            <Link
-              key={cell.key}
-              href={`/calendar?date=${dateKey}`}
-              className={cn(className, "hover:border-[rgba(108,77,255,0.24)]")}
-            >
-              {content}
-            </Link>
-          ) : (
-            <div key={cell.key} className={className}>
-              {content}
-            </div>
-          );
+            return dateKey ? (
+              <Link
+                key={cell.key}
+                href={`/calendar?date=${dateKey}`}
+                className={cn(className, "hover:border-violet-200")}
+              >
+                {content}
+              </Link>
+            ) : (
+              <div key={cell.key} className={className}>
+                {content}
+              </div>
+            );
           })}
         </div>
       </div>
 
       <div className="mt-6 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
-        <div className="rounded-[18px] bg-[rgba(108,77,255,0.05)] px-4 py-4">
+        <div className="rounded-[18px] border border-violet-100 bg-violet-50/70 px-4 py-4">
           <p className="text-sm text-slate-500">{copy.calendar.summary.totalPnl}</p>
           <p
             className={cn(
@@ -182,7 +193,7 @@ export default function PnlCalendar({
             {formatCurrency(summary.totalPnl, settings.currency)}
           </p>
         </div>
-        <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
+        <div className="rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-4">
           <p className="text-sm text-slate-500">
             {copy.calendar.summary.winningDays}
           </p>
@@ -190,7 +201,7 @@ export default function PnlCalendar({
             {summary.winningDays} ({formatPercent(winningDayRate)})
           </p>
         </div>
-        <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
+        <div className="rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-4">
           <p className="text-sm text-slate-500">
             {copy.calendar.summary.losingDays}
           </p>
@@ -198,13 +209,13 @@ export default function PnlCalendar({
             {summary.losingDays} ({formatPercent(losingDayRate)})
           </p>
         </div>
-        <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-4">
+        <div className="rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-4">
           <p className="text-sm text-slate-500">{copy.calendar.summary.bestDay}</p>
-          <p className="mt-2 text-lg font-semibold text-[var(--accent)]">
+          <p className="mt-2 text-lg font-semibold text-violet-600">
             {formatCurrency(summary.bestDayPnl, settings.currency)}
           </p>
         </div>
       </div>
-    </section>
+    </Card>
   );
 }

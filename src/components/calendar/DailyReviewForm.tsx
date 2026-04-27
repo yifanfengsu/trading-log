@@ -4,6 +4,9 @@ import { type FormEvent, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
+import Button from "@/components/ui/Button";
+import Select from "@/components/ui/Select";
+import Textarea from "@/components/ui/Textarea";
 import {
   dailyReviewScores,
   reviewEmotions,
@@ -27,9 +30,6 @@ interface ReviewFormState {
   score: DailyReviewScore;
   notes: string;
 }
-
-const inputClass =
-  "mt-2 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
 function getEmptyFormState(): ReviewFormState {
   return {
@@ -107,40 +107,40 @@ export default function DailyReviewForm({ date, review }: DailyReviewFormProps) 
     <form onSubmit={handleSubmit} className="space-y-4">
       <label className="block text-sm font-medium text-slate-600">
         {copy.calendarPage.rulesFollowed}
-        <textarea
+        <Textarea
           value={form.rulesFollowed}
           onChange={(event) => updateField("rulesFollowed", event.target.value)}
-          className={cn(inputClass, "min-h-24 resize-none py-3")}
+          className="mt-2 min-h-24 resize-none"
           placeholder={copy.calendarPage.rulesFollowedPlaceholder}
         />
       </label>
 
       <label className="block text-sm font-medium text-slate-600">
         {copy.calendarPage.mainMistake}
-        <textarea
+        <Textarea
           value={form.mainMistake}
           onChange={(event) => updateField("mainMistake", event.target.value)}
-          className={cn(inputClass, "min-h-24 resize-none py-3")}
+          className="mt-2 min-h-24 resize-none"
           placeholder={copy.calendarPage.mainMistakePlaceholder}
         />
       </label>
 
       <label className="block text-sm font-medium text-slate-600">
         {copy.calendarPage.marketCondition}
-        <textarea
+        <Textarea
           value={form.marketCondition}
           onChange={(event) => updateField("marketCondition", event.target.value)}
-          className={cn(inputClass, "min-h-24 resize-none py-3")}
+          className="mt-2 min-h-24 resize-none"
           placeholder={copy.calendarPage.marketConditionPlaceholder}
         />
       </label>
 
       <label className="block text-sm font-medium text-slate-600">
         {copy.calendarPage.tomorrowFocus}
-        <textarea
+        <Textarea
           value={form.tomorrowFocus}
           onChange={(event) => updateField("tomorrowFocus", event.target.value)}
-          className={cn(inputClass, "min-h-24 resize-none py-3")}
+          className="mt-2 min-h-24 resize-none"
           placeholder={copy.calendarPage.tomorrowFocusPlaceholder}
         />
       </label>
@@ -148,19 +148,19 @@ export default function DailyReviewForm({ date, review }: DailyReviewFormProps) 
       <div className="grid gap-4 sm:grid-cols-2">
         <label className="block text-sm font-medium text-slate-600">
           {copy.calendarPage.emotion}
-          <select
+          <Select
             value={form.emotion}
             onChange={(event) =>
               updateField("emotion", event.target.value as ReviewEmotion)
             }
-            className={cn(inputClass, "h-11")}
+            className="mt-2"
           >
             {reviewEmotions.map((emotion) => (
               <option key={emotion} value={emotion}>
                 {copy.calendarPage.emotions[emotion]}
               </option>
             ))}
-          </select>
+          </Select>
         </label>
 
         <div>
@@ -194,40 +194,32 @@ export default function DailyReviewForm({ date, review }: DailyReviewFormProps) 
 
       <label className="block text-sm font-medium text-slate-600">
         {copy.calendarPage.notes}
-        <textarea
+        <Textarea
           value={form.notes}
           onChange={(event) => updateField("notes", event.target.value)}
-          className={cn(inputClass, "min-h-24 resize-none py-3")}
+          className="mt-2 min-h-24 resize-none"
         />
       </label>
 
       <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
-        <button
+        <Button
           type="button"
           onClick={() => setForm(getEmptyFormState())}
-          className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-4 text-sm font-semibold text-slate-600 transition-colors hover:border-[rgba(108,77,255,0.22)] hover:text-slate-900"
+          variant="secondary"
         >
           {copy.calendarPage.clear}
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
           onClick={handleDelete}
           disabled={!review}
-          className={cn(
-            "inline-flex h-11 items-center justify-center rounded-full border px-4 text-sm font-semibold transition-colors",
-            review
-              ? "border-rose-100 bg-rose-50 text-rose-600 hover:bg-rose-100"
-              : "border-[rgba(148,163,184,0.14)] bg-slate-50 text-slate-300",
-          )}
+          variant="danger"
         >
           {copy.calendarPage.deleteReview}
-        </button>
-        <button
-          type="submit"
-          className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-        >
+        </Button>
+        <Button type="submit">
           {copy.calendarPage.saveReview}
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -10,6 +10,11 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   getMonthLabel,
   getMonthNavigation,
@@ -51,7 +56,7 @@ const toneClasses = {
 
 function InsightRow({ label, value, tone = "neutral" }: InsightRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-3">
+    <div className="flex items-center justify-between gap-4 rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-3">
       <p className="text-sm text-slate-500">{label}</p>
       <p className={cn("text-sm font-semibold", toneClasses[tone])}>{value}</p>
     </div>
@@ -125,38 +130,33 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
 
   return (
     <>
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-[30px]">
-            {copy.calendarPage.title}
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {copy.calendarPage.subtitle}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleMonthChange(prevMonth)}
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-[rgba(148,163,184,0.16)] bg-white px-4 text-sm font-semibold text-slate-600 shadow-[0_8px_18px_rgba(31,15,86,0.04)] transition-colors hover:border-[rgba(108,77,255,0.22)] hover:text-slate-900"
-          >
-            <ChevronLeft className="h-4 w-4" />
-            {copy.calendarPage.previousMonth}
-          </button>
-          <div className="inline-flex h-11 items-center rounded-full bg-[rgba(108,77,255,0.10)] px-4 text-sm font-semibold text-[var(--accent)]">
-            {getMonthLabel(selectedMonth, locale)}
+      <PageHeader
+        title={copy.calendarPage.title}
+        description={copy.calendarPage.subtitle}
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={() => handleMonthChange(prevMonth)}
+              variant="secondary"
+              title={copy.calendarPage.previousMonth}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {copy.calendarPage.previousMonth}
+            </Button>
+            <Badge variant="purple" className="h-11 px-4 text-sm">
+              {getMonthLabel(selectedMonth, locale)}
+            </Badge>
+            <Button
+              onClick={() => handleMonthChange(nextMonth)}
+              variant="secondary"
+              title={copy.calendarPage.nextMonth}
+            >
+              {copy.calendarPage.nextMonth}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
           </div>
-          <button
-            type="button"
-            onClick={() => handleMonthChange(nextMonth)}
-            className="inline-flex h-11 items-center gap-2 rounded-full border border-[rgba(148,163,184,0.16)] bg-white px-4 text-sm font-semibold text-slate-600 shadow-[0_8px_18px_rgba(31,15,86,0.04)] transition-colors hover:border-[rgba(108,77,255,0.22)] hover:text-slate-900"
-          >
-            {copy.calendarPage.nextMonth}
-            <ChevronRight className="h-4 w-4" />
-          </button>
-        </div>
-      </section>
+        }
+      />
 
       <CalendarSummaryCards summary={summary} />
 
@@ -170,7 +170,7 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
           onSelectDate={handleSelectDate}
         />
 
-        <aside className="panel-card h-fit p-5 lg:p-6">
+        <Card as="aside" className="h-fit">
           <h2 className="panel-title">{copy.calendarPage.monthlyInsights}</h2>
           {insights.tradingDays > 0 ? (
             <div className="mt-5 space-y-3">
@@ -208,11 +208,12 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
               />
             </div>
           ) : (
-            <div className="mt-5 rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(248,250,252,0.82)] px-4 py-10 text-center text-sm text-slate-500">
-              {copy.calendarPage.noDataForMonth}
-            </div>
+            <EmptyState
+              title={copy.calendarPage.noDataForMonth}
+              className="mt-5 min-h-[220px]"
+            />
           )}
-        </aside>
+        </Card>
       </section>
 
       {selectedDate && isDrawerOpen ? (

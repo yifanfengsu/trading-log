@@ -16,6 +16,9 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Card from "@/components/ui/Card";
+import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
 import {
   getAnalyticsSummary,
   getRMultipleDistribution,
@@ -36,11 +39,9 @@ import {
 
 function AnalyticsEmptyState({ label }: { label: string }) {
   return (
-    <section className="panel-card flex min-h-[360px] items-center justify-center p-6">
-      <div className="rounded-[22px] border border-dashed border-[rgba(148,163,184,0.24)] bg-[rgba(250,250,255,0.78)] px-8 py-12 text-center">
-        <p className="text-sm font-semibold text-slate-500">{label}</p>
-      </div>
-    </section>
+    <Card>
+      <EmptyState title={label} className="min-h-[320px]" />
+    </Card>
   );
 }
 
@@ -103,16 +104,10 @@ export default function AnalyticsPage() {
 
   return (
     <>
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-[30px]">
-            {copy.analyticsPage.title}
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {copy.analyticsPage.subtitle}
-          </p>
-        </div>
-      </section>
+      <PageHeader
+        title={copy.analyticsPage.title}
+        description={copy.analyticsPage.subtitle}
+      />
 
       <AnalyticsFilters
         filters={filters}

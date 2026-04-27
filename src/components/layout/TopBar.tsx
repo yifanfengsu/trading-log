@@ -13,6 +13,7 @@ import { usePathname } from "next/navigation";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
+import Button from "@/components/ui/Button";
 import type { SidebarMenuId } from "@/lib/mock-data";
 import { cn, formatMonthRange } from "@/lib/utils";
 
@@ -23,7 +24,10 @@ interface FilterChipProps {
 
 function FilterChip({ icon: Icon, label }: FilterChipProps) {
   return (
-    <div className="soft-pill cursor-default justify-between" aria-hidden="true">
+    <div
+      className="inline-flex h-10 max-w-full cursor-default items-center gap-2 rounded-full border border-slate-200 bg-white/88 px-3 text-sm font-medium text-slate-600 shadow-[0_8px_18px_rgba(30,41,59,0.04)]"
+      aria-hidden="true"
+    >
       <span className="flex min-w-0 items-center gap-2">
         <Icon className="h-4 w-4 shrink-0 text-slate-400" />
         <span className="truncate">{label}</span>
@@ -76,12 +80,12 @@ export default function TopBar() {
   const activeMenuId = getActiveMenuId(pathname);
 
   return (
-    <header className="panel-card flex flex-col gap-4 px-5 py-4 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+    <header className="panel-card flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
       <div>
-        <p className="text-xs font-medium uppercase tracking-[0.22em] text-[var(--accent)]">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">
           {copy.menu[activeMenuId]}
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-[30px]">
+        <h1 className="mt-1 text-2xl font-semibold tracking-normal text-slate-950 sm:text-[30px]">
           {copy.appTitle}
         </h1>
       </div>
@@ -98,7 +102,7 @@ export default function TopBar() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
-          <div className="inline-flex rounded-full bg-[rgba(108,77,255,0.10)] p-1">
+          <div className="inline-flex rounded-full bg-violet-50 p-1 ring-1 ring-inset ring-violet-100">
             {(["zh", "en"] as const).map((item) => {
               const isActive = locale === item;
 
@@ -111,8 +115,8 @@ export default function TopBar() {
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-semibold transition-all",
                     isActive
-                      ? "bg-white text-[var(--accent)] shadow-[0_6px_16px_rgba(108,77,255,0.14)]"
-                      : "text-slate-500 hover:text-slate-900",
+                      ? "bg-white text-violet-600 shadow-[0_6px_16px_rgba(109,93,246,0.14)]"
+                      : "text-slate-500 hover:text-slate-950",
                   )}
                 >
                   {copy.language[item]}
@@ -121,16 +125,15 @@ export default function TopBar() {
             })}
           </div>
 
-          <button
-            type="button"
+          <Button
             onClick={openCreateTrade}
-            className="inline-flex h-11 items-center gap-2 rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
+            title={copy.addTrade}
           >
             <Plus className="h-4 w-4" />
             {copy.addTrade}
-          </button>
+          </Button>
 
-          <div className="hidden h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#8a74ff_0%,#6c4dff_65%,#4d7dff_100%)] text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] sm:flex">
+          <div className="hidden h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#8B7CF6_0%,#6D5DF6_65%,#4F7CFF_100%)] text-sm font-semibold text-white shadow-[0_12px_24px_rgba(109,93,246,0.22)] sm:flex">
             JD
           </div>
         </div>

@@ -1,12 +1,16 @@
 "use client";
 
-import { X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Button from "@/components/ui/Button";
+import DrawerShell from "@/components/ui/DrawerShell";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Textarea from "@/components/ui/Textarea";
 import type { UserSettings } from "@/lib/settings-types";
 import type {
   Trade,
@@ -14,8 +18,6 @@ import type {
   TradeSetup,
   TradeSide,
 } from "@/lib/trade-types";
-import { cn } from "@/lib/utils";
-import { useEscapeKey } from "@/lib/use-escape-key";
 
 interface TradeDrawerProps {
   mode: "create" | "edit";
@@ -46,9 +48,6 @@ const setupOptions: TradeSetup[] = [
   "meanReversion",
   "other",
 ];
-
-const inputClass =
-  "mt-2 h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.18)] bg-white px-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-300 focus:border-[rgba(108,77,255,0.38)]";
 
 function getCurrentDatetimeLocal() {
   const now = new Date();
@@ -142,8 +141,6 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
     form.playbookId && !selectedPlaybook,
   );
 
-  useEscapeKey(onClose);
-
   function updateField<Key extends keyof TradeFormState>(
     key: Key,
     value: TradeFormState[Key],
@@ -235,66 +232,48 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        className="absolute inset-0 bg-slate-950/24 backdrop-blur-[2px]"
-        onClick={onClose}
-        aria-label={copy.tradeForm.cancel}
-      />
-      <aside
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="trade-drawer-title"
-        className="relative flex h-full w-full max-w-[520px] flex-col overflow-hidden border-l border-white/70 bg-[rgba(255,255,255,0.96)] shadow-[0_24px_80px_rgba(31,15,86,0.18)]"
-      >
-        <div className="flex items-center justify-between border-b border-[rgba(148,163,184,0.14)] px-6 py-5">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
-              {copy.recentTrades.columns.status}: {copy.status.closed}
-            </p>
-            <h2
-              id="trade-drawer-title"
-              className="mt-1 text-xl font-semibold tracking-[-0.03em] text-slate-950"
-            >
-              {title}
-            </h2>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[rgba(15,23,42,0.04)] text-slate-500 transition-colors hover:bg-[rgba(15,23,42,0.08)] hover:text-slate-900"
-            aria-label={copy.tradeForm.cancel}
-          >
-            <X className="h-5 w-5" />
-          </button>
+    <DrawerShell
+      title={title}
+      eyebrow={`${copy.recentTrades.columns.status}: ${copy.status.closed}`}
+      closeLabel={copy.tradeForm.cancel}
+      labelledById="trade-drawer-title"
+      onClose={onClose}
+      footer={
+        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-end">
+          <Button type="button" variant="secondary" onClick={onClose}>
+            {copy.tradeForm.cancel}
+          </Button>
+          <Button type="submit" form="trade-form">
+            {saveLabel}
+          </Button>
         </div>
-
+      }
+    >
         <form
+          id="trade-form"
           onSubmit={handleSubmit}
-          className="flex-1 overflow-y-auto px-6 py-5"
+          className="grid gap-4"
         >
-          <div className="grid gap-4">
             <label className="block text-sm font-medium text-slate-600">
               {copy.tradeForm.closeTime}
-              <input
+              <Input
                 type="datetime-local"
                 value={form.closedAt}
                 onChange={(event) => updateField("closedAt", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 required
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.tradeForm.symbol}
-              <input
+              <Input
                 type="text"
                 value={form.symbol}
                 onChange={(event) =>
                   updateField("symbol", event.target.value.toUpperCase())
                 }
-                className={inputClass}
+                className="mt-2"
                 placeholder={copy.tradeForm.symbolPlaceholder}
                 required
               />
@@ -303,45 +282,45 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.side}
-                <select
+                <Select
                   value={form.side}
                   onChange={(event) =>
                     updateField("side", event.target.value as TradeSide)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {sideOptions.map((side) => (
                     <option key={side} value={side}>
                       {copy.side[side]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.setup}
-                <select
+                <Select
                   value={form.setup}
                   onChange={(event) =>
                     handleSetupChange(event.target.value as TradeSetup)
                   }
-                  className={inputClass}
+                  className="mt-2"
                 >
                   {setupOptions.map((setup) => (
                     <option key={setup} value={setup}>
                       {copy.strategies[setup]}
                     </option>
                   ))}
-                </select>
+                </Select>
               </label>
             </div>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.tradeForm.playbook}
-              <select
+              <Select
                 value={form.playbookId}
                 onChange={(event) => handlePlaybookChange(event.target.value)}
-                className={inputClass}
+                className="mt-2"
               >
                 <option value="">{copy.playbookPage.none}</option>
                 {playbookOptions.map((playbook) => (
@@ -357,32 +336,32 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                     {copy.playbookPage.deletedPlaybook}
                   </option>
                 ) : null}
-              </select>
+              </Select>
             </label>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.entryPrice}
-                <input
+                <Input
                   type="number"
                   step="any"
                   value={form.entryPrice}
                   onChange={(event) =>
                     updateField("entryPrice", event.target.value)
                   }
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.exitPrice}
-                <input
+                <Input
                   type="number"
                   step="any"
                   value={form.exitPrice}
                   onChange={(event) => updateField("exitPrice", event.target.value)}
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
@@ -391,40 +370,40 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
             <div className="grid gap-4 sm:grid-cols-3">
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.riskPercent}
-                <input
+                <Input
                   type="number"
                   step="any"
                   value={form.riskPercent}
                   onChange={(event) =>
                     updateField("riskPercent", event.target.value)
                   }
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.netPnl}
-                <input
+                <Input
                   type="number"
                   step="any"
                   value={form.pnl}
                   onChange={(event) => updateField("pnl", event.target.value)}
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
                 {copy.tradeForm.rMultiple}
-                <input
+                <Input
                   type="number"
                   step="any"
                   value={form.rMultiple}
                   onChange={(event) =>
                     updateField("rMultiple", event.target.value)
                   }
-                  className={inputClass}
+                  className="mt-2"
                   required
                 />
               </label>
@@ -432,48 +411,30 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.tradeForm.notes}
-              <textarea
+              <Textarea
                 value={form.notes}
                 onChange={(event) => updateField("notes", event.target.value)}
-                className={cn(inputClass, "h-24 resize-none py-3")}
+                className="mt-2 h-24 resize-none"
               />
             </label>
 
             <label className="block text-sm font-medium text-slate-600">
               {copy.tradeForm.tags}
-              <input
+              <Input
                 type="text"
                 value={form.tags}
                 onChange={(event) => updateField("tags", event.target.value)}
-                className={inputClass}
+                className="mt-2"
                 placeholder={copy.tradeForm.tagsPlaceholder}
               />
             </label>
-          </div>
 
           {error ? (
-            <p className="mt-4 rounded-2xl bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
+            <p className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-600">
               {error}
             </p>
           ) : null}
-
-          <div className="sticky bottom-0 -mx-6 mt-6 flex flex-col-reverse gap-3 border-t border-[rgba(148,163,184,0.14)] bg-white/92 px-6 py-4 backdrop-blur sm:flex-row sm:items-center sm:justify-end">
-            <button
-              type="button"
-              onClick={onClose}
-              className="inline-flex h-11 items-center justify-center rounded-full border border-[rgba(148,163,184,0.18)] bg-white px-5 text-sm font-semibold text-slate-600 transition-colors hover:text-slate-900"
-            >
-              {copy.tradeForm.cancel}
-            </button>
-            <button
-              type="submit"
-              className="inline-flex h-11 items-center justify-center rounded-full bg-[var(--accent)] px-5 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-            >
-              {saveLabel}
-            </button>
-          </div>
         </form>
-      </aside>
-    </div>
+    </DrawerShell>
   );
 }

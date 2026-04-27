@@ -8,6 +8,15 @@ import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useTradeDrawer } from "@/components/providers/TradeDrawerProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Badge from "@/components/ui/Badge";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import DataTable, {
+  dataTableCellClassName,
+  dataTableHeadCellClassName,
+} from "@/components/ui/DataTable";
+import EmptyState from "@/components/ui/EmptyState";
+import SectionHeader from "@/components/ui/SectionHeader";
 import type { TradeSortKey, TradeSortState } from "@/lib/trade-filters";
 import type { Trade } from "@/lib/trade-types";
 import {
@@ -105,21 +114,16 @@ export default function TradesTable({
   }
 
   return (
-    <section className="panel-card p-5 lg:p-6">
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 className="panel-title">{copy.tradesPage.filteredResults}</h2>
-          <p className="mt-1 text-sm text-slate-500">
-            {trades.length} {copy.tradesPage.tradeCountLabel}
-          </p>
-        </div>
-      </div>
+    <Card>
+      <SectionHeader
+        title={copy.tradesPage.filteredResults}
+        description={`${trades.length} ${copy.tradesPage.tradeCountLabel}`}
+      />
 
-      <div className="overflow-x-auto">
-        <table className="min-w-[1380px] w-full border-separate border-spacing-y-2">
+      <DataTable minWidth={1380} className="mt-5">
           <thead>
-            <tr className="text-left text-xs uppercase tracking-[0.08em] text-slate-400">
-              <th className="px-3 pb-2">
+            <tr className="table-head-row">
+              <th className={dataTableHeadCellClassName}>
                 <SortableHeader
                   label={copy.recentTrades.columns.time}
                   sortKey="closedAt"
@@ -127,7 +131,7 @@ export default function TradesTable({
                   onSort={onSort}
                 />
               </th>
-              <th className="px-3 pb-2">
+              <th className={dataTableHeadCellClassName}>
                 <SortableHeader
                   label={copy.recentTrades.columns.symbol}
                   sortKey="symbol"
@@ -135,25 +139,25 @@ export default function TradesTable({
                   onSort={onSort}
                 />
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.recentTrades.columns.side}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.recentTrades.columns.setup}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.playbookPage.playbook}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.recentTrades.columns.entry}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.recentTrades.columns.exit}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.recentTrades.columns.risk}
               </th>
-              <th className="px-3 pb-2">
+              <th className={dataTableHeadCellClassName}>
                 <SortableHeader
                   label={copy.recentTrades.columns.pnl}
                   sortKey="pnl"
@@ -161,7 +165,7 @@ export default function TradesTable({
                   onSort={onSort}
                 />
               </th>
-              <th className="px-3 pb-2">
+              <th className={dataTableHeadCellClassName}>
                 <SortableHeader
                   label={copy.recentTrades.columns.rMultiple}
                   sortKey="rMultiple"
@@ -169,13 +173,13 @@ export default function TradesTable({
                   onSort={onSort}
                 />
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.tradesPage.notes}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.recentTrades.columns.status}
               </th>
-              <th className="px-3 pb-2 font-medium">
+              <th className={dataTableHeadCellClassName}>
                 {copy.tradesPage.actions}
               </th>
             </tr>
@@ -185,18 +189,23 @@ export default function TradesTable({
               <tr>
                 <td
                   colSpan={13}
-                  className="rounded-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-14 text-center"
+                  className="rounded-[18px] bg-white px-3 py-6 text-center"
                 >
-                  <p className="text-sm font-semibold text-slate-500">
-                    {hasAnyTrades ? copy.tradesPage.noFilterResults : copy.emptyState}
-                  </p>
-                  <button
-                    type="button"
+                  <EmptyState
+                    title={
+                      hasAnyTrades
+                        ? copy.tradesPage.noFilterResults
+                        : copy.emptyState
+                    }
+                    className="min-h-[220px]"
+                    action={
+                      <Button
                     onClick={hasAnyTrades ? onResetFilters : openCreateTrade}
-                    className="mt-4 inline-flex h-10 items-center justify-center rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.18)]"
                   >
                     {hasAnyTrades ? copy.tradesPage.resetFilters : copy.addTrade}
-                  </button>
+                      </Button>
+                    }
+                  />
                 </td>
               </tr>
             ) : (
@@ -204,11 +213,11 @@ export default function TradesTable({
                 const badge = getSymbolBadge(trade.symbol);
 
                 return (
-                  <tr key={trade.id} className="text-sm text-slate-600">
-                    <td className="rounded-l-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-4 font-medium text-slate-700">
+                  <tr key={trade.id} className="table-row-surface">
+                    <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
                       {formatTradeTimestamp(trade.closedAt)}
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
+                    <td className={dataTableCellClassName}>
                       <div className="flex items-center gap-3 font-semibold text-slate-900">
                         <span
                           className={cn(
@@ -221,15 +230,15 @@ export default function TradesTable({
                         {trade.symbol}
                       </div>
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
-                      <span className="inline-flex rounded-full bg-[rgba(108,77,255,0.08)] px-3 py-1 font-medium text-[var(--accent)]">
+                    <td className={dataTableCellClassName}>
+                      <Badge variant="purple">
                         {copy.side[trade.side]}
-                      </span>
+                      </Badge>
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4 font-medium text-slate-700">
+                    <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
                       {copy.strategies[trade.setup]}
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4 font-medium text-slate-700">
+                    <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
                       <span className="line-clamp-1">
                         {trade.playbookId
                           ? (getPlaybookById(trade.playbookId)?.name ??
@@ -237,18 +246,19 @@ export default function TradesTable({
                           : "—"}
                       </span>
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
+                    <td className={dataTableCellClassName}>
                       {formatTradePrice(trade.entryPrice)}
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
+                    <td className={dataTableCellClassName}>
                       {formatTradePrice(trade.exitPrice)}
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
+                    <td className={dataTableCellClassName}>
                       {formatRisk(trade.riskPercent)}
                     </td>
                     <td
                       className={cn(
-                        "bg-[rgba(250,250,255,0.88)] px-3 py-4 font-semibold",
+                        dataTableCellClassName,
+                        "font-semibold",
                         trade.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
                       )}
                     >
@@ -256,7 +266,8 @@ export default function TradesTable({
                     </td>
                     <td
                       className={cn(
-                        "bg-[rgba(250,250,255,0.88)] px-3 py-4 font-semibold",
+                        dataTableCellClassName,
+                        "font-semibold",
                         trade.rMultiple >= 0
                           ? "text-emerald-600"
                           : "text-rose-600",
@@ -264,50 +275,58 @@ export default function TradesTable({
                     >
                       {formatRMultiple(trade.rMultiple)}
                     </td>
-                    <td className="max-w-[180px] bg-[rgba(250,250,255,0.88)] px-3 py-4">
+                    <td className={cn(dataTableCellClassName, "max-w-[180px]")}>
                       <span className="line-clamp-1">
                         {trade.notes || copy.tradesPage.noNotes}
                       </span>
                     </td>
-                    <td className="bg-[rgba(250,250,255,0.88)] px-3 py-4">
-                      <span className="inline-flex rounded-full bg-emerald-50 px-3 py-1 font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-100">
+                    <td className={dataTableCellClassName}>
+                      <Badge variant="green">
                         {copy.status[trade.status]}
-                      </span>
+                      </Badge>
                     </td>
-                    <td className="rounded-r-[18px] bg-[rgba(250,250,255,0.88)] px-3 py-4">
+                    <td className={dataTableCellClassName}>
                       <div className="flex items-center gap-2">
-                        <button
-                          type="button"
+                        <Button
                           onClick={() => onView(trade)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-colors hover:bg-slate-200"
+                          variant="secondary"
+                          size="icon"
+                          className="h-8 w-8"
                           aria-label={copy.tradesPage.viewDetails}
+                          title={copy.tradesPage.viewDetails}
                         >
                           <Eye className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
                           onClick={() => openEditTrade(trade)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
                           aria-label={copy.tradesPage.editTrade}
+                          title={copy.tradesPage.editTrade}
                         >
                           <Pencil className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
                           onClick={() => handleAddNote(trade)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[rgba(108,77,255,0.08)] text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.14)]"
+                          variant="outline"
+                          size="icon"
+                          className="h-8 w-8"
                           aria-label={copy.notesPage.addNote}
+                          title={copy.notesPage.addNote}
                         >
                           <NotebookPen className="h-4 w-4" />
-                        </button>
-                        <button
-                          type="button"
+                        </Button>
+                        <Button
                           onClick={() => handleDelete(trade)}
-                          className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 text-rose-600 transition-colors hover:bg-rose-100"
+                          variant="danger"
+                          size="icon"
+                          className="h-8 w-8"
                           aria-label={copy.tradesPage.deleteTrade}
+                          title={copy.tradesPage.deleteTrade}
                         >
                           <Trash2 className="h-4 w-4" />
-                        </button>
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -315,8 +334,7 @@ export default function TradesTable({
               })
             )}
           </tbody>
-        </table>
-      </div>
-    </section>
+      </DataTable>
+    </Card>
   );
 }

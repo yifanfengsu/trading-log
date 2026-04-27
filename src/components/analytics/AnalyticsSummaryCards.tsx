@@ -12,9 +12,9 @@ import {
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import StatCard from "@/components/ui/StatCard";
 import type { AnalyticsSummary } from "@/lib/analytics-calculations";
 import {
-  cn,
   formatCurrency,
   formatPercent,
   formatProfitFactor,
@@ -32,13 +32,6 @@ interface SummaryItem {
   tone: "neutral" | "positive" | "negative" | "accent";
   icon: LucideIcon;
 }
-
-const toneClassMap = {
-  neutral: "text-slate-950",
-  positive: "text-emerald-600",
-  negative: "text-rose-600",
-  accent: "text-[var(--accent)]",
-} as const;
 
 export default function AnalyticsSummaryCards({
   summary,
@@ -106,22 +99,14 @@ export default function AnalyticsSummaryCards({
         const Icon = item.icon;
 
         return (
-          <article key={item.key} className="panel-card p-5">
-            <div className="flex items-start justify-between gap-3">
-              <p className="text-sm font-medium text-slate-500">{item.label}</p>
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(108,77,255,0.10)] text-[var(--accent)]">
-                <Icon className="h-5 w-5" />
-              </div>
-            </div>
-            <p
-              className={cn(
-                "mt-5 text-[28px] font-semibold tracking-[-0.04em]",
-                toneClassMap[item.tone],
-              )}
-            >
-              {item.value}
-            </p>
-          </article>
+          <StatCard
+            key={item.key}
+            label={item.label}
+            value={item.value}
+            tone={item.tone}
+            icon={Icon}
+            className="min-h-[132px]"
+          />
         );
       })}
     </section>

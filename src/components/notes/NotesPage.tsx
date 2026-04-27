@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { Archive, Link2, NotebookPen, Pin, Plus } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import NoteDetailDrawer from "@/components/notes/NoteDetailDrawer";
@@ -12,6 +12,10 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useNotes } from "@/components/providers/NotesStoreProvider";
 import { usePlaybooks } from "@/components/providers/PlaybookStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
+import Button from "@/components/ui/Button";
+import EmptyState from "@/components/ui/EmptyState";
+import PageHeader from "@/components/ui/PageHeader";
+import StatCard from "@/components/ui/StatCard";
 import {
   defaultNoteFilters,
   filterNotes,
@@ -20,7 +24,7 @@ import {
   type NoteFilters,
 } from "@/lib/note-calculations";
 import type { Note, NoteLink, NoteType } from "@/lib/note-types";
-import { cn, formatDateLabel } from "@/lib/utils";
+import { formatDateLabel } from "@/lib/utils";
 
 type EditorState =
   | {
@@ -37,28 +41,6 @@ type EditorState =
 interface NotesPageProps {
   initialLink?: NoteLink | null;
   initialLinkKey?: string | null;
-}
-
-interface SummaryCardProps {
-  label: string;
-  value: string;
-  tone?: "neutral" | "accent";
-}
-
-function SummaryCard({ label, value, tone = "neutral" }: SummaryCardProps) {
-  return (
-    <article className="panel-card p-5">
-      <p className="text-sm font-medium text-slate-500">{label}</p>
-      <p
-        className={cn(
-          "mt-5 text-[30px] font-semibold tracking-[-0.04em]",
-          tone === "accent" ? "text-[var(--accent)]" : "text-slate-950",
-        )}
-      >
-        {value}
-      </p>
-    </article>
-  );
 }
 
 export default function NotesPage({
@@ -144,42 +126,38 @@ export default function NotesPage({
 
   return (
     <>
-      <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.04em] text-slate-950 sm:text-[30px]">
-            {copy.notesPage.title}
-          </h1>
-          <p className="mt-2 text-sm text-slate-500">
-            {copy.notesPage.subtitle}
-          </p>
-        </div>
-        <button
-          type="button"
-          onClick={openCreateNote}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.22)] transition-colors hover:bg-[var(--accent-strong)]"
-        >
-          <Plus className="h-4 w-4" />
-          {copy.notesPage.newNote}
-        </button>
-      </section>
+      <PageHeader
+        title={copy.notesPage.title}
+        description={copy.notesPage.subtitle}
+        actions={
+          <Button onClick={openCreateNote}>
+            <Plus className="h-4 w-4" />
+            {copy.notesPage.newNote}
+          </Button>
+        }
+      />
 
       <section className="grid gap-5 md:grid-cols-2 2xl:grid-cols-4">
-        <SummaryCard
+        <StatCard
           label={copy.notesPage.totalNotes}
           value={String(summary.totalNotes)}
           tone="accent"
+          icon={NotebookPen}
         />
-        <SummaryCard
+        <StatCard
           label={copy.notesPage.pinnedNotes}
           value={String(summary.pinnedNotes)}
+          icon={Pin}
         />
-        <SummaryCard
+        <StatCard
           label={copy.notesPage.archived}
           value={String(summary.archivedNotes)}
+          icon={Archive}
         />
-        <SummaryCard
+        <StatCard
           label={copy.notesPage.linkedNotes}
           value={String(summary.linkedNotes)}
+          icon={Link2}
         />
       </section>
 
@@ -200,16 +178,14 @@ export default function NotesPage({
 
           {filteredNotes.length === 0 ? (
             <section className="panel-card px-5 py-14 text-center">
-              <p className="text-sm font-semibold text-slate-500">
-                {copy.notesPage.noFilterResults}
-              </p>
-              <button
-                type="button"
-                onClick={() => setFilters(defaultNoteFilters)}
-                className="mt-4 inline-flex h-10 items-center justify-center rounded-full bg-[var(--accent)] px-4 text-sm font-semibold text-white shadow-[0_12px_24px_rgba(108,77,255,0.18)]"
-              >
-                {copy.tradesPage.resetFilters}
-              </button>
+              <EmptyState
+                title={copy.notesPage.noFilterResults}
+                action={
+                  <Button onClick={() => setFilters(defaultNoteFilters)}>
+                    {copy.tradesPage.resetFilters}
+                  </Button>
+                }
+              />
             </section>
           ) : (
             <NotesList

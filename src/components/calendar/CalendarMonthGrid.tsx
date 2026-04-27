@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import Card from "@/components/ui/Card";
 import { getDateDisplay, getMonthMatrix } from "@/lib/calendar-utils";
 import {
   cn,
@@ -32,7 +33,7 @@ export default function CalendarMonthGrid({
   const cells = getMonthMatrix(year, month);
 
   return (
-    <section className="panel-card overflow-hidden p-4 sm:p-5 lg:p-6">
+    <Card className="overflow-hidden">
       <div className="overflow-x-auto pb-1">
         <div className="grid min-w-[760px] grid-cols-7 gap-2">
           {copy.calendar.weekdays.map((day) => (
@@ -57,7 +58,7 @@ export default function CalendarMonthGrid({
               return (
                 <div
                   key={cell.dateKey}
-                  className="min-h-[122px] rounded-[18px] border border-[rgba(151,161,184,0.10)] bg-[rgba(241,243,251,0.42)] p-3 text-slate-300"
+                  className="min-h-[122px] rounded-[18px] border border-slate-100 bg-slate-50/80 p-3 text-slate-300"
                 >
                   <span className="text-sm font-semibold">{cell.day}</span>
                 </div>
@@ -73,13 +74,13 @@ export default function CalendarMonthGrid({
                 className={cn(
                   "flex min-h-[122px] flex-col rounded-[18px] border p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(31,15,86,0.08)]",
                   !hasTrades &&
-                    "border-[rgba(151,161,184,0.12)] bg-white/74 hover:border-[rgba(108,77,255,0.20)]",
+                    "border-slate-100 bg-white/80 hover:border-violet-200",
                   isProfit &&
-                    "border-emerald-100 bg-[linear-gradient(180deg,rgba(22,163,74,0.13),rgba(255,255,255,0.92))]",
+                    "border-emerald-100 bg-[linear-gradient(180deg,#ECFDF5_0%,rgba(255,255,255,0.94)_100%)]",
                   isLoss &&
-                    "border-rose-100 bg-[linear-gradient(180deg,rgba(244,63,94,0.13),rgba(255,255,255,0.94))]",
+                    "border-rose-100 bg-[linear-gradient(180deg,#FFF1F2_0%,rgba(255,255,255,0.95)_100%)]",
                   isSelected &&
-                    "border-[rgba(108,77,255,0.55)] shadow-[inset_0_0_0_1px_rgba(108,77,255,0.32),0_14px_28px_rgba(108,77,255,0.10)]",
+                    "border-violet-300 shadow-[inset_0_0_0_1px_rgba(109,93,246,0.28),0_14px_28px_rgba(109,93,246,0.10)]",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
@@ -89,7 +90,7 @@ export default function CalendarMonthGrid({
                   <span
                     className={cn(
                       "h-2 w-2 rounded-full",
-                      isReviewed && "bg-[var(--accent)]",
+                      isReviewed && "bg-violet-500",
                       !isReviewed && hasTrades && "bg-slate-300",
                       !isReviewed && !hasTrades && "bg-transparent",
                     )}
@@ -115,7 +116,7 @@ export default function CalendarMonthGrid({
                       className={cn(
                         "inline-flex w-fit rounded-full px-2 py-1 text-[11px] font-semibold",
                         isReviewed
-                          ? "bg-[rgba(108,77,255,0.10)] text-[var(--accent)]"
+                          ? "bg-violet-50 text-violet-600"
                           : "bg-slate-100 text-slate-500",
                       )}
                     >
@@ -125,7 +126,7 @@ export default function CalendarMonthGrid({
                     </span>
                   </div>
                 ) : isReviewed ? (
-                  <span className="mt-auto inline-flex w-fit rounded-full bg-[rgba(108,77,255,0.10)] px-2 py-1 text-[11px] font-semibold text-[var(--accent)]">
+                  <span className="mt-auto inline-flex w-fit rounded-full bg-violet-50 px-2 py-1 text-[11px] font-semibold text-violet-600">
                     {copy.calendarPage.reviewed}
                   </span>
                 ) : null}
@@ -134,6 +135,6 @@ export default function CalendarMonthGrid({
           })}
         </div>
       </div>
-    </section>
+    </Card>
   );
 }
