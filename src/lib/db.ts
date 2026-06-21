@@ -65,6 +65,7 @@ interface TradeRow {
   stop_price: number | null;
   take_profit: number | null;
   fees: number | null;
+  leverage: number | null; // multiplier (e.g. 10 = 10x); NULL on pre-leverage rows
   screenshots: string | null; // JSON string[] of relative upload paths
   pnl_source: string | null; // "manual" (legacy) | "computed"
 }
@@ -89,6 +90,7 @@ interface TradeWriteParams {
   stop_price: number | null;
   take_profit: number | null;
   fees: number | null;
+  leverage: number | null;
   screenshots: string | null;
   pnl_source: string;
 }
@@ -124,6 +126,7 @@ function getDb(): Database.Database {
       stop_price REAL,
       take_profit REAL,
       fees REAL,
+      leverage REAL,
       screenshots TEXT,
       pnl_source TEXT
     );
@@ -247,6 +250,7 @@ function ensureTradeColumns(db: Database.Database) {
     ["stop_price", "REAL"],
     ["take_profit", "REAL"],
     ["fees", "REAL"],
+    ["leverage", "REAL"],
     ["screenshots", "TEXT"],
     ["pnl_source", "TEXT"],
   ];
@@ -326,6 +330,9 @@ function rowToTrade(row: TradeRow): Trade {
   if (row.fees !== null) {
     trade.fees = row.fees;
   }
+  if (row.leverage !== null) {
+    trade.leverage = row.leverage;
+  }
   if (row.playbook_id !== null) {
     trade.playbookId = row.playbook_id;
   }
@@ -384,6 +391,7 @@ function toWriteParams(input: unknown): TradeWriteParams {
     stop_price: isFiniteNumber(trade.stopPrice) ? trade.stopPrice : null,
     take_profit: isFiniteNumber(trade.takeProfit) ? trade.takeProfit : null,
     fees: isFiniteNumber(trade.fees) ? trade.fees : null,
+    leverage: isFiniteNumber(trade.leverage) ? trade.leverage : null,
     screenshots: isStringArray(trade.screenshots)
       ? JSON.stringify(trade.screenshots)
       : null,
@@ -397,11 +405,11 @@ const INSERT_SQL = `
   INSERT INTO trades (
     id, closed_at, symbol, side, setup, entry_price, exit_price,
     risk_percent, pnl, r_multiple, playbook_id, status, notes, tags,
-    quantity, stop_price, take_profit, fees, screenshots, pnl_source
+    quantity, stop_price, take_profit, fees, leverage, screenshots, pnl_source
   ) VALUES (
     @id, @closed_at, @symbol, @side, @setup, @entry_price, @exit_price,
     @risk_percent, @pnl, @r_multiple, @playbook_id, @status, @notes, @tags,
-    @quantity, @stop_price, @take_profit, @fees, @screenshots, @pnl_source
+    @quantity, @stop_price, @take_profit, @fees, @leverage, @screenshots, @pnl_source
   )
 `;
 
@@ -424,6 +432,7 @@ const UPDATE_SQL = `
     stop_price = @stop_price,
     take_profit = @take_profit,
     fees = @fees,
+    leverage = @leverage,
     screenshots = @screenshots,
     pnl_source = @pnl_source
   WHERE id = @id

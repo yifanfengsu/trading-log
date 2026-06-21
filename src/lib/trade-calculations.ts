@@ -74,6 +74,55 @@ export function computeRiskPercent({
   return accountBalance > 0 ? (initialRisk / accountBalance) * 100 : 0;
 }
 
+// ============================================================================
+// Leverage-derived display metrics — capital efficiency only.
+//
+// These NEVER touch pnl or rMultiple: pnl is driven by price move × quantity,
+// and R by the stop-defined risk — both independent of leverage. Leverage only
+// changes how much principal a position actually ties up, so it feeds the two
+// display-only metrics below (margin used + return on that margin).
+// ============================================================================
+
+export interface NotionalInput {
+  entryPrice: number;
+  quantity: number;
+}
+
+export interface MarginInput {
+  entryPrice: number;
+  quantity: number;
+  leverage: number;
+}
+
+export interface ReturnOnMarginInput {
+  pnl: number;
+  margin: number;
+}
+
+// Notional position value = entry price × quantity (leverage-independent).
+export function computeNotional({ entryPrice, quantity }: NotionalInput): number {
+  return entryPrice * quantity;
+}
+
+// Margin actually tied up = notional / leverage. Guards divide-by-zero: a 0 /
+// missing leverage falls back to 1x (i.e. margin == notional).
+export function computeMargin({
+  entryPrice,
+  quantity,
+  leverage,
+}: MarginInput): number {
+  return (entryPrice * quantity) / (leverage || 1);
+}
+
+// Return on margin = realized pnl / margin used, as a decimal (×100 to display
+// as a percentage). Guards against divide-by-zero.
+export function computeReturnOnMargin({
+  pnl,
+  margin,
+}: ReturnOnMarginInput): number {
+  return margin > 0 ? pnl / margin : 0;
+}
+
 export interface PeriodStats {
   netPnl: number;
   totalTrades: number;

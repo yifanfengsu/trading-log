@@ -10,10 +10,15 @@ import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import DrawerShell from "@/components/ui/DrawerShell";
+import {
+  computeMargin,
+  computeReturnOnMargin,
+} from "@/lib/trade-calculations";
 import type { Trade } from "@/lib/trade-types";
 import {
   cn,
   formatCurrency,
+  formatPercent,
   formatRMultiple,
   formatRisk,
   formatTradePrice,
@@ -59,6 +64,21 @@ export default function TradeDetailDrawer({
   const { getPlaybookById } = usePlaybooks();
   const { settings } = useUserSettings();
   const linkedNotes = getNotesForTrade(trade.id);
+  // Leverage-derived metrics are only meaningful when the trade has both a
+  // quantity and a recorded leverage (i.e. new computed trades). Legacy rows
+  // missing either show "—" rather than a misleading 1x-based number.
+  const margin =
+    trade.quantity !== undefined && trade.leverage !== undefined
+      ? computeMargin({
+          entryPrice: trade.entryPrice,
+          quantity: trade.quantity,
+          leverage: trade.leverage,
+        })
+      : null;
+  const returnOnMargin =
+    margin !== null && margin > 0
+      ? computeReturnOnMargin({ pnl: trade.pnl, margin })
+      : null;
   const playbookLabel = trade.playbookId
     ? (getPlaybookById(trade.playbookId)?.name ??
       copy.playbookPage.deletedPlaybook)
@@ -152,6 +172,10 @@ export default function TradeDetailDrawer({
               }
             />
             <DetailRow
+              label={copy.tradeForm.leverage}
+              value={trade.leverage !== undefined ? `${trade.leverage}x` : "—"}
+            />
+            <DetailRow
               label={copy.tradeForm.netPnl}
               value={formatCurrency(trade.pnl, settings.currency)}
               valueClassName={
@@ -163,6 +187,29 @@ export default function TradeDetailDrawer({
               value={formatRMultiple(trade.rMultiple)}
               valueClassName={
                 trade.rMultiple >= 0 ? "text-emerald-300" : "text-rose-300"
+              }
+            />
+            <DetailRow
+              label={copy.tradeForm.margin}
+              value={
+                margin !== null
+                  ? formatCurrency(margin, settings.currency)
+                  : "—"
+              }
+            />
+            <DetailRow
+              label={copy.tradeForm.returnOnMargin}
+              value={
+                returnOnMargin !== null
+                  ? formatPercent(returnOnMargin * 100)
+                  : "—"
+              }
+              valueClassName={
+                returnOnMargin === null
+                  ? undefined
+                  : returnOnMargin >= 0
+                    ? "text-emerald-300"
+                    : "text-rose-300"
               }
             />
             <DetailRow

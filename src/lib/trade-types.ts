@@ -29,6 +29,10 @@ export type Trade = {
   stopPrice?: number;
   takeProfit?: number;
   fees?: number;
+  // Leverage multiplier (e.g. 10 for 10x). Optional so legacy rows stay readable;
+  // it never affects pnl/rMultiple — only the derived margin / return-on-margin.
+  // Calculations default a missing value to 1x (see trade-calculations).
+  leverage?: number;
   riskPercent: number;
   pnl: number;
   rMultiple: number;

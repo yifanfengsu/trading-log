@@ -324,9 +324,12 @@ export interface Dictionary {
     stopPrice: string;
     takeProfit: string;
     fees: string;
+    leverage: string;
     riskPercent: string;
     netPnl: string;
     rMultiple: string;
+    margin: string;
+    returnOnMargin: string;
     playbook: string;
     notes: string;
     tags: string;
@@ -974,9 +977,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       stopPrice: "止损价",
       takeProfit: "止盈价",
       fees: "手续费",
+      leverage: "杠杆",
       riskPercent: "风险比例",
       netPnl: "净盈亏",
       rMultiple: "R 倍数",
+      margin: "保证金",
+      returnOnMargin: "保证金回报率",
       playbook: "策略手册",
       notes: "复盘笔记",
       tags: "标签",
@@ -990,7 +996,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       tagsPlaceholder: "趋势, 突破",
       enterSymbol: "请输入交易对",
       enterValidNumber: "请输入有效数字",
-      positiveNumberRequired: "数量和止损价必须为正数",
+      positiveNumberRequired: "数量、止损价和杠杆必须为正数",
       uploadFailed: "截图上传失败",
       requiredFields: "请填写所有必填项",
       deleteConfirm: "确定要删除这笔交易吗？",
@@ -1635,9 +1641,12 @@ export const dictionaries: Record<Locale, Dictionary> = {
       stopPrice: "Stop Price",
       takeProfit: "Take Profit",
       fees: "Fees",
+      leverage: "Leverage",
       riskPercent: "Risk %",
       netPnl: "Net P&L",
       rMultiple: "R-Multiple",
+      margin: "Margin",
+      returnOnMargin: "Return on Margin",
       playbook: "Playbook",
       notes: "Notes",
       tags: "Tags",
@@ -1651,7 +1660,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       tagsPlaceholder: "trend, breakout",
       enterSymbol: "Enter symbol",
       enterValidNumber: "Enter a valid number",
-      positiveNumberRequired: "Quantity and stop price must be positive",
+      positiveNumberRequired: "Quantity, stop price, and leverage must be positive",
       uploadFailed: "Screenshot upload failed",
       requiredFields: "Fill all required fields",
       deleteConfirm: "Delete this trade?",

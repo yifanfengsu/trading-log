@@ -15,8 +15,10 @@ import Textarea from "@/components/ui/Textarea";
 import type { UserSettings } from "@/lib/settings-types";
 import {
   computeInitialRisk,
+  computeMargin,
   computePnl,
   computeRMultiple,
+  computeReturnOnMargin,
   computeRiskPercent,
 } from "@/lib/trade-calculations";
 import type {
@@ -26,7 +28,7 @@ import type {
   TradeSide,
 } from "@/lib/trade-types";
 import { useUploadScreenshot } from "@/lib/use-upload-screenshot";
-import { cn, formatCurrency, formatRMultiple } from "@/lib/utils";
+import { cn, formatCurrency, formatPercent, formatRMultiple } from "@/lib/utils";
 
 interface TradeDrawerProps {
   mode: "create" | "edit";
@@ -45,10 +47,15 @@ interface TradeFormState {
   stopPrice: string;
   takeProfit: string;
   fees: string;
+  leverage: string;
   playbookId: string;
   notes: string;
   tags: string;
 }
+
+// Most trades here are contracts/futures, so leverage is required and pre-filled
+// with a sensible default for new trades (the user rarely changes it).
+const DEFAULT_LEVERAGE = "10";
 
 const sideOptions: TradeSide[] = ["long", "short"];
 const setupOptions: TradeSetup[] = [
@@ -90,6 +97,7 @@ function getInitialFormState(
       stopPrice: "",
       takeProfit: "",
       fees: "",
+      leverage: DEFAULT_LEVERAGE,
       playbookId: "",
       notes: "",
       tags: "",
@@ -107,6 +115,9 @@ function getInitialFormState(
     stopPrice: numberToField(trade.stopPrice),
     takeProfit: numberToField(trade.takeProfit),
     fees: numberToField(trade.fees),
+    // Legacy rows have no leverage → blank field; the user fills it in to
+    // complete the trade (same flow as backfilling quantity/stop on edit).
+    leverage: numberToField(trade.leverage),
     playbookId: trade.playbookId ?? "",
     notes: trade.notes ?? "",
     tags: trade.tags?.join(", ") ?? "",
@@ -190,6 +201,21 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
     pnlPreview !== null && initialRiskPreview !== null
       ? computeRMultiple({ pnl: pnlPreview, initialRisk: initialRiskPreview })
       : null;
+  // Leverage-derived efficiency metrics (display only; never feed pnl/R). A
+  // missing/0 leverage falls back to 1x inside computeMargin.
+  const leveragePreview = parseNumber(form.leverage);
+  const marginPreview =
+    entryPreview !== null && quantityPreview !== null
+      ? computeMargin({
+          entryPrice: entryPreview,
+          quantity: quantityPreview,
+          leverage: leveragePreview ?? 1,
+        })
+      : null;
+  const returnOnMarginPreview =
+    pnlPreview !== null && marginPreview !== null && marginPreview > 0
+      ? computeReturnOnMargin({ pnl: pnlPreview, margin: marginPreview })
+      : null;
 
   function updateField<Key extends keyof TradeFormState>(
     key: Key,
@@ -251,6 +277,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
     const stopPrice = parseNumber(form.stopPrice);
     const takeProfit = parseNumber(form.takeProfit);
     const fees = parseNumber(form.fees);
+    const leverage = parseNumber(form.leverage);
 
     if (!form.closedAt || !symbol) {
       setError(!symbol ? copy.tradeForm.enterSymbol : copy.tradeForm.requiredFields);
@@ -261,13 +288,14 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
       entryPrice === null ||
       exitPrice === null ||
       quantity === null ||
-      stopPrice === null
+      stopPrice === null ||
+      leverage === null
     ) {
       setError(copy.tradeForm.enterValidNumber);
       return;
     }
 
-    if (quantity <= 0 || stopPrice <= 0) {
+    if (quantity <= 0 || stopPrice <= 0 || leverage <= 0) {
       setError(copy.tradeForm.positiveNumberRequired);
       return;
     }
@@ -299,6 +327,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
       stopPrice,
       takeProfit: takeProfit !== null ? takeProfit : undefined,
       fees: fees !== null ? fees : undefined,
+      leverage,
       riskPercent,
       pnl,
       rMultiple,
@@ -509,6 +538,19 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
               </label>
             </div>
 
+            <label className="block text-sm font-medium text-slate-600">
+              {copy.tradeForm.leverage}
+              <Input
+                type="number"
+                step="any"
+                min="0"
+                value={form.leverage}
+                onChange={(event) => updateField("leverage", event.target.value)}
+                className="mt-2"
+                required
+              />
+            </label>
+
             <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-300">
                 {copy.tradeForm.computedPreview}
@@ -546,6 +588,33 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                     )}
                   >
                     {rPreview === null ? "—" : formatRMultiple(rPreview)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400">{copy.tradeForm.margin}</p>
+                  <p className="mt-1 text-lg font-semibold text-slate-100">
+                    {marginPreview === null
+                      ? "—"
+                      : formatCurrency(marginPreview, settings.currency)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400">
+                    {copy.tradeForm.returnOnMargin}
+                  </p>
+                  <p
+                    className={cn(
+                      "mt-1 text-lg font-semibold",
+                      returnOnMarginPreview === null
+                        ? "text-slate-500"
+                        : returnOnMarginPreview >= 0
+                          ? "text-emerald-300"
+                          : "text-rose-300",
+                    )}
+                  >
+                    {returnOnMarginPreview === null
+                      ? "—"
+                      : formatPercent(returnOnMarginPreview * 100)}
                   </p>
                 </div>
               </div>
