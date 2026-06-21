@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
-import { deleteTrade, updateTrade } from "@/lib/db";
+import { deleteTrade, getTradeById, updateTrade } from "@/lib/db";
+import { deleteTradeScreenshots } from "@/lib/uploads";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,10 +42,17 @@ export async function DELETE(_request: Request, { params }: RouteParams) {
   const { id } = await params;
 
   try {
+    // Capture the screenshot paths before the row is gone so we can clean up
+    // the files afterwards (best-effort; failures are logged, not fatal).
+    const existing = getTradeById(id);
     const deleted = deleteTrade(id);
 
     if (!deleted) {
       return NextResponse.json({ error: "Trade not found" }, { status: 404 });
+    }
+
+    if (existing?.screenshots && existing.screenshots.length > 0) {
+      await deleteTradeScreenshots(existing.screenshots);
     }
 
     return new NextResponse(null, { status: 204 });

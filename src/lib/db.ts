@@ -59,15 +59,17 @@ interface TradeRow {
   status: string;
   notes: string | null;
   tags: string | null;
-  // Reserved columns — not written this round, kept nullable for a future
-  // data-model change.
+  // Extended trade-model columns. All nullable so pre-migration rows (which
+  // never had them) read back cleanly as undefined / "manual".
   quantity: number | null;
   stop_price: number | null;
+  take_profit: number | null;
   fees: number | null;
+  screenshots: string | null; // JSON string[] of relative upload paths
+  pnl_source: string | null; // "manual" (legacy) | "computed"
 }
 
-// Parameters bound to the INSERT / UPDATE prepared statements. Mirrors the
-// columns we actually write (the reserved columns are intentionally omitted).
+// Parameters bound to the INSERT / UPDATE prepared statements.
 interface TradeWriteParams {
   id: string;
   closed_at: string;
@@ -83,6 +85,12 @@ interface TradeWriteParams {
   status: string;
   notes: string | null;
   tags: string | null;
+  quantity: number | null;
+  stop_price: number | null;
+  take_profit: number | null;
+  fees: number | null;
+  screenshots: string | null;
+  pnl_source: string;
 }
 
 let database: Database.Database | null = null;
@@ -114,9 +122,17 @@ function getDb(): Database.Database {
       tags TEXT,
       quantity REAL,
       stop_price REAL,
-      fees REAL
+      take_profit REAL,
+      fees REAL,
+      screenshots TEXT,
+      pnl_source TEXT
     );
   `);
+
+  // Bring an existing trades table (created before the extended trade model) up
+  // to date. ADD COLUMN is non-destructive: existing rows get NULL for the new
+  // columns and keep all their data. Idempotent — skips columns already present.
+  ensureTradeColumns(db);
 
   // All other domains share this same file and singleton connection. Array and
   // nested-object fields are stored as JSON strings (see the per-domain row <->
@@ -216,6 +232,32 @@ function getDb(): Database.Database {
   return db;
 }
 
+// Additive, idempotent schema migration for the trades table. Reads the current
+// columns via PRAGMA and ADDs any that are missing. Only ever adds nullable
+// columns — never drops, rebuilds, or rewrites existing data.
+function ensureTradeColumns(db: Database.Database) {
+  const existing = new Set(
+    (db.prepare("PRAGMA table_info(trades)").all() as { name: string }[]).map(
+      (column) => column.name,
+    ),
+  );
+
+  const expectedColumns: Array<[name: string, type: string]> = [
+    ["quantity", "REAL"],
+    ["stop_price", "REAL"],
+    ["take_profit", "REAL"],
+    ["fees", "REAL"],
+    ["screenshots", "TEXT"],
+    ["pnl_source", "TEXT"],
+  ];
+
+  for (const [name, type] of expectedColumns) {
+    if (!existing.has(name)) {
+      db.exec(`ALTER TABLE trades ADD COLUMN ${name} ${type}`);
+    }
+  }
+}
+
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
@@ -241,6 +283,17 @@ function rowToTrade(row: TradeRow): Trade {
     }
   }
 
+  let screenshots: string[] = [];
+
+  if (row.screenshots) {
+    try {
+      const parsed: unknown = JSON.parse(row.screenshots);
+      screenshots = isStringArray(parsed) ? parsed : [];
+    } catch {
+      screenshots = [];
+    }
+  }
+
   const trade: Trade = {
     id: row.id,
     closedAt: row.closed_at,
@@ -252,9 +305,27 @@ function rowToTrade(row: TradeRow): Trade {
     riskPercent: row.risk_percent,
     pnl: row.pnl,
     rMultiple: row.r_multiple,
+    // Legacy rows (NULL pnl_source) are treated as hand-entered "manual" data so
+    // their pnl/rMultiple are shown as-is and never recomputed.
+    pnlSource: row.pnl_source === "computed" ? "computed" : "manual",
+    screenshots,
     status: row.status as TradeStatus,
   };
 
+  // Pre-migration rows store NULL for these — map to undefined, never coerce to
+  // 0 (which would look like a real value).
+  if (row.quantity !== null) {
+    trade.quantity = row.quantity;
+  }
+  if (row.stop_price !== null) {
+    trade.stopPrice = row.stop_price;
+  }
+  if (row.take_profit !== null) {
+    trade.takeProfit = row.take_profit;
+  }
+  if (row.fees !== null) {
+    trade.fees = row.fees;
+  }
   if (row.playbook_id !== null) {
     trade.playbookId = row.playbook_id;
   }
@@ -307,16 +378,30 @@ function toWriteParams(input: unknown): TradeWriteParams {
     status: typeof trade.status === "string" ? trade.status : "closed",
     notes: typeof trade.notes === "string" ? trade.notes : null,
     tags: isStringArray(trade.tags) ? JSON.stringify(trade.tags) : null,
+    // New trade-model fields. Each is optional: a payload that omits them (an
+    // old backup being re-imported) persists NULL and stays valid.
+    quantity: isFiniteNumber(trade.quantity) ? trade.quantity : null,
+    stop_price: isFiniteNumber(trade.stopPrice) ? trade.stopPrice : null,
+    take_profit: isFiniteNumber(trade.takeProfit) ? trade.takeProfit : null,
+    fees: isFiniteNumber(trade.fees) ? trade.fees : null,
+    screenshots: isStringArray(trade.screenshots)
+      ? JSON.stringify(trade.screenshots)
+      : null,
+    // Default to "manual" unless the payload explicitly says "computed", so
+    // seed/legacy imports are never mislabeled as system-computed.
+    pnl_source: trade.pnlSource === "computed" ? "computed" : "manual",
   };
 }
 
 const INSERT_SQL = `
   INSERT INTO trades (
     id, closed_at, symbol, side, setup, entry_price, exit_price,
-    risk_percent, pnl, r_multiple, playbook_id, status, notes, tags
+    risk_percent, pnl, r_multiple, playbook_id, status, notes, tags,
+    quantity, stop_price, take_profit, fees, screenshots, pnl_source
   ) VALUES (
     @id, @closed_at, @symbol, @side, @setup, @entry_price, @exit_price,
-    @risk_percent, @pnl, @r_multiple, @playbook_id, @status, @notes, @tags
+    @risk_percent, @pnl, @r_multiple, @playbook_id, @status, @notes, @tags,
+    @quantity, @stop_price, @take_profit, @fees, @screenshots, @pnl_source
   )
 `;
 
@@ -334,7 +419,13 @@ const UPDATE_SQL = `
     playbook_id = @playbook_id,
     status = @status,
     notes = @notes,
-    tags = @tags
+    tags = @tags,
+    quantity = @quantity,
+    stop_price = @stop_price,
+    take_profit = @take_profit,
+    fees = @fees,
+    screenshots = @screenshots,
+    pnl_source = @pnl_source
   WHERE id = @id
 `;
 

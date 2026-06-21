@@ -320,16 +320,28 @@ export interface Dictionary {
     setup: string;
     entryPrice: string;
     exitPrice: string;
+    quantity: string;
+    stopPrice: string;
+    takeProfit: string;
+    fees: string;
     riskPercent: string;
     netPnl: string;
     rMultiple: string;
     playbook: string;
     notes: string;
     tags: string;
+    screenshots: string;
+    uploadScreenshot: string;
+    uploading: string;
+    removeScreenshot: string;
+    computedPreview: string;
+    autoCalculated: string;
     symbolPlaceholder: string;
     tagsPlaceholder: string;
     enterSymbol: string;
     enterValidNumber: string;
+    positiveNumberRequired: string;
+    uploadFailed: string;
     requiredFields: string;
     deleteConfirm: string;
   };
@@ -359,6 +371,10 @@ export interface Dictionary {
     tags: string;
     noNotes: string;
     noTags: string;
+    screenshots: string;
+    noScreenshots: string;
+    legacyManual: string;
+    legacyManualHint: string;
     filteredResults: string;
     tradeCountLabel: string;
   };
@@ -954,16 +970,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
       setup: "策略",
       entryPrice: "入场价",
       exitPrice: "出场价",
+      quantity: "数量",
+      stopPrice: "止损价",
+      takeProfit: "止盈价",
+      fees: "手续费",
       riskPercent: "风险比例",
       netPnl: "净盈亏",
       rMultiple: "R 倍数",
       playbook: "策略手册",
       notes: "复盘笔记",
       tags: "标签",
+      screenshots: "K线截图",
+      uploadScreenshot: "上传截图",
+      uploading: "上传中…",
+      removeScreenshot: "移除截图",
+      computedPreview: "自动计算预览",
+      autoCalculated: "自动计算",
       symbolPlaceholder: "请输入交易对",
       tagsPlaceholder: "趋势, 突破",
       enterSymbol: "请输入交易对",
       enterValidNumber: "请输入有效数字",
+      positiveNumberRequired: "数量和止损价必须为正数",
+      uploadFailed: "截图上传失败",
       requiredFields: "请填写所有必填项",
       deleteConfirm: "确定要删除这笔交易吗？",
     },
@@ -993,6 +1021,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       tags: "标签",
       noNotes: "无笔记",
       noTags: "无标签",
+      screenshots: "K线截图",
+      noScreenshots: "暂无截图",
+      legacyManual: "历史",
+      legacyManualHint: "历史手填数据，缺少数量与止损价",
       filteredResults: "筛选结果",
       tradeCountLabel: "笔交易",
     },
@@ -1599,16 +1631,28 @@ export const dictionaries: Record<Locale, Dictionary> = {
       setup: "Setup",
       entryPrice: "Entry Price",
       exitPrice: "Exit Price",
+      quantity: "Quantity",
+      stopPrice: "Stop Price",
+      takeProfit: "Take Profit",
+      fees: "Fees",
       riskPercent: "Risk %",
       netPnl: "Net P&L",
       rMultiple: "R-Multiple",
       playbook: "Playbook",
       notes: "Notes",
       tags: "Tags",
+      screenshots: "Chart Screenshots",
+      uploadScreenshot: "Upload Screenshot",
+      uploading: "Uploading…",
+      removeScreenshot: "Remove screenshot",
+      computedPreview: "Auto-calculated Preview",
+      autoCalculated: "Auto",
       symbolPlaceholder: "Enter symbol",
       tagsPlaceholder: "trend, breakout",
       enterSymbol: "Enter symbol",
       enterValidNumber: "Enter a valid number",
+      positiveNumberRequired: "Quantity and stop price must be positive",
+      uploadFailed: "Screenshot upload failed",
       requiredFields: "Fill all required fields",
       deleteConfirm: "Delete this trade?",
     },
@@ -1638,6 +1682,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       tags: "Tags",
       noNotes: "No notes",
       noTags: "No tags",
+      screenshots: "Chart Screenshots",
+      noScreenshots: "No screenshots",
+      legacyManual: "Legacy",
+      legacyManualHint: "Legacy manual entry — missing quantity and stop price",
       filteredResults: "Filtered Results",
       tradeCountLabel: "trades",
     },

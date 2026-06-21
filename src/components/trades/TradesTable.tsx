@@ -236,6 +236,14 @@ export default function TradesTable({
                           {badge.label}
                         </span>
                         {trade.symbol}
+                        {trade.pnlSource === "manual" ? (
+                          <Badge
+                            variant="amber"
+                            title={copy.tradesPage.legacyManualHint}
+                          >
+                            {copy.tradesPage.legacyManual}
+                          </Badge>
+                        ) : null}
                       </div>
                     </td>
                     <td className={dataTableCellClassName}>

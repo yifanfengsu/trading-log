@@ -41,6 +41,9 @@ yarn-error.log*
 *.db-wal
 *.db-shm
 
+# uploaded trade screenshots (local files, not version-controlled)
+/uploads/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

@@ -1,7 +1,78 @@
-import type { Trade, TradeSetup } from "@/lib/trade-types";
+import type { Trade, TradeSetup, TradeSide } from "@/lib/trade-types";
 import { getDateKey } from "@/lib/utils";
 
 export const STARTING_BALANCE = 100000;
+
+// ============================================================================
+// Per-trade derivation: pnl / initial risk / R-multiple / risk %
+//
+// These pure helpers are the single source of truth for turning the raw trade
+// inputs (side, prices, quantity, fees, stop) into pnl and R. The entry form
+// calls them for a live preview and again on submit so the persisted pnl /
+// rMultiple are always system-computed, never hand-typed.
+// ============================================================================
+
+export interface PnlInput {
+  side: TradeSide;
+  entryPrice: number;
+  exitPrice: number;
+  quantity: number;
+  fees?: number;
+}
+
+export interface InitialRiskInput {
+  entryPrice: number;
+  stopPrice: number;
+  quantity: number;
+}
+
+export interface RMultipleInput {
+  pnl: number;
+  initialRisk: number;
+}
+
+export interface RiskPercentInput {
+  initialRisk: number;
+  accountBalance: number;
+}
+
+// Long: (exit - entry) * qty - fees. Short: (entry - exit) * qty - fees.
+export function computePnl({
+  side,
+  entryPrice,
+  exitPrice,
+  quantity,
+  fees,
+}: PnlInput): number {
+  const gross =
+    side === "long"
+      ? (exitPrice - entryPrice) * quantity
+      : (entryPrice - exitPrice) * quantity;
+
+  return gross - (fees ?? 0);
+}
+
+// Risk taken on the trade in account currency: |entry - stop| * qty.
+export function computeInitialRisk({
+  entryPrice,
+  stopPrice,
+  quantity,
+}: InitialRiskInput): number {
+  return Math.abs(entryPrice - stopPrice) * quantity;
+}
+
+// R-multiple = realized pnl / initial risk. Guards against divide-by-zero.
+export function computeRMultiple({ pnl, initialRisk }: RMultipleInput): number {
+  return initialRisk > 0 ? pnl / initialRisk : 0;
+}
+
+// Risk as a percentage of the account balance (uses STARTING_BALANCE by default).
+export function computeRiskPercent({
+  initialRisk,
+  accountBalance,
+}: RiskPercentInput): number {
+  return accountBalance > 0 ? (initialRisk / accountBalance) * 100 : 0;
+}
 
 export interface PeriodStats {
   netPnl: number;

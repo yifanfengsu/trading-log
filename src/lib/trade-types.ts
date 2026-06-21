@@ -9,6 +9,12 @@ export type TradeSetup =
 
 export type TradeStatus = "closed";
 
+// "manual" trades are legacy rows whose pnl/rMultiple were hand-entered before
+// the data model gained quantity/stopPrice (they cannot be recomputed). "computed"
+// trades have pnl/rMultiple derived from the new fields. New/edited trades are
+// always "computed"; pre-migration rows are read back as "manual".
+export type TradePnlSource = "manual" | "computed";
+
 export type Trade = {
   id: string;
   closedAt: string;
@@ -17,9 +23,18 @@ export type Trade = {
   setup: TradeSetup;
   entryPrice: number;
   exitPrice: number;
+  // Optional so legacy rows (missing these before the migration) stay readable.
+  // The entry form requires quantity/stopPrice as positive numbers for new trades.
+  quantity?: number;
+  stopPrice?: number;
+  takeProfit?: number;
+  fees?: number;
   riskPercent: number;
   pnl: number;
   rMultiple: number;
+  pnlSource?: TradePnlSource;
+  // Relative paths under uploads/ (e.g. "uploads/trades/<id>-<ts>.png").
+  screenshots?: string[];
   playbookId?: string;
   status: TradeStatus;
   notes?: string;

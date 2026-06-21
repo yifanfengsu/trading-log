@@ -88,6 +88,15 @@ export default function TradeDetailDrawer({
       }
     >
         <div className="space-y-5">
+          {trade.pnlSource === "manual" ? (
+            <div className="flex items-start gap-3 rounded-[18px] border border-[rgba(245,158,11,0.24)] bg-[rgba(245,158,11,0.08)] px-4 py-3">
+              <Badge variant="amber">{copy.tradesPage.legacyManual}</Badge>
+              <p className="text-xs leading-5 text-amber-200/90">
+                {copy.tradesPage.legacyManualHint}
+              </p>
+            </div>
+          ) : null}
+
           <div className="rounded-[20px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4">
             <DetailRow
               label={copy.tradeForm.closeTime}
@@ -109,8 +118,38 @@ export default function TradeDetailDrawer({
               value={formatTradePrice(trade.exitPrice)}
             />
             <DetailRow
+              label={copy.tradeForm.quantity}
+              value={
+                trade.quantity !== undefined ? String(trade.quantity) : "—"
+              }
+            />
+            <DetailRow
+              label={copy.tradeForm.stopPrice}
+              value={
+                trade.stopPrice !== undefined
+                  ? formatTradePrice(trade.stopPrice)
+                  : "—"
+              }
+            />
+            <DetailRow
+              label={copy.tradeForm.takeProfit}
+              value={
+                trade.takeProfit !== undefined
+                  ? formatTradePrice(trade.takeProfit)
+                  : "—"
+              }
+            />
+            <DetailRow
               label={copy.tradeForm.riskPercent}
               value={formatRisk(trade.riskPercent)}
+            />
+            <DetailRow
+              label={copy.tradeForm.fees}
+              value={
+                trade.fees !== undefined
+                  ? formatCurrency(trade.fees, settings.currency)
+                  : "—"
+              }
             />
             <DetailRow
               label={copy.tradeForm.netPnl}
@@ -158,6 +197,36 @@ export default function TradeDetailDrawer({
                 </span>
               )}
             </div>
+          </div>
+
+          <div className="mt-5">
+            <p className="text-sm font-semibold text-slate-100">
+              {copy.tradesPage.screenshots}
+            </p>
+            {trade.screenshots && trade.screenshots.length > 0 ? (
+              <div className="mt-2 flex flex-wrap gap-3">
+                {trade.screenshots.map((screenshot) => (
+                  <a
+                    key={screenshot}
+                    href={`/api/${screenshot}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block h-24 w-24 overflow-hidden rounded-2xl border border-white/10 bg-[rgba(2,6,23,0.34)] transition-transform hover:-translate-y-0.5"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/${screenshot}`}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-2 text-sm text-slate-400">
+                {copy.tradesPage.noScreenshots}
+              </p>
+            )}
           </div>
 
           <LinkedNotesPreview notes={linkedNotes} onAdd={handleAddNote} />

@@ -1,5 +1,6 @@
 "use client";
 
+import { ImagePlus, X } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -12,12 +13,20 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Textarea from "@/components/ui/Textarea";
 import type { UserSettings } from "@/lib/settings-types";
+import {
+  computeInitialRisk,
+  computePnl,
+  computeRMultiple,
+  computeRiskPercent,
+} from "@/lib/trade-calculations";
 import type {
   Trade,
   TradeInput,
   TradeSetup,
   TradeSide,
 } from "@/lib/trade-types";
+import { useUploadScreenshot } from "@/lib/use-upload-screenshot";
+import { cn, formatCurrency, formatRMultiple } from "@/lib/utils";
 
 interface TradeDrawerProps {
   mode: "create" | "edit";
@@ -32,9 +41,10 @@ interface TradeFormState {
   setup: TradeSetup;
   entryPrice: string;
   exitPrice: string;
-  riskPercent: string;
-  pnl: string;
-  rMultiple: string;
+  quantity: string;
+  stopPrice: string;
+  takeProfit: string;
+  fees: string;
   playbookId: string;
   notes: string;
   tags: string;
@@ -60,6 +70,10 @@ function getCurrentDatetimeLocal() {
   return `${year}-${month}-${day}T${hours}:${minutes}`;
 }
 
+function numberToField(value: number | undefined) {
+  return value === undefined ? "" : String(value);
+}
+
 function getInitialFormState(
   trade: Trade | undefined,
   settings: UserSettings,
@@ -72,9 +86,10 @@ function getInitialFormState(
       setup: settings.defaultSetup,
       entryPrice: "",
       exitPrice: "",
-      riskPercent: String(settings.defaultRiskPercent),
-      pnl: "",
-      rMultiple: "",
+      quantity: "",
+      stopPrice: "",
+      takeProfit: "",
+      fees: "",
       playbookId: "",
       notes: "",
       tags: "",
@@ -88,9 +103,10 @@ function getInitialFormState(
     setup: trade.setup,
     entryPrice: String(trade.entryPrice),
     exitPrice: String(trade.exitPrice),
-    riskPercent: String(trade.riskPercent),
-    pnl: String(trade.pnl),
-    rMultiple: String(trade.rMultiple),
+    quantity: numberToField(trade.quantity),
+    stopPrice: numberToField(trade.stopPrice),
+    takeProfit: numberToField(trade.takeProfit),
+    fees: numberToField(trade.fees),
     playbookId: trade.playbookId ?? "",
     notes: trade.notes ?? "",
     tags: trade.tags?.join(", ") ?? "",
@@ -121,6 +137,10 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
   const [form, setForm] = useState<TradeFormState>(() =>
     getInitialFormState(mode === "edit" ? trade : undefined, settings),
   );
+  const [screenshots, setScreenshots] = useState<string[]>(
+    () => (mode === "edit" ? (trade?.screenshots ?? []) : []),
+  );
+  const { uploadScreenshots, uploading, uploadError } = useUploadScreenshot();
   const [error, setError] = useState<string | null>(null);
   const title =
     mode === "create" ? copy.tradeForm.addTitle : copy.tradeForm.editTitle;
@@ -140,6 +160,36 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
   const hasDeletedSelectedPlaybook = Boolean(
     form.playbookId && !selectedPlaybook,
   );
+
+  // Live preview of the system-computed pnl / R from the current inputs. Mirrors
+  // exactly what handleSubmit persists, so the user sees the result while typing.
+  const entryPreview = parseNumber(form.entryPrice);
+  const exitPreview = parseNumber(form.exitPrice);
+  const quantityPreview = parseNumber(form.quantity);
+  const stopPreview = parseNumber(form.stopPrice);
+  const feesPreview = parseNumber(form.fees);
+  const pnlPreview =
+    entryPreview !== null && exitPreview !== null && quantityPreview !== null
+      ? computePnl({
+          side: form.side,
+          entryPrice: entryPreview,
+          exitPrice: exitPreview,
+          quantity: quantityPreview,
+          fees: feesPreview ?? 0,
+        })
+      : null;
+  const initialRiskPreview =
+    entryPreview !== null && stopPreview !== null && quantityPreview !== null
+      ? computeInitialRisk({
+          entryPrice: entryPreview,
+          stopPrice: stopPreview,
+          quantity: quantityPreview,
+        })
+      : null;
+  const rPreview =
+    pnlPreview !== null && initialRiskPreview !== null
+      ? computeRMultiple({ pnl: pnlPreview, initialRisk: initialRiskPreview })
+      : null;
 
   function updateField<Key extends keyof TradeFormState>(
     key: Key,
@@ -179,15 +229,28 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
     });
   }
 
+  async function handleFilesSelected(fileList: FileList | null) {
+    const uploaded = await uploadScreenshots(fileList, trade?.id);
+
+    if (uploaded.length > 0) {
+      setScreenshots((current) => [...current, ...uploaded]);
+    }
+  }
+
+  function handleRemoveScreenshot(index: number) {
+    setScreenshots((current) => current.filter((_, i) => i !== index));
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const symbol = form.symbol.trim().toUpperCase();
     const entryPrice = parseNumber(form.entryPrice);
     const exitPrice = parseNumber(form.exitPrice);
-    const riskPercent = parseNumber(form.riskPercent);
-    const pnl = parseNumber(form.pnl);
-    const rMultiple = parseNumber(form.rMultiple);
+    const quantity = parseNumber(form.quantity);
+    const stopPrice = parseNumber(form.stopPrice);
+    const takeProfit = parseNumber(form.takeProfit);
+    const fees = parseNumber(form.fees);
 
     if (!form.closedAt || !symbol) {
       setError(!symbol ? copy.tradeForm.enterSymbol : copy.tradeForm.requiredFields);
@@ -197,13 +260,32 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
     if (
       entryPrice === null ||
       exitPrice === null ||
-      riskPercent === null ||
-      pnl === null ||
-      rMultiple === null
+      quantity === null ||
+      stopPrice === null
     ) {
       setError(copy.tradeForm.enterValidNumber);
       return;
     }
+
+    if (quantity <= 0 || stopPrice <= 0) {
+      setError(copy.tradeForm.positiveNumberRequired);
+      return;
+    }
+
+    // pnl / R / risk% are always system-computed here — never taken from input.
+    const pnl = computePnl({
+      side: form.side,
+      entryPrice,
+      exitPrice,
+      quantity,
+      fees: fees ?? 0,
+    });
+    const initialRisk = computeInitialRisk({ entryPrice, stopPrice, quantity });
+    const rMultiple = computeRMultiple({ pnl, initialRisk });
+    const riskPercent = computeRiskPercent({
+      initialRisk,
+      accountBalance: settings.startingBalance,
+    });
 
     const tradeInput: TradeInput = {
       closedAt:
@@ -213,9 +295,15 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
       setup: form.setup,
       entryPrice,
       exitPrice,
+      quantity,
+      stopPrice,
+      takeProfit: takeProfit !== null ? takeProfit : undefined,
+      fees: fees !== null ? fees : undefined,
       riskPercent,
       pnl,
       rMultiple,
+      pnlSource: "computed",
+      screenshots,
       playbookId: form.playbookId || undefined,
       status: "closed",
       notes: form.notes.trim() || undefined,
@@ -367,46 +455,158 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
               </label>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-4 sm:grid-cols-2">
               <label className="block text-sm font-medium text-slate-600">
-                {copy.tradeForm.riskPercent}
+                {copy.tradeForm.quantity}
                 <Input
                   type="number"
                   step="any"
-                  value={form.riskPercent}
-                  onChange={(event) =>
-                    updateField("riskPercent", event.target.value)
-                  }
+                  min="0"
+                  value={form.quantity}
+                  onChange={(event) => updateField("quantity", event.target.value)}
                   className="mt-2"
                   required
                 />
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
-                {copy.tradeForm.netPnl}
+                {copy.tradeForm.stopPrice}
                 <Input
                   type="number"
                   step="any"
-                  value={form.pnl}
-                  onChange={(event) => updateField("pnl", event.target.value)}
+                  min="0"
+                  value={form.stopPrice}
+                  onChange={(event) => updateField("stopPrice", event.target.value)}
                   className="mt-2"
                   required
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block text-sm font-medium text-slate-600">
+                {copy.tradeForm.takeProfit}
+                <Input
+                  type="number"
+                  step="any"
+                  value={form.takeProfit}
+                  onChange={(event) =>
+                    updateField("takeProfit", event.target.value)
+                  }
+                  className="mt-2"
                 />
               </label>
 
               <label className="block text-sm font-medium text-slate-600">
-                {copy.tradeForm.rMultiple}
+                {copy.tradeForm.fees}
                 <Input
                   type="number"
                   step="any"
-                  value={form.rMultiple}
-                  onChange={(event) =>
-                    updateField("rMultiple", event.target.value)
-                  }
+                  value={form.fees}
+                  onChange={(event) => updateField("fees", event.target.value)}
                   className="mt-2"
-                  required
                 />
               </label>
+            </div>
+
+            <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-300">
+                {copy.tradeForm.computedPreview}
+              </p>
+              <div className="mt-3 grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-slate-400">{copy.tradeForm.netPnl}</p>
+                  <p
+                    className={cn(
+                      "mt-1 text-lg font-semibold",
+                      pnlPreview === null
+                        ? "text-slate-500"
+                        : pnlPreview >= 0
+                          ? "text-emerald-300"
+                          : "text-rose-300",
+                    )}
+                  >
+                    {pnlPreview === null
+                      ? "—"
+                      : formatCurrency(pnlPreview, settings.currency)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-400">
+                    {copy.tradeForm.rMultiple}
+                  </p>
+                  <p
+                    className={cn(
+                      "mt-1 text-lg font-semibold",
+                      rPreview === null
+                        ? "text-slate-500"
+                        : rPreview >= 0
+                          ? "text-emerald-300"
+                          : "text-rose-300",
+                    )}
+                  >
+                    {rPreview === null ? "—" : formatRMultiple(rPreview)}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="block text-sm font-medium text-slate-600">
+              {copy.tradeForm.screenshots}
+              <div className="mt-2 flex flex-wrap gap-3">
+                {screenshots.map((screenshot, index) => (
+                  <div
+                    key={screenshot}
+                    className="relative h-20 w-20 overflow-hidden rounded-2xl border border-white/10 bg-[rgba(2,6,23,0.34)]"
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={`/api/${screenshot}`}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveScreenshot(index)}
+                      aria-label={copy.tradeForm.removeScreenshot}
+                      title={copy.tradeForm.removeScreenshot}
+                      className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(2,6,23,0.78)] text-slate-200 ring-1 ring-white/10 transition-colors hover:bg-rose-500/80 hover:text-white"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+                ))}
+
+                <label
+                  className={cn(
+                    "inline-flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[rgba(148,163,184,0.30)] bg-[rgba(2,6,23,0.30)] text-xs font-medium text-slate-400 transition-colors hover:border-[rgba(124,92,255,0.50)] hover:text-slate-100",
+                    uploading && "pointer-events-none opacity-60",
+                  )}
+                >
+                  <ImagePlus className="h-5 w-5" />
+                  <span>
+                    {uploading
+                      ? copy.tradeForm.uploading
+                      : copy.tradeForm.uploadScreenshot}
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp,image/gif"
+                    multiple
+                    className="hidden"
+                    disabled={uploading}
+                    onChange={(event) => {
+                      void handleFilesSelected(event.target.files);
+                      event.target.value = "";
+                    }}
+                  />
+                </label>
+              </div>
+              {uploadError ? (
+                <p className="mt-2 text-xs font-medium text-rose-300">
+                  {uploadError}
+                </p>
+              ) : null}
             </div>
 
             <label className="block text-sm font-medium text-slate-600">
