@@ -73,7 +73,7 @@ export default function SymbolPerformanceChart({
   }
 
   return (
-    <section className="panel-card p-5 lg:p-6">
+    <section className="panel-card min-w-0 p-5 lg:p-6">
       <h2 className="panel-title">{copy.analyticsPage.symbolPerformance}</h2>
 
       {data.length === 0 ? (
@@ -81,9 +81,9 @@ export default function SymbolPerformanceChart({
           {copy.analyticsPage.noTradeData}
         </div>
       ) : (
-        <div className="mt-5 h-[300px] w-full">
+        <div className="mt-5 h-[300px] w-full min-w-0">
           {isClient ? (
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height={300}>
               <BarChart
                 data={data}
                 layout="vertical"

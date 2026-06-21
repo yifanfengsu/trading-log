@@ -46,7 +46,7 @@ export default function TradesToolbar({
 
   return (
     <Toolbar>
-      <div className="grid gap-3 xl:grid-cols-[minmax(220px,1.2fr)_repeat(5,minmax(140px,0.75fr))_auto]">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-[minmax(180px,1.2fr)_repeat(5,minmax(150px,0.85fr))_auto]">
         <label className="relative">
           <span className="sr-only">{copy.tradesPage.searchSymbol}</span>
           <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />

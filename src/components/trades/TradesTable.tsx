@@ -214,6 +214,11 @@ export default function TradesTable({
             ) : (
               trades.map((trade) => {
                 const badge = getSymbolBadge(trade.symbol);
+                const playbookName = trade.playbookId
+                  ? (getPlaybookById(trade.playbookId)?.name ??
+                    copy.playbookPage.deletedPlaybook)
+                  : "—";
+                const notesText = trade.notes || copy.tradesPage.noNotes;
 
                 return (
                   <tr key={trade.id} className="group table-row-surface">
@@ -238,15 +243,12 @@ export default function TradesTable({
                         {copy.side[trade.side]}
                       </Badge>
                     </td>
-                    <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
+                    <td className={cn(dataTableCellClassName, "whitespace-nowrap font-medium text-slate-300")}>
                       {copy.strategies[trade.setup]}
                     </td>
                     <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
-                      <span className="line-clamp-1">
-                        {trade.playbookId
-                          ? (getPlaybookById(trade.playbookId)?.name ??
-                            copy.playbookPage.deletedPlaybook)
-                          : "—"}
+                      <span className="block max-w-[200px] truncate" title={playbookName}>
+                        {playbookName}
                       </span>
                     </td>
                     <td className={dataTableCellClassName}>
@@ -278,9 +280,9 @@ export default function TradesTable({
                     >
                       {formatRMultiple(trade.rMultiple)}
                     </td>
-                    <td className={cn(dataTableCellClassName, "max-w-[180px]")}>
-                      <span className="line-clamp-1">
-                        {trade.notes || copy.tradesPage.noNotes}
+                    <td className={dataTableCellClassName}>
+                      <span className="block max-w-[220px] truncate" title={notesText}>
+                        {notesText}
                       </span>
                     </td>
                     <td className={dataTableCellClassName}>
