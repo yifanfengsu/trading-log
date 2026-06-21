@@ -32,14 +32,14 @@ export default function RiskGuardrailsPanel({
   return (
     <aside className="panel-card h-fit p-5 lg:p-6">
       <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(108,77,255,0.09)] text-[var(--accent)]">
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(124,92,255,0.14)] text-violet-200 ring-1 ring-inset ring-[rgba(124,92,255,0.24)]">
           <ShieldAlert className="h-5 w-5" />
         </div>
         <h2 className="panel-title">{copy.goalsPage.riskGuardrails}</h2>
       </div>
 
       {guardrails.length === 0 ? (
-        <p className="mt-5 rounded-[18px] bg-[rgba(250,250,255,0.88)] px-4 py-8 text-center text-sm font-medium text-slate-400">
+        <p className="mt-5 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-8 text-center text-sm font-medium text-slate-400">
           {copy.goalsPage.noActiveRiskGoals}
         </p>
       ) : (
@@ -59,11 +59,11 @@ export default function RiskGuardrailsPanel({
             return (
               <article
                 key={goal.id}
-                className="rounded-[18px] border border-[rgba(148,163,184,0.14)] bg-white px-4 py-4 shadow-[0_8px_18px_rgba(31,15,86,0.04)]"
+                className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-4 shadow-[0_12px_28px_rgba(2,6,23,0.22)]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <h3 className="line-clamp-1 text-sm font-semibold text-slate-950">
+                    <h3 className="line-clamp-1 text-sm font-semibold text-slate-100">
                       {goal.title}
                     </h3>
                     <p className="mt-1 text-xs text-slate-400">
@@ -93,8 +93,8 @@ export default function RiskGuardrailsPanel({
                     </p>
                     <p
                       className={cn(
-                        "mt-1 font-semibold text-slate-950",
-                        status === "exceeded" && "text-rose-600",
+                        "mt-1 font-semibold text-slate-100",
+                        status === "exceeded" && "text-rose-300",
                       )}
                     >
                       {formatGoalValue(
@@ -109,7 +109,7 @@ export default function RiskGuardrailsPanel({
                     <p className="text-xs font-medium text-slate-400">
                       {copy.goalsPage.limit}
                     </p>
-                    <p className="mt-1 font-semibold text-slate-950">
+                    <p className="mt-1 font-semibold text-slate-100">
                       {formatGoalValue(
                         progress.targetValue,
                         goal.unit,
@@ -121,7 +121,7 @@ export default function RiskGuardrailsPanel({
                 </div>
 
                 <div className="mt-4">
-                  <div className="h-2.5 overflow-hidden rounded-full bg-slate-100">
+                  <div className="h-2.5 overflow-hidden rounded-full bg-[rgba(148,163,184,0.14)]">
                     <div
                       className={cn(
                         "h-full rounded-full transition-all",

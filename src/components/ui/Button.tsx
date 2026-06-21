@@ -14,15 +14,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClassMap: Record<ButtonVariant, string> = {
   primary:
-    "border border-violet-600 bg-violet-600 text-white shadow-[0_12px_24px_rgba(109,93,246,0.22)] hover:border-violet-700 hover:bg-violet-700 active:bg-violet-800",
+    "border border-[rgba(124,92,255,0.65)] bg-[linear-gradient(135deg,#7C5CFF_0%,#6366F1_48%,#22D3EE_100%)] text-white shadow-[0_14px_32px_rgba(124,92,255,0.28)] hover:border-[rgba(34,211,238,0.65)] hover:shadow-[0_18px_42px_rgba(124,92,255,0.34),0_0_24px_rgba(34,211,238,0.16)] active:scale-[0.99]",
   secondary:
-    "border border-slate-200 bg-white text-slate-700 shadow-[0_8px_18px_rgba(30,41,59,0.04)] hover:border-violet-200 hover:text-slate-950",
+    "border border-white/10 bg-[rgba(15,23,42,0.66)] text-slate-200 shadow-[0_10px_24px_rgba(2,6,23,0.22)] hover:border-[rgba(124,92,255,0.38)] hover:bg-[rgba(30,41,59,0.78)] hover:text-white",
   ghost:
-    "border border-transparent bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-950",
+    "border border-transparent bg-transparent text-slate-300 hover:bg-[rgba(124,92,255,0.10)] hover:text-white",
   danger:
-    "border border-rose-100 bg-rose-50 text-rose-600 hover:border-rose-200 hover:bg-rose-100",
+    "border border-[rgba(244,63,94,0.30)] bg-[rgba(244,63,94,0.10)] text-rose-300 hover:border-[rgba(244,63,94,0.46)] hover:bg-[rgba(244,63,94,0.16)] hover:text-rose-200",
   outline:
-    "border border-violet-200 bg-white text-violet-600 hover:bg-violet-50 hover:text-violet-700",
+    "border border-[rgba(124,92,255,0.30)] bg-[rgba(124,92,255,0.08)] text-violet-200 hover:border-[rgba(34,211,238,0.34)] hover:bg-[rgba(124,92,255,0.14)] hover:text-white",
 };
 
 const sizeClassMap: Record<ButtonSize, string> = {
@@ -44,7 +44,7 @@ export default function Button({
       type={type ?? "button"}
       className={cn(
         "inline-flex shrink-0 items-center justify-center font-semibold transition-all duration-200",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-200",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgba(124,92,255,0.55)]",
         "disabled:pointer-events-none disabled:opacity-50",
         variantClassMap[variant],
         sizeClassMap[size],

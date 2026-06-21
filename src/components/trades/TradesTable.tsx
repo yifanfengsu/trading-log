@@ -57,7 +57,7 @@ function SortableHeader({
     <button
       type="button"
       onClick={() => onSort(sortKey)}
-      className="inline-flex items-center gap-1 font-medium text-slate-400 transition-colors hover:text-slate-700"
+      className="inline-flex items-center gap-1 font-medium text-slate-400 transition-colors hover:text-slate-100"
     >
       {label}
       {isActive ? <Icon className="h-3.5 w-3.5" /> : null}
@@ -71,20 +71,23 @@ function getSymbolBadge(symbol: string) {
   if (asset === "BTC") {
     return {
       label: "B",
-      className: "bg-amber-50 text-amber-600 ring-amber-100",
+      className:
+        "bg-[rgba(245,158,11,0.12)] text-amber-300 ring-[rgba(245,158,11,0.22)]",
     };
   }
 
   if (asset === "ETH") {
     return {
       label: "E",
-      className: "bg-indigo-50 text-indigo-600 ring-indigo-100",
+      className:
+        "bg-[rgba(99,102,241,0.14)] text-indigo-200 ring-[rgba(99,102,241,0.24)]",
     };
   }
 
   return {
     label: asset.slice(0, 1) || "T",
-    className: "bg-cyan-50 text-cyan-600 ring-cyan-100",
+    className:
+      "bg-[rgba(34,211,238,0.12)] text-cyan-200 ring-[rgba(34,211,238,0.22)]",
   };
 }
 
@@ -189,7 +192,7 @@ export default function TradesTable({
               <tr>
                 <td
                   colSpan={13}
-                  className="rounded-[18px] bg-white px-3 py-6 text-center"
+                  className="rounded-[18px] bg-[rgba(15,23,42,0.46)] px-3 py-6 text-center"
                 >
                   <EmptyState
                     title={
@@ -214,11 +217,11 @@ export default function TradesTable({
 
                 return (
                   <tr key={trade.id} className="group table-row-surface">
-                    <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
+                    <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
                       {formatTradeTimestamp(trade.closedAt)}
                     </td>
                     <td className={dataTableCellClassName}>
-                      <div className="flex items-center gap-3 font-semibold text-slate-900">
+                      <div className="flex items-center gap-3 font-semibold text-slate-100">
                         <span
                           className={cn(
                             "inline-flex h-9 w-9 items-center justify-center rounded-full text-sm ring-1 ring-inset",
@@ -235,10 +238,10 @@ export default function TradesTable({
                         {copy.side[trade.side]}
                       </Badge>
                     </td>
-                    <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
+                    <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
                       {copy.strategies[trade.setup]}
                     </td>
-                    <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
+                    <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
                       <span className="line-clamp-1">
                         {trade.playbookId
                           ? (getPlaybookById(trade.playbookId)?.name ??
@@ -259,7 +262,7 @@ export default function TradesTable({
                       className={cn(
                         dataTableCellClassName,
                         "font-semibold",
-                        trade.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
+                        trade.pnl >= 0 ? "text-emerald-300" : "text-rose-300",
                       )}
                     >
                       {formatCurrency(trade.pnl, settings.currency)}
@@ -269,8 +272,8 @@ export default function TradesTable({
                         dataTableCellClassName,
                         "font-semibold",
                         trade.rMultiple >= 0
-                          ? "text-emerald-600"
-                          : "text-rose-600",
+                          ? "text-emerald-300"
+                          : "text-rose-300",
                       )}
                     >
                       {formatRMultiple(trade.rMultiple)}

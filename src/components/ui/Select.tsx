@@ -14,8 +14,8 @@ const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
     <select
       ref={ref}
       className={cn(
-        "h-11 w-full rounded-2xl border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-[0_1px_0_rgba(15,23,42,0.02)] outline-none transition-all",
-        "hover:border-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:bg-slate-50 disabled:text-slate-400",
+        "h-11 w-full rounded-2xl border border-[rgba(148,163,184,0.20)] bg-[rgba(2,6,23,0.34)] px-3 text-sm font-medium text-slate-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)] outline-none transition-all",
+        "hover:border-[rgba(148,163,184,0.32)] focus:border-[rgba(124,92,255,0.70)] focus:ring-4 focus:ring-[rgba(124,92,255,0.16)] disabled:border-white/5 disabled:bg-slate-950/30 disabled:text-slate-600",
         className,
       )}
       {...props}

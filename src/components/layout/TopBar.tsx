@@ -25,11 +25,11 @@ interface FilterChipProps {
 function FilterChip({ icon: Icon, label }: FilterChipProps) {
   return (
     <div
-      className="inline-flex h-10 max-w-full cursor-default items-center gap-2 rounded-full border border-slate-200 bg-white/88 px-3 text-sm font-medium text-slate-600 shadow-[0_8px_18px_rgba(30,41,59,0.04)]"
+      className="inline-flex h-10 max-w-full cursor-default items-center gap-2 rounded-full border border-white/10 bg-[rgba(15,23,42,0.62)] px-3 text-sm font-medium text-slate-300 shadow-[0_10px_24px_rgba(2,6,23,0.20)]"
       aria-hidden="true"
     >
       <span className="flex min-w-0 items-center gap-2">
-        <Icon className="h-4 w-4 shrink-0 text-slate-400" />
+        <Icon className="h-4 w-4 shrink-0 text-slate-500" />
         <span className="truncate">{label}</span>
       </span>
     </div>
@@ -80,12 +80,12 @@ export default function TopBar() {
   const activeMenuId = getActiveMenuId(pathname);
 
   return (
-    <header className="panel-card flex flex-col gap-4 px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+    <header className="flex flex-col gap-4 rounded-[24px] border border-white/10 bg-[rgba(15,23,42,0.50)] px-4 py-4 shadow-[0_18px_58px_rgba(2,6,23,0.26)] backdrop-blur-xl sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">
           {copy.menu[activeMenuId]}
         </p>
-        <h1 className="mt-1 text-2xl font-semibold tracking-normal text-slate-950 sm:text-[30px]">
+        <h1 className="mt-1 text-2xl font-semibold tracking-normal text-slate-50 sm:text-[30px]">
           {copy.appTitle}
         </h1>
       </div>
@@ -102,7 +102,7 @@ export default function TopBar() {
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
-          <div className="inline-flex rounded-full bg-violet-50 p-1 ring-1 ring-inset ring-violet-100">
+          <div className="inline-flex rounded-full border border-white/10 bg-[rgba(2,6,23,0.34)] p-1">
             {(["zh", "en"] as const).map((item) => {
               const isActive = locale === item;
 
@@ -115,8 +115,8 @@ export default function TopBar() {
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-semibold transition-all",
                     isActive
-                      ? "bg-white text-violet-600 shadow-[0_6px_16px_rgba(109,93,246,0.14)]"
-                      : "text-slate-500 hover:text-slate-950",
+                      ? "bg-[linear-gradient(135deg,rgba(124,92,255,0.38),rgba(34,211,238,0.18))] text-white shadow-[0_8px_20px_rgba(124,92,255,0.20)]"
+                      : "text-slate-400 hover:text-slate-50",
                   )}
                 >
                   {copy.language[item]}
@@ -133,7 +133,7 @@ export default function TopBar() {
             {copy.addTrade}
           </Button>
 
-          <div className="hidden h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#8B7CF6_0%,#6D5DF6_65%,#4F7CFF_100%)] text-sm font-semibold text-white shadow-[0_12px_24px_rgba(109,93,246,0.22)] sm:flex">
+          <div className="hidden h-11 w-11 items-center justify-center rounded-full bg-[linear-gradient(135deg,#7C5CFF_0%,#6366F1_55%,#22D3EE_100%)] text-sm font-semibold text-white shadow-[0_14px_30px_rgba(124,92,255,0.30)] ring-1 ring-white/10 sm:flex">
             JD
           </div>
         </div>

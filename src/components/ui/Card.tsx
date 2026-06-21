@@ -30,10 +30,10 @@ export default function Card({
   return (
     <Component
       className={cn(
-        "rounded-[22px] border border-[#E8EAF2] bg-white/95 shadow-[0_18px_48px_rgba(30,41,59,0.055)] backdrop-blur-[10px]",
+        "rounded-[22px] border border-white/10 bg-[rgba(15,23,42,0.72)] shadow-[0_22px_70px_rgba(2,6,23,0.32)] backdrop-blur-xl",
         "transition-[border-color,box-shadow,transform] duration-200",
         hover &&
-          "hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_22px_58px_rgba(30,41,59,0.09)]",
+          "hover:-translate-y-0.5 hover:border-[rgba(124,92,255,0.38)] hover:shadow-[0_28px_90px_rgba(2,6,23,0.42),0_0_34px_rgba(124,92,255,0.12)]",
         densityClassMap[density],
         className,
       )}

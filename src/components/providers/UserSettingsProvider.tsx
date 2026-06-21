@@ -17,7 +17,15 @@ import {
   type UserSettings,
 } from "@/lib/settings-types";
 
+// Legacy localStorage key — only read once, during the one-time migration into
+// SQLite. Settings are now persisted server-side via /api/settings.
 export const USER_SETTINGS_STORAGE_KEY = "trade-journal-settings-v1";
+
+// Set in localStorage after the legacy settings have been imported into SQLite
+// so the migration never runs twice. The legacy data itself is left in place.
+const SETTINGS_MIGRATION_FLAG_KEY = "settings-migrated-to-sqlite";
+
+const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 
 interface UserSettingsContextValue {
   settings: UserSettings;
@@ -40,10 +48,56 @@ function parseStoredSettings(value: string | null): UserSettings | null {
   }
 }
 
-function persistSettings(settings: UserSettings) {
+async function fetchSettings(): Promise<UserSettings> {
+  const response = await fetch("/api/settings");
+
+  if (!response.ok) {
+    throw new Error(`GET /api/settings failed with status ${response.status}`);
+  }
+
+  const data: unknown = await response.json();
+  return normalizeUserSettings(data) ?? DEFAULT_USER_SETTINGS;
+}
+
+// One-time import of legacy localStorage settings into SQLite. Settings are a
+// single global row, so "database empty" is detectable only as "no row yet" —
+// and because this migration runs on mount before any settings can be written,
+// an unset marker already implies an empty table. The marker is therefore a
+// sufficient (and primary) gate: once set, the migration never runs again.
+async function migrateLegacySettingsIfNeeded(): Promise<void> {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  if (window.localStorage.getItem(SETTINGS_MIGRATION_FLAG_KEY)) {
+    return;
+  }
+
+  const legacySettings = parseStoredSettings(
+    window.localStorage.getItem(USER_SETTINGS_STORAGE_KEY),
+  );
+
+  if (legacySettings) {
+    try {
+      const response = await fetch("/api/settings", {
+        method: "PUT",
+        headers: JSON_HEADERS,
+        body: JSON.stringify(legacySettings),
+      });
+
+      if (!response.ok) {
+        throw new Error(`settings migration failed with status ${response.status}`);
+      }
+    } catch (error) {
+      console.error("[settings] migration from localStorage failed", error);
+      // Leave the marker unset so the migration retries on the next load.
+      return;
+    }
+  }
+
   window.localStorage.setItem(
-    USER_SETTINGS_STORAGE_KEY,
-    JSON.stringify(settings),
+    SETTINGS_MIGRATION_FLAG_KEY,
+    new Date().toISOString(),
   );
 }
 
@@ -51,45 +105,98 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
   const settingsRef = useRef<UserSettings>(DEFAULT_USER_SETTINGS);
 
-  const commitSettings = useCallback((nextSettings: UserSettings) => {
+  // Update the in-memory state (optimistic UI). Persistence happens separately.
+  const applySettings = useCallback((nextSettings: UserSettings) => {
     settingsRef.current = nextSettings;
     setSettings(nextSettings);
-    persistSettings(nextSettings);
   }, []);
 
+  const persist = useCallback(
+    async (
+      request: () => Promise<Response>,
+      previousSettings: UserSettings,
+      label: string,
+    ) => {
+      try {
+        const response = await request();
+
+        if (!response.ok) {
+          throw new Error(`${label} failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`[settings] ${label} failed — rolling back`, error);
+        applySettings(previousSettings);
+      }
+    },
+    [applySettings],
+  );
+
+  // Initial load: migrate legacy localStorage settings on the first run, then
+  // pull the authoritative settings from SQLite.
   useEffect(() => {
-    const storedSettings = parseStoredSettings(
-      window.localStorage.getItem(USER_SETTINGS_STORAGE_KEY),
-    );
+    let cancelled = false;
 
-    if (storedSettings) {
-      const timeoutId = window.setTimeout(() => {
-        settingsRef.current = storedSettings;
-        setSettings(storedSettings);
-      }, 0);
+    async function load() {
+      try {
+        await migrateLegacySettingsIfNeeded();
+        const serverSettings = await fetchSettings();
 
-      return () => window.clearTimeout(timeoutId);
+        if (!cancelled) {
+          applySettings(serverSettings);
+        }
+      } catch (error) {
+        console.error("[settings] failed to load from API", error);
+      }
     }
 
-    persistSettings(DEFAULT_USER_SETTINGS);
-  }, []);
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applySettings]);
 
   const updateSettings = useCallback(
     (patch: Partial<UserSettings>) => {
+      const previousSettings = settingsRef.current;
       const nextSettings =
         normalizeUserSettings({
-          ...settingsRef.current,
+          ...previousSettings,
           ...patch,
-        }) ?? settingsRef.current;
+        }) ?? previousSettings;
 
-      commitSettings(nextSettings);
+      applySettings(nextSettings);
+
+      void persist(
+        () =>
+          fetch("/api/settings", {
+            method: "PUT",
+            headers: JSON_HEADERS,
+            body: JSON.stringify(nextSettings),
+          }),
+        previousSettings,
+        "PUT /api/settings",
+      );
     },
-    [commitSettings],
+    [applySettings, persist],
   );
 
   const resetSettings = useCallback(() => {
-    commitSettings(DEFAULT_USER_SETTINGS);
-  }, [commitSettings]);
+    const previousSettings = settingsRef.current;
+
+    applySettings(DEFAULT_USER_SETTINGS);
+
+    void persist(
+      () =>
+        fetch("/api/settings", {
+          method: "PUT",
+          headers: JSON_HEADERS,
+          body: JSON.stringify(DEFAULT_USER_SETTINGS),
+        }),
+      previousSettings,
+      "PUT /api/settings (reset)",
+    );
+  }, [applySettings, persist]);
 
   const value = useMemo(
     () => ({

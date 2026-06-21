@@ -77,13 +77,17 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
             >
               <defs>
                 <linearGradient id="equityGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#6D5DF6" stopOpacity={0.22} />
-                  <stop offset="100%" stopColor="#6D5DF6" stopOpacity={0.02} />
+                  <stop offset="0%" stopColor="#7C5CFF" stopOpacity={0.34} />
+                  <stop offset="100%" stopColor="#22D3EE" stopOpacity={0.02} />
+                </linearGradient>
+                <linearGradient id="equityStroke" x1="0" x2="1" y1="0" y2="0">
+                  <stop offset="0%" stopColor="#7C5CFF" />
+                  <stop offset="100%" stopColor="#22D3EE" />
                 </linearGradient>
               </defs>
               <CartesianGrid
                 vertical={false}
-                stroke="rgba(148,163,184,0.18)"
+                stroke="rgba(148,163,184,0.12)"
                 strokeDasharray="4 6"
               />
               <XAxis
@@ -93,7 +97,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 tickMargin={14}
                 ticks={chartTicks}
                 minTickGap={32}
-                tick={{ fill: "#8c88a6", fontSize: 12 }}
+                tick={{ fill: "#94A3B8", fontSize: 12 }}
                 tickFormatter={(value: string) =>
                   formatShortDateLabel(value, locale)
                 }
@@ -105,20 +109,21 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 width={54}
                 domain={[-4000, 12000]}
                 ticks={[-4000, 0, 4000, 8000, 12000]}
-                tick={{ fill: "#8c88a6", fontSize: 12 }}
+                tick={{ fill: "#94A3B8", fontSize: 12 }}
                 tickFormatter={(value: number) =>
                   formatAxisCurrencyTick(value, settings.currency)
                 }
               />
               <Tooltip
-                cursor={{ stroke: "rgba(108,77,255,0.18)", strokeWidth: 1.5 }}
+                cursor={{ stroke: "rgba(124,92,255,0.28)", strokeWidth: 1.5 }}
                 contentStyle={{
                   borderRadius: 16,
-                  border: "1px solid rgba(109,93,246,0.14)",
-                  boxShadow: "0 14px 34px rgba(30,41,59,0.10)",
-                  backgroundColor: "rgba(255,255,255,0.98)",
+                  border: "1px solid rgba(255,255,255,0.12)",
+                  boxShadow: "0 18px 44px rgba(2,6,23,0.42)",
+                  backgroundColor: "#0F172A",
+                  color: "#F8FAFC",
                 }}
-                labelStyle={{ color: "#172033", fontWeight: 600 }}
+                labelStyle={{ color: "#F8FAFC", fontWeight: 600 }}
                 formatter={(value) =>
                   formatCurrency(Number(value ?? 0), {
                     currency: settings.currency,
@@ -132,14 +137,14 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
               <Area
                 type="monotone"
                 dataKey="equity"
-                stroke="#6D5DF6"
+                stroke="url(#equityStroke)"
                 strokeWidth={3}
                 fill="url(#equityGradient)"
                 dot={false}
                 activeDot={{
                   r: 6,
-                  fill: "#6D5DF6",
-                  stroke: "#ffffff",
+                  fill: "#22D3EE",
+                  stroke: "#0F172A",
                   strokeWidth: 3,
                 }}
               />
@@ -147,13 +152,13 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 x={lastPoint.date}
                 y={lastPoint.equity}
                 r={5}
-                fill="#6D5DF6"
-                stroke="#fff"
+                fill="#22D3EE"
+                stroke="#0F172A"
                 strokeWidth={3}
                 label={{
                   value: formatCompactCurrency(lastPoint.equity, settings.currency),
                   position: "right",
-                  fill: "#6D5DF6",
+                  fill: "#22D3EE",
                   fontSize: 12,
                   fontWeight: 700,
                 }}
@@ -161,7 +166,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(109,93,246,0.10),rgba(255,255,255,0.75))]" />
+          <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(124,92,255,0.12),rgba(15,23,42,0.58))]" />
         )}
       </div>
     </Card>

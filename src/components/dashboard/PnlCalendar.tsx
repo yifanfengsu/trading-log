@@ -65,7 +65,7 @@ export default function PnlCalendar({
         action={
           <Badge variant="purple" className="h-9 px-3">
             <span>{copy.monthlyLabel}</span>
-            <ChevronDown className="h-4 w-4 text-violet-400" />
+            <ChevronDown className="h-4 w-4 text-violet-200" />
           </Badge>
         }
       />
@@ -76,11 +76,11 @@ export default function PnlCalendar({
           size="icon"
           aria-label={copy.calendarPage.previousMonth}
           title={copy.calendarPage.previousMonth}
-          className="h-8 w-8 bg-violet-50 text-violet-600 hover:bg-violet-100"
+          className="h-8 w-8 bg-[rgba(124,92,255,0.12)] text-violet-200 hover:bg-[rgba(124,92,255,0.20)]"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
-        <p className="text-sm font-medium text-slate-500">
+        <p className="text-sm font-medium text-slate-400">
           {formatMonthLabel(selectedMonth, locale)}
         </p>
         <Button
@@ -89,7 +89,7 @@ export default function PnlCalendar({
           size="icon"
           aria-label={copy.calendarPage.nextMonth}
           title={copy.calendarPage.nextMonth}
-          className="h-8 w-8 bg-violet-50 text-violet-600 hover:bg-violet-100"
+          className="h-8 w-8 bg-[rgba(124,92,255,0.12)] text-violet-200 hover:bg-[rgba(124,92,255,0.20)]"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -120,40 +120,42 @@ export default function PnlCalendar({
             const isLoss = (cell.pnl ?? 0) < 0;
             const className = cn(
               "flex min-h-[84px] flex-col rounded-[18px] border p-3 transition-all lg:min-h-[96px]",
-              !cell.inCurrentMonth && "border-slate-100 bg-slate-50/80",
+              !cell.inCurrentMonth &&
+                "border-white/5 bg-[rgba(15,23,42,0.22)]",
               cell.inCurrentMonth &&
                 !hasTrade &&
-                "border-slate-100 bg-white/80 hover:bg-white",
+                "border-white/10 bg-[rgba(15,23,42,0.46)] hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.66)]",
               isProfit &&
-                "border-emerald-100 bg-[linear-gradient(180deg,#ECFDF5_0%,rgba(255,255,255,0.94)_100%)]",
+                "border-[rgba(16,185,129,0.28)] bg-[linear-gradient(180deg,rgba(16,185,129,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
               isLoss &&
-                "border-rose-100 bg-[linear-gradient(180deg,#FFF1F2_0%,rgba(255,255,255,0.95)_100%)]",
-              isToday && "ring-2 ring-violet-200 ring-offset-1 ring-offset-white",
+                "border-[rgba(244,63,94,0.30)] bg-[linear-gradient(180deg,rgba(244,63,94,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
+              isToday &&
+                "ring-2 ring-[rgba(124,92,255,0.60)] ring-offset-1 ring-offset-[#0b1020] shadow-[0_0_22px_rgba(124,92,255,0.18)]",
             );
             const content = (
               <>
                 <span
                   className={cn(
                     "text-sm font-semibold",
-                    cell.inCurrentMonth ? "text-slate-700" : "text-slate-300",
+                    cell.inCurrentMonth ? "text-slate-200" : "text-slate-600",
                   )}
                 >
                   {cell.day ?? ""}
                 </span>
                 <div className="mt-1 flex gap-1">
                   {isReviewed ? (
-                    <span className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-violet-300 shadow-[0_0_10px_rgba(124,92,255,0.8)]" />
                   ) : null}
                   {!isReviewed && hasTrade ? (
-                    <span className="h-1.5 w-1.5 rounded-full bg-slate-300" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
                   ) : null}
                 </div>
                 {hasTrade && cell.pnl !== null ? (
                   <span
                     className={cn(
                       "mt-auto text-sm font-semibold tracking-normal",
-                      isProfit && "text-emerald-700",
-                      isLoss && "text-rose-700",
+                      isProfit && "text-emerald-300",
+                      isLoss && "text-rose-300",
                     )}
                   >
                     {formatCompactCurrency(cell.pnl, settings.currency)}
@@ -180,38 +182,38 @@ export default function PnlCalendar({
       </div>
 
       <div className="mt-6 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
-        <div className="rounded-[18px] border border-violet-100 bg-violet-50/70 px-4 py-4">
-          <p className="text-sm text-slate-500">{copy.calendar.summary.totalPnl}</p>
+        <div className="rounded-[18px] border border-[rgba(124,92,255,0.24)] bg-[rgba(124,92,255,0.10)] px-4 py-4">
+          <p className="text-sm text-slate-400">{copy.calendar.summary.totalPnl}</p>
           <p
             className={cn(
               "mt-2 text-lg font-semibold",
-              summary.totalPnl > 0 && "text-emerald-600",
-              summary.totalPnl < 0 && "text-rose-600",
-              summary.totalPnl === 0 && "text-slate-900",
+              summary.totalPnl > 0 && "text-emerald-300",
+              summary.totalPnl < 0 && "text-rose-300",
+              summary.totalPnl === 0 && "text-slate-100",
             )}
           >
             {formatCurrency(summary.totalPnl, settings.currency)}
           </p>
         </div>
-        <div className="rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-4">
-          <p className="text-sm text-slate-500">
+        <div className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-4">
+          <p className="text-sm text-slate-400">
             {copy.calendar.summary.winningDays}
           </p>
-          <p className="mt-2 text-lg font-semibold text-slate-900">
+          <p className="mt-2 text-lg font-semibold text-slate-100">
             {summary.winningDays} ({formatPercent(winningDayRate)})
           </p>
         </div>
-        <div className="rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-4">
-          <p className="text-sm text-slate-500">
+        <div className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-4">
+          <p className="text-sm text-slate-400">
             {copy.calendar.summary.losingDays}
           </p>
-          <p className="mt-2 text-lg font-semibold text-slate-900">
+          <p className="mt-2 text-lg font-semibold text-slate-100">
             {summary.losingDays} ({formatPercent(losingDayRate)})
           </p>
         </div>
-        <div className="rounded-[18px] border border-slate-100 bg-slate-50/80 px-4 py-4">
-          <p className="text-sm text-slate-500">{copy.calendar.summary.bestDay}</p>
-          <p className="mt-2 text-lg font-semibold text-violet-600">
+        <div className="rounded-[18px] border border-[rgba(34,211,238,0.18)] bg-[rgba(34,211,238,0.08)] px-4 py-4">
+          <p className="text-sm text-slate-400">{copy.calendar.summary.bestDay}</p>
+          <p className="mt-2 text-lg font-semibold text-cyan-200">
             {formatCurrency(summary.bestDayPnl, settings.currency)}
           </p>
         </div>

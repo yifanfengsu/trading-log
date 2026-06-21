@@ -21,7 +21,7 @@ function DangerAction({ label, onClick }: DangerActionProps) {
     <button
       type="button"
       onClick={onClick}
-      className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-rose-100 bg-white px-4 py-3 text-left text-sm font-semibold text-rose-600 transition-colors hover:border-rose-200 hover:bg-rose-50"
+      className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-[rgba(244,63,94,0.26)] bg-[rgba(244,63,94,0.08)] px-4 py-3 text-left text-sm font-semibold text-rose-300 transition-colors hover:border-[rgba(244,63,94,0.42)] hover:bg-[rgba(244,63,94,0.14)]"
     >
       <span>{label}</span>
       <Trash2 className="h-4 w-4" />
@@ -90,16 +90,16 @@ export default function DangerZoneSettings() {
   }
 
   return (
-    <section className="panel-card border-rose-100 p-5 lg:p-6">
+    <section className="panel-card border-[rgba(244,63,94,0.28)] p-5 lg:p-6">
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[rgba(244,63,94,0.12)] text-rose-300 ring-1 ring-inset ring-[rgba(244,63,94,0.24)]">
           <AlertTriangle className="h-5 w-5" />
         </div>
         <div>
-          <h2 className="panel-title text-rose-600">
+          <h2 className="panel-title text-rose-300">
             {copy.settingsPage.dangerZone}
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             {copy.settingsPage.irreversible}
           </p>
         </div>

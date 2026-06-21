@@ -36,20 +36,23 @@ function getSymbolBadge(symbol: string) {
   if (asset === "BTC") {
     return {
       label: "B",
-      className: "bg-amber-50 text-amber-600 ring-amber-100",
+      className:
+        "bg-[rgba(245,158,11,0.12)] text-amber-300 ring-[rgba(245,158,11,0.22)]",
     };
   }
 
   if (asset === "ETH") {
     return {
       label: "E",
-      className: "bg-indigo-50 text-indigo-600 ring-indigo-100",
+      className:
+        "bg-[rgba(99,102,241,0.14)] text-indigo-200 ring-[rgba(99,102,241,0.24)]",
     };
   }
 
   return {
     label: "S",
-    className: "bg-cyan-50 text-cyan-600 ring-cyan-100",
+    className:
+      "bg-[rgba(34,211,238,0.12)] text-cyan-200 ring-[rgba(34,211,238,0.22)]",
   };
 }
 
@@ -73,7 +76,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
         action={
           <Link
             href="/trades"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-600 transition-colors hover:text-violet-700"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-200 transition-colors hover:text-cyan-200"
           >
             {copy.recentTrades.viewAll}
             <ArrowRightLeft className="h-4 w-4" />
@@ -124,7 +127,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
               <tr>
                 <td
                   colSpan={11}
-                  className="rounded-[18px] bg-white px-3 py-6"
+                  className="rounded-[18px] bg-[rgba(15,23,42,0.46)] px-3 py-6"
                 >
                   <EmptyState title={copy.emptyState} className="min-h-[180px]" />
                 </td>
@@ -134,11 +137,11 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
 
               return (
                 <tr key={row.id} className="table-row-surface">
-                  <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
+                  <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
                     {formatTradeTimestamp(row.closedAt)}
                   </td>
                   <td className={dataTableCellClassName}>
-                    <div className="flex items-center gap-3 font-semibold text-slate-900">
+                    <div className="flex items-center gap-3 font-semibold text-slate-100">
                       <span
                         className={cn(
                           "inline-flex h-9 w-9 items-center justify-center rounded-full text-sm ring-1 ring-inset",
@@ -155,7 +158,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
                       {copy.side[row.side]}
                     </Badge>
                   </td>
-                  <td className={cn(dataTableCellClassName, "font-medium text-slate-700")}>
+                  <td className={cn(dataTableCellClassName, "font-medium text-slate-300")}>
                     {copy.strategies[row.setup]}
                   </td>
                   <td className={dataTableCellClassName}>
@@ -171,7 +174,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
                     className={cn(
                       dataTableCellClassName,
                       "font-semibold",
-                      row.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
+                      row.pnl >= 0 ? "text-emerald-300" : "text-rose-300",
                     )}
                   >
                     {formatCurrency(row.pnl, settings.currency)}
@@ -180,7 +183,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
                     className={cn(
                       dataTableCellClassName,
                       "font-semibold",
-                      row.rMultiple >= 0 ? "text-emerald-600" : "text-rose-600",
+                      row.rMultiple >= 0 ? "text-emerald-300" : "text-rose-300",
                     )}
                   >
                     {formatRMultiple(row.rMultiple)}

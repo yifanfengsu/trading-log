@@ -180,8 +180,8 @@ export default function DailyReviewForm({ date, review }: DailyReviewFormProps) 
                   className={cn(
                     "flex h-10 w-10 items-center justify-center rounded-full text-sm font-semibold transition-all",
                     isActive
-                      ? "bg-[var(--accent)] text-white shadow-[0_10px_18px_rgba(108,77,255,0.22)]"
-                      : "border border-[rgba(148,163,184,0.18)] bg-white text-slate-500 hover:border-[rgba(108,77,255,0.22)] hover:text-[var(--accent)]",
+                      ? "bg-[linear-gradient(135deg,#7C5CFF,#22D3EE)] text-white shadow-[0_10px_18px_rgba(124,92,255,0.24)]"
+                      : "border border-[rgba(148,163,184,0.18)] bg-[rgba(15,23,42,0.48)] text-slate-400 hover:border-[rgba(124,92,255,0.32)] hover:text-violet-200",
                   )}
                 >
                   {score}

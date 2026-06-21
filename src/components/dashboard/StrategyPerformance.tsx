@@ -38,7 +38,7 @@ export default function StrategyPerformance({
         action={
           <Link
             href="/analytics"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-violet-600 transition-colors hover:text-violet-700"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-violet-200 transition-colors hover:text-cyan-200"
           >
             {copy.strategyPerformance.viewAll}
             <ArrowRight className="h-4 w-4" />
@@ -78,7 +78,7 @@ export default function StrategyPerformance({
                 return (
                   <tr key={row.setup} className="table-row-surface">
                     <td className={dataTableCellClassName}>
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-semibold text-slate-100">
                         {copy.strategies[row.setup]}
                       </div>
                     </td>
@@ -86,7 +86,7 @@ export default function StrategyPerformance({
                       className={cn(
                         dataTableCellClassName,
                         "font-semibold",
-                        row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
+                        row.netPnl >= 0 ? "text-emerald-300" : "text-rose-300",
                       )}
                     >
                       {formatCurrency(row.netPnl, settings.currency)}
@@ -94,13 +94,13 @@ export default function StrategyPerformance({
                     <td className={dataTableCellClassName}>
                       <div className="min-w-[132px]">
                         <div className="flex items-center justify-between gap-2 text-sm">
-                          <span className="font-semibold text-slate-900">
+                          <span className="font-semibold text-slate-100">
                             {formatPercent(row.winRate)}
                           </span>
                         </div>
-                        <div className="mt-2 h-2 rounded-full bg-violet-50">
+                        <div className="mt-2 h-2 rounded-full bg-[rgba(148,163,184,0.14)]">
                           <div
-                            className="h-full rounded-full bg-[linear-gradient(90deg,#8B7CF6,#6D5DF6)]"
+                            className="h-full rounded-full bg-[linear-gradient(90deg,#7C5CFF,#22D3EE)] shadow-[0_0_14px_rgba(124,92,255,0.34)]"
                             style={{ width: winRateWidth }}
                           />
                         </div>
@@ -114,16 +114,16 @@ export default function StrategyPerformance({
                               "font-semibold",
                               row.profitFactor >= 1.5 ||
                               row.profitFactor === Infinity
-                                ? "text-violet-600"
-                                : "text-slate-900",
+                                ? "text-cyan-200"
+                                : "text-slate-100",
                             )}
                           >
                             {formatProfitFactor(row.profitFactor)}
                           </span>
                         </div>
-                        <div className="mt-2 h-2 rounded-full bg-violet-50">
+                        <div className="mt-2 h-2 rounded-full bg-[rgba(148,163,184,0.14)]">
                           <div
-                            className="h-full rounded-full bg-[linear-gradient(90deg,#ddd6fe,#6D5DF6)]"
+                            className="h-full rounded-full bg-[linear-gradient(90deg,#6366F1,#22D3EE)] shadow-[0_0_14px_rgba(34,211,238,0.22)]"
                             style={{ width: factorWidth }}
                           />
                         </div>

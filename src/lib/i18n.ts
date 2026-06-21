@@ -40,6 +40,7 @@ export interface Dictionary {
   dashboardPage: {
     title: string;
     subtitle: string;
+    localMode: string;
   };
   menu: Record<SidebarMenuId, string>;
   metrics: Record<
@@ -564,6 +565,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     dashboardPage: {
       title: "交易日志",
       subtitle: "追踪交易表现、复盘执行质量，并沉淀你的交易系统。",
+      localMode: "本地模式",
     },
     menu: {
       dashboard: "仪表盘",
@@ -1197,6 +1199,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
       title: "Trade Journal",
       subtitle:
         "Track performance, review execution, and improve your trading system.",
+      localMode: "Local Mode",
     },
     menu: {
       dashboard: "Dashboard",

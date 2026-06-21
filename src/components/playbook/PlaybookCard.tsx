@@ -33,13 +33,13 @@ interface MetricProps {
 
 function Metric({ label, value, tone = "neutral" }: MetricProps) {
   return (
-    <div className="rounded-2xl bg-[rgba(250,250,255,0.88)] px-3 py-3">
+    <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-3 py-3">
       <p className="text-xs font-medium text-slate-400">{label}</p>
       <p
         className={cn(
-          "mt-1 text-sm font-semibold text-slate-950",
-          tone === "positive" && "text-emerald-600",
-          tone === "negative" && "text-rose-600",
+          "mt-1 text-sm font-semibold text-slate-100",
+          tone === "positive" && "text-emerald-300",
+          tone === "negative" && "text-rose-300",
         )}
       >
         {value}
@@ -69,7 +69,7 @@ export default function PlaybookCard({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="line-clamp-1 text-lg font-semibold tracking-[-0.03em] text-slate-950">
+          <h2 className="line-clamp-1 text-lg font-semibold tracking-normal text-slate-50">
             {playbook.name}
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -83,20 +83,20 @@ export default function PlaybookCard({
         </div>
       </div>
 
-      <p className="mt-4 line-clamp-2 min-h-10 text-sm leading-5 text-slate-500">
+      <p className="mt-4 line-clamp-2 min-h-10 text-sm leading-5 text-slate-400">
         {playbook.description || "—"}
       </p>
 
-      <div className="mt-4 grid gap-2 text-sm text-slate-500">
+      <div className="mt-4 grid gap-2 text-sm text-slate-400">
         <div className="flex items-center justify-between gap-3">
           <span>{copy.playbookPage.market}</span>
-          <span className="truncate font-semibold text-slate-700">
+          <span className="truncate font-semibold text-slate-200">
             {playbook.market || "—"}
           </span>
         </div>
         <div className="flex items-center justify-between gap-3">
           <span>{copy.playbookPage.timeframes}</span>
-          <span className="truncate font-semibold text-slate-700">
+          <span className="truncate font-semibold text-slate-200">
             {playbook.timeframes.length > 0
               ? playbook.timeframes.join(", ")
               : "—"}
@@ -109,7 +109,7 @@ export default function PlaybookCard({
           playbook.tags.slice(0, 4).map((tag) => (
             <span
               key={tag}
-              className="inline-flex rounded-full bg-white px-3 py-1 text-xs font-medium text-slate-500 ring-1 ring-inset ring-slate-100"
+              className="inline-flex rounded-full border border-[rgba(148,163,184,0.16)] bg-[rgba(148,163,184,0.10)] px-3 py-1 text-xs font-medium text-slate-300"
             >
               {tag}
             </span>

@@ -22,9 +22,9 @@ interface RMultipleDistributionProps {
   rows: RMultipleDistributionRow[];
 }
 
-const positiveColor = "#16a34a";
-const negativeColor = "#e11d48";
-const neutralColor = "#6c4dff";
+const positiveColor = "#34D399";
+const negativeColor = "#FB7185";
+const neutralColor = "#7C5CFF";
 
 function useIsClient() {
   return useSyncExternalStore(
@@ -52,9 +52,9 @@ export default function RMultipleDistribution({
     }
 
     return (
-      <div className="rounded-2xl border border-[rgba(108,77,255,0.14)] bg-white/95 p-3 text-sm shadow-[0_12px_32px_rgba(31,15,86,0.10)]">
-        <p className="font-semibold text-slate-950">{row.bucket}</p>
-        <div className="mt-2 grid gap-1 text-slate-500">
+      <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-3 text-sm text-slate-200 shadow-[0_18px_44px_rgba(2,6,23,0.42)]">
+        <p className="font-semibold text-slate-50">{row.bucket}</p>
+        <div className="mt-2 grid gap-1 text-slate-400">
           <span>{copy.analyticsPage.trades}: {row.count}</span>
           <span>
             {copy.metrics.netPnl.label}:{" "}
@@ -84,7 +84,7 @@ export default function RMultipleDistribution({
                 >
                   <CartesianGrid
                     vertical={false}
-                    stroke="rgba(148,163,184,0.18)"
+                    stroke="rgba(148,163,184,0.12)"
                     strokeDasharray="4 6"
                   />
                   <XAxis
@@ -92,7 +92,7 @@ export default function RMultipleDistribution({
                     axisLine={false}
                     tickLine={false}
                     tickMargin={12}
-                    tick={{ fill: "#8c88a6", fontSize: 12 }}
+                    tick={{ fill: "#94A3B8", fontSize: 12 }}
                   />
                   <YAxis
                     allowDecimals={false}
@@ -100,10 +100,10 @@ export default function RMultipleDistribution({
                     tickLine={false}
                     tickMargin={12}
                     width={36}
-                    tick={{ fill: "#8c88a6", fontSize: 12 }}
+                    tick={{ fill: "#94A3B8", fontSize: 12 }}
                   />
                   <Tooltip
-                    cursor={{ fill: "rgba(108,77,255,0.06)" }}
+                    cursor={{ fill: "rgba(124,92,255,0.08)" }}
                     content={renderTooltip}
                   />
                   <Bar dataKey="count" radius={[8, 8, 8, 8]}>
@@ -123,10 +123,10 @@ export default function RMultipleDistribution({
                 </BarChart>
               </ResponsiveContainer>
             ) : (
-              <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(108,77,255,0.10),rgba(255,255,255,0.75))]" />
+              <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(124,92,255,0.12),rgba(15,23,42,0.58))]" />
             )}
           </div>
-          <p className="mt-4 rounded-[18px] bg-[rgba(108,77,255,0.07)] px-4 py-3 text-sm text-slate-600">
+          <p className="mt-4 rounded-[18px] border border-[rgba(124,92,255,0.18)] bg-[rgba(124,92,255,0.08)] px-4 py-3 text-sm text-slate-300">
             {copy.analyticsPage.rMultipleInsight}
           </p>
         </>

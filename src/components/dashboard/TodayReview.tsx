@@ -34,21 +34,24 @@ const iconMap: Record<ReviewId, LucideIcon> = {
 
 const toneClasses = {
   positive: {
-    wrapper: "bg-emerald-50 text-emerald-700 ring-emerald-100",
-    icon: "text-emerald-600",
+    wrapper:
+      "bg-[rgba(16,185,129,0.12)] text-emerald-300 ring-[rgba(16,185,129,0.24)]",
+    icon: "text-emerald-300",
   },
   negative: {
-    wrapper: "bg-rose-50 text-rose-700 ring-rose-100",
-    icon: "text-rose-600",
+    wrapper:
+      "bg-[rgba(244,63,94,0.12)] text-rose-300 ring-[rgba(244,63,94,0.24)]",
+    icon: "text-rose-300",
   },
   neutral: {
-    wrapper: "bg-slate-100 text-slate-700 ring-slate-200",
-    icon: "text-slate-500",
+    wrapper:
+      "bg-[rgba(148,163,184,0.10)] text-slate-300 ring-[rgba(148,163,184,0.18)]",
+    icon: "text-slate-400",
   },
   accent: {
     wrapper:
-      "bg-[rgba(108,77,255,0.10)] text-[var(--accent)] ring-[rgba(108,77,255,0.16)]",
-    icon: "text-[var(--accent)]",
+      "bg-[rgba(124,92,255,0.12)] text-violet-200 ring-[rgba(124,92,255,0.26)]",
+    icon: "text-violet-200",
   },
 } as const;
 
@@ -102,15 +105,15 @@ export default function TodayReview({
         {pnlItems.map((item) => (
           <div
             key={item.label}
-            className="rounded-[16px] border border-violet-100 bg-violet-50/70 px-3 py-3"
+            className="rounded-[16px] border border-[rgba(124,92,255,0.22)] bg-[rgba(124,92,255,0.08)] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
           >
-            <p className="text-xs font-medium text-slate-500">{item.label}</p>
+            <p className="text-xs font-medium text-slate-400">{item.label}</p>
             <p
               className={cn(
                 "mt-1 text-sm font-semibold",
-                item.value > 0 && "text-emerald-600",
-                item.value < 0 && "text-rose-600",
-                item.value === 0 && "text-slate-700",
+                item.value > 0 && "text-emerald-300",
+                item.value < 0 && "text-rose-300",
+                item.value === 0 && "text-slate-300",
               )}
             >
               {formatCurrency(item.value, settings.currency)}
@@ -130,7 +133,7 @@ export default function TodayReview({
           return (
             <article
               key={item.id}
-              className="rounded-[18px] border border-[rgba(148,163,184,0.12)] bg-[rgba(250,250,255,0.82)] p-4"
+              className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.44)] p-4 transition-colors hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.62)]"
             >
               <div className="flex items-start gap-3">
                 <div
@@ -144,10 +147,10 @@ export default function TodayReview({
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-900">
+                  <p className="text-sm font-semibold text-slate-100">
                     {content.label}
                   </p>
-                  <p className="mt-1 text-sm leading-6 text-slate-500">
+                  <p className="mt-1 text-sm leading-6 text-slate-400">
                     {body}
                   </p>
                 </div>

@@ -153,7 +153,7 @@ export default function DataManagementSettings() {
         <button
           type="button"
           onClick={handleExportBackup}
-          className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-[rgba(148,163,184,0.16)] bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-[0_8px_18px_rgba(31,15,86,0.04)] transition-colors hover:border-[rgba(108,77,255,0.24)] hover:text-slate-950"
+          className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3 text-left text-sm font-semibold text-slate-200 shadow-[0_10px_24px_rgba(2,6,23,0.20)] transition-colors hover:border-[rgba(124,92,255,0.34)] hover:text-white"
         >
           <span>{actionStatus === "exported" ? copy.settingsPage.exported : copy.settingsPage.exportBackup}</span>
           <Download className="h-4 w-4 text-[var(--accent)]" />
@@ -172,7 +172,7 @@ export default function DataManagementSettings() {
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-[rgba(148,163,184,0.16)] bg-white px-4 py-3 text-left text-sm font-semibold text-slate-700 shadow-[0_8px_18px_rgba(31,15,86,0.04)] transition-colors hover:border-[rgba(108,77,255,0.24)] hover:text-slate-950"
+          className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3 text-left text-sm font-semibold text-slate-200 shadow-[0_10px_24px_rgba(2,6,23,0.20)] transition-colors hover:border-[rgba(124,92,255,0.34)] hover:text-white"
         >
           <span>{actionStatus === "imported" ? copy.settingsPage.imported : copy.settingsPage.importBackup}</span>
           <Upload className="h-4 w-4 text-[var(--accent)]" />
@@ -181,7 +181,7 @@ export default function DataManagementSettings() {
         <button
           type="button"
           onClick={handleRestoreDemoData}
-          className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-[rgba(108,77,255,0.14)] bg-[rgba(108,77,255,0.07)] px-4 py-3 text-left text-sm font-semibold text-[var(--accent)] transition-colors hover:bg-[rgba(108,77,255,0.11)]"
+          className="flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-[rgba(124,92,255,0.24)] bg-[rgba(124,92,255,0.10)] px-4 py-3 text-left text-sm font-semibold text-violet-200 transition-colors hover:bg-[rgba(124,92,255,0.16)]"
         >
           <span>{copy.settingsPage.restoreDemoData}</span>
           <RotateCcw className="h-4 w-4" />

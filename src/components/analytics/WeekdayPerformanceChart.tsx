@@ -31,8 +31,8 @@ interface WeekdayChartDatum extends WeekdayPerformanceRow {
   weekdayLabel: string;
 }
 
-const positiveColor = "#16a34a";
-const negativeColor = "#e11d48";
+const positiveColor = "#34D399";
+const negativeColor = "#FB7185";
 
 function useIsClient() {
   return useSyncExternalStore(
@@ -64,9 +64,9 @@ export default function WeekdayPerformanceChart({
     }
 
     return (
-      <div className="rounded-2xl border border-[rgba(108,77,255,0.14)] bg-white/95 p-3 text-sm shadow-[0_12px_32px_rgba(31,15,86,0.10)]">
-        <p className="font-semibold text-slate-950">{row.weekdayLabel}</p>
-        <div className="mt-2 grid gap-1 text-slate-500">
+      <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-3 text-sm text-slate-200 shadow-[0_18px_44px_rgba(2,6,23,0.42)]">
+        <p className="font-semibold text-slate-50">{row.weekdayLabel}</p>
+        <div className="mt-2 grid gap-1 text-slate-400">
           <span>
             {copy.metrics.netPnl.label}:{" "}
             {formatCurrency(row.netPnl, settings.currency)}
@@ -97,7 +97,7 @@ export default function WeekdayPerformanceChart({
               >
                 <CartesianGrid
                   vertical={false}
-                  stroke="rgba(148,163,184,0.18)"
+                  stroke="rgba(148,163,184,0.12)"
                   strokeDasharray="4 6"
                 />
                 <XAxis
@@ -105,20 +105,20 @@ export default function WeekdayPerformanceChart({
                   axisLine={false}
                   tickLine={false}
                   tickMargin={12}
-                  tick={{ fill: "#8c88a6", fontSize: 12 }}
+                  tick={{ fill: "#94A3B8", fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
                   tickMargin={12}
                   width={54}
-                  tick={{ fill: "#8c88a6", fontSize: 12 }}
+                  tick={{ fill: "#94A3B8", fontSize: 12 }}
                   tickFormatter={(value: number) =>
                     formatAxisCurrencyTick(value, settings.currency)
                   }
                 />
                 <Tooltip
-                  cursor={{ fill: "rgba(108,77,255,0.06)" }}
+                  cursor={{ fill: "rgba(124,92,255,0.08)" }}
                   content={renderTooltip}
                 />
                 <Bar dataKey="netPnl" radius={[8, 8, 8, 8]}>
@@ -132,7 +132,7 @@ export default function WeekdayPerformanceChart({
               </BarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(108,77,255,0.10),rgba(255,255,255,0.75))]" />
+            <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(124,92,255,0.12),rgba(15,23,42,0.58))]" />
           )}
         </div>
       )}

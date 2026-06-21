@@ -96,7 +96,7 @@ export default function GoalCard({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <h2 className="line-clamp-1 text-lg font-semibold tracking-[-0.03em] text-slate-950">
+          <h2 className="line-clamp-1 text-lg font-semibold tracking-normal text-slate-50">
             {goal.title}
           </h2>
           <div className="mt-2 flex flex-wrap items-center gap-2">
@@ -121,34 +121,34 @@ export default function GoalCard({
         </div>
       </div>
 
-      <p className="mt-4 text-sm font-medium text-slate-500">
+      <p className="mt-4 text-sm font-medium text-slate-400">
         {formatDateRange(goal.startDate, goal.endDate, locale)}
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl bg-[rgba(250,250,255,0.88)] px-3 py-3">
+        <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-3 py-3">
           <p className="text-xs font-medium text-slate-400">
             {copy.goalsPage.currentValue}
           </p>
           <p
             className={cn(
-              "mt-1 text-sm font-semibold text-slate-950",
+              "mt-1 text-sm font-semibold text-slate-100",
               goal.metric === "netPnl" &&
                 progress.currentValue > 0 &&
-                "text-emerald-600",
+                "text-emerald-300",
               goal.metric === "netPnl" &&
                 progress.currentValue < 0 &&
-                "text-rose-600",
+                "text-rose-300",
             )}
           >
             {currentValue}
           </p>
         </div>
-        <div className="rounded-2xl bg-[rgba(250,250,255,0.88)] px-3 py-3">
+        <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-3 py-3">
           <p className="text-xs font-medium text-slate-400">
             {copy.goalsPage.targetValue}
           </p>
-          <p className="mt-1 text-sm font-semibold text-slate-950">
+          <p className="mt-1 text-sm font-semibold text-slate-100">
             {targetValue}
           </p>
         </div>
@@ -162,14 +162,14 @@ export default function GoalCard({
         />
       </div>
 
-      <div className="mt-4 grid gap-2 rounded-[18px] bg-[rgba(250,250,255,0.72)] px-4 py-3 text-sm">
+      <div className="mt-4 grid gap-2 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-3 text-sm">
         <div className="flex items-center justify-between gap-3">
-          <span className="text-slate-500">{copy.goalsPage.remaining}</span>
+          <span className="text-slate-400">{copy.goalsPage.remaining}</span>
           <span
             className={cn(
-              "font-semibold text-slate-900",
-              progress.remainingValue === 0 && "text-emerald-600",
-              progress.atRisk && "text-rose-600",
+              "font-semibold text-slate-100",
+              progress.remainingValue === 0 && "text-emerald-300",
+              progress.atRisk && "text-rose-300",
             )}
           >
             {remainingValue}
@@ -181,7 +181,7 @@ export default function GoalCard({
               "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
               progress.achieved || isCompleted
                 ? "bg-emerald-50 text-emerald-700"
-                : "bg-slate-100 text-slate-500",
+                : "bg-[rgba(148,163,184,0.10)] text-slate-400",
             )}
           >
             {progress.achieved || isCompleted
@@ -189,7 +189,7 @@ export default function GoalCard({
               : copy.goalsPage.notCompleted}
           </span>
           {progress.atRisk ? (
-            <span className="inline-flex rounded-full bg-rose-50 px-3 py-1 text-xs font-semibold text-rose-600">
+            <span className="inline-flex rounded-full border border-[rgba(244,63,94,0.24)] bg-[rgba(244,63,94,0.12)] px-3 py-1 text-xs font-semibold text-rose-300">
               {copy.goalsPage.atRisk}
             </span>
           ) : null}
@@ -255,7 +255,7 @@ export default function GoalCard({
             }}
             variant="outline"
             size="sm"
-            className="border-emerald-100 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+            className="border-[rgba(16,185,129,0.26)] bg-[rgba(16,185,129,0.12)] text-emerald-300 hover:bg-[rgba(16,185,129,0.18)]"
           >
             <CheckCircle2 className="h-4 w-4" />
             {copy.goalsPage.markComplete}

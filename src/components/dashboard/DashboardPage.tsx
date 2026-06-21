@@ -125,6 +125,12 @@ export default function DashboardPage() {
       <PageHeader
         title={copy.dashboardPage.title}
         description={copy.dashboardPage.subtitle}
+        badge={
+          <Badge variant="cyan" className="h-8 px-3">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
+            {copy.dashboardPage.localMode}
+          </Badge>
+        }
         actions={
           <Badge variant="purple" className="h-10 px-4 text-sm">
             {formatMonthRange(selectedMonth, locale)}

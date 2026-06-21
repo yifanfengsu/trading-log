@@ -44,7 +44,7 @@ export default function DrawerShell({
     <div className={cn("fixed inset-0 flex justify-end", zIndexClassName)}>
       <button
         type="button"
-        className="absolute inset-0 bg-slate-950/25 backdrop-blur-[3px] transition-opacity"
+        className="absolute inset-0 bg-slate-950/70 backdrop-blur-[4px] transition-opacity"
         onClick={onClose}
         aria-label={closeLabel}
       />
@@ -53,11 +53,11 @@ export default function DrawerShell({
         aria-modal="true"
         aria-labelledby={labelledById}
         className={cn(
-          "relative flex h-full w-full max-w-[100vw] flex-col overflow-hidden border-l border-slate-200 bg-white shadow-[0_24px_80px_rgba(30,41,59,0.18)]",
+          "relative flex h-full w-full max-w-[100vw] flex-col overflow-hidden border-l border-white/10 bg-[rgba(11,16,32,0.96)] shadow-[0_30px_100px_rgba(2,6,23,0.56)] backdrop-blur-xl",
           sizeClassMap[size],
         )}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200 px-5 py-5 sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 bg-[rgba(15,23,42,0.48)] px-5 py-5 sm:px-6">
           <div className="min-w-0">
             {eyebrow ? (
               <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
@@ -66,7 +66,7 @@ export default function DrawerShell({
             ) : null}
             <h2
               id={labelledById}
-              className="mt-1 text-xl font-semibold tracking-normal text-slate-950"
+              className="mt-1 text-xl font-semibold tracking-normal text-slate-50"
             >
               {title}
             </h2>
@@ -77,7 +77,7 @@ export default function DrawerShell({
             onClick={onClose}
             aria-label={closeLabel}
             title={closeLabel}
-            className="h-10 w-10 shrink-0 bg-slate-50 text-slate-500 hover:bg-slate-100"
+            className="h-10 w-10 shrink-0 bg-[rgba(15,23,42,0.68)] text-slate-300 hover:bg-[rgba(124,92,255,0.14)]"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -88,7 +88,7 @@ export default function DrawerShell({
         </div>
 
         {footer ? (
-          <div className="shrink-0 border-t border-slate-200 bg-white/95 px-5 py-4 backdrop-blur sm:px-6">
+          <div className="shrink-0 border-t border-white/10 bg-[rgba(15,23,42,0.82)] px-5 py-4 backdrop-blur sm:px-6">
             {footer}
           </div>
         ) : null}

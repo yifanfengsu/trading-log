@@ -25,11 +25,11 @@ export default function SectionHeader({
       )}
     >
       <div className="min-w-0">
-        <h2 className="text-base font-semibold tracking-normal text-slate-950">
+        <h2 className="text-base font-semibold tracking-normal text-slate-50">
           {title}
         </h2>
         {description ? (
-          <p className="mt-1 text-sm leading-6 text-slate-500">{description}</p>
+          <p className="mt-1 text-sm leading-6 text-slate-400">{description}</p>
         ) : null}
       </div>
       {action ? <div className="shrink-0">{action}</div> : null}

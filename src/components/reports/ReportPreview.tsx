@@ -36,15 +36,15 @@ interface PreviewMetricProps {
 }
 
 const toneClassMap = {
-  neutral: "text-slate-900",
-  positive: "text-emerald-600",
-  negative: "text-rose-600",
-  accent: "text-[var(--accent)]",
+  neutral: "text-slate-100",
+  positive: "text-emerald-300",
+  negative: "text-rose-300",
+  accent: "text-violet-200",
 } as const;
 
 function PreviewMetric({ label, value, tone = "neutral" }: PreviewMetricProps) {
   return (
-    <div className="rounded-[18px] bg-[rgba(250,250,255,0.88)] px-4 py-3">
+    <div className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3">
       <p className="text-xs font-semibold text-slate-400">{label}</p>
       <p className={cn("mt-1 text-sm font-semibold", toneClassMap[tone])}>
         {value}
@@ -83,7 +83,7 @@ export default function ReportPreview({
       <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h2 className="panel-title">{copy.reportsPage.reportPreview}</h2>
-          <p className="mt-1 text-sm text-slate-500">
+          <p className="mt-1 text-sm text-slate-400">
             {periodType === "weekly"
               ? copy.reportsPage.weekly
               : copy.reportsPage.monthly}
@@ -94,14 +94,14 @@ export default function ReportPreview({
       </div>
 
       {stats.totalTrades === 0 ? (
-        <div className="mt-5 rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(250,250,255,0.72)] px-5 py-8 text-sm font-medium text-slate-400">
+        <div className="mt-5 rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(15,23,42,0.42)] px-5 py-8 text-sm font-medium text-slate-400">
           {copy.reportsPage.noTradeData}
         </div>
       ) : null}
 
       <div className="mt-5 space-y-6">
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-sm font-semibold text-slate-100">
             {copy.reportsPage.corePerformance}
           </h3>
           <div className="mt-3 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -139,22 +139,22 @@ export default function ReportPreview({
 
         <div className="grid gap-4 lg:grid-cols-2">
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-slate-100">
               {copy.reportsPage.setupPerformance}
             </h3>
             <div className="mt-3 space-y-2">
               {setupBreakdown.slice(0, 3).map((row) => (
                 <div
                   key={row.setup}
-                  className="flex items-center justify-between gap-4 rounded-[18px] bg-[rgba(250,250,255,0.88)] px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
                 >
-                  <span className="text-sm font-medium text-slate-600">
+                  <span className="text-sm font-medium text-slate-300">
                     {copy.strategies[row.setup]}
                   </span>
                   <span
                     className={cn(
                       "text-sm font-semibold",
-                      row.netPnl >= 0 ? "text-emerald-600" : "text-rose-600",
+                      row.netPnl >= 0 ? "text-emerald-300" : "text-rose-300",
                     )}
                   >
                     {formatCurrency(row.netPnl, settings.currency)}
@@ -170,7 +170,7 @@ export default function ReportPreview({
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-slate-100">
               {copy.reportsPage.tagImpact}
             </h3>
             <div className="mt-3 flex flex-wrap gap-2">
@@ -180,8 +180,8 @@ export default function ReportPreview({
                   className={cn(
                     "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
                     row.netPnl >= 0
-                      ? "bg-emerald-50 text-emerald-600"
-                      : "bg-rose-50 text-rose-600",
+                      ? "border border-[rgba(16,185,129,0.24)] bg-[rgba(16,185,129,0.12)] text-emerald-300"
+                      : "border border-[rgba(244,63,94,0.24)] bg-[rgba(244,63,94,0.12)] text-rose-300",
                   )}
                 >
                   {row.tag} · {formatCurrency(row.netPnl, settings.currency)}
@@ -197,7 +197,7 @@ export default function ReportPreview({
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-sm font-semibold text-slate-100">
             {copy.reportsPage.topWinningTrades} /{" "}
             {copy.reportsPage.topLosingTrades}
           </h3>
@@ -206,10 +206,10 @@ export default function ReportPreview({
               {topTradeRows.map((trade) => (
                 <div
                   key={trade.id}
-                  className="flex items-center justify-between gap-4 rounded-[18px] bg-[rgba(250,250,255,0.88)] px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-slate-900">
+                    <p className="truncate text-sm font-semibold text-slate-100">
                       {trade.symbol}
                     </p>
                     <p className="mt-0.5 text-xs text-slate-400">
@@ -220,7 +220,7 @@ export default function ReportPreview({
                     <p
                       className={cn(
                         "text-sm font-semibold",
-                        trade.pnl >= 0 ? "text-emerald-600" : "text-rose-600",
+                        trade.pnl >= 0 ? "text-emerald-300" : "text-rose-300",
                       )}
                     >
                       {formatCurrency(trade.pnl, settings.currency)}
@@ -229,8 +229,8 @@ export default function ReportPreview({
                       className={cn(
                         "text-xs font-semibold",
                         trade.rMultiple >= 0
-                          ? "text-emerald-600"
-                          : "text-rose-600",
+                          ? "text-emerald-300"
+                          : "text-rose-300",
                       )}
                     >
                       {formatRMultiple(trade.rMultiple)}
@@ -247,19 +247,19 @@ export default function ReportPreview({
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold text-slate-900">
+          <h3 className="text-sm font-semibold text-slate-100">
             {copy.reportsPage.periodReview}
           </h3>
           <div className="mt-3 space-y-3">
             {reviewBlocks.map((block) => (
               <div
                 key={block.label}
-                className="rounded-[18px] bg-[rgba(250,250,255,0.88)] px-4 py-3"
+                className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
               >
                 <p className="text-xs font-semibold text-slate-400">
                   {block.label}
                 </p>
-                <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-slate-600">
+                <p className="mt-1 whitespace-pre-wrap text-sm leading-6 text-slate-300">
                   {block.value.trim() || copy.reportsPage.noData}
                 </p>
               </div>
@@ -268,7 +268,7 @@ export default function ReportPreview({
         </div>
       </div>
 
-      <p className="mt-6 rounded-[18px] bg-[rgba(108,77,255,0.08)] px-4 py-3 text-sm font-medium text-[var(--accent)]">
+      <p className="mt-6 rounded-[18px] border border-[rgba(124,92,255,0.18)] bg-[rgba(124,92,255,0.08)] px-4 py-3 text-sm font-medium text-violet-200">
         {copy.reportsPage.copyMarkdownHint}
       </p>
     </section>

@@ -58,7 +58,7 @@ export default function CalendarMonthGrid({
               return (
                 <div
                   key={cell.dateKey}
-                  className="min-h-[122px] rounded-[18px] border border-slate-100 bg-slate-50/80 p-3 text-slate-300"
+                  className="min-h-[122px] rounded-[18px] border border-white/5 bg-[rgba(15,23,42,0.22)] p-3 text-slate-600"
                 >
                   <span className="text-sm font-semibold">{cell.day}</span>
                 </div>
@@ -72,26 +72,27 @@ export default function CalendarMonthGrid({
                 onClick={() => onSelectDate(cell.dateKey)}
                 aria-label={getDateDisplay(cell.dateKey, locale)}
                 className={cn(
-                  "flex min-h-[122px] flex-col rounded-[18px] border p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_12px_28px_rgba(31,15,86,0.08)]",
+                  "flex min-h-[122px] flex-col rounded-[18px] border p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(2,6,23,0.28)]",
                   !hasTrades &&
-                    "border-slate-100 bg-white/80 hover:border-violet-200",
+                    "border-white/10 bg-[rgba(15,23,42,0.46)] hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.66)]",
                   isProfit &&
-                    "border-emerald-100 bg-[linear-gradient(180deg,#ECFDF5_0%,rgba(255,255,255,0.94)_100%)]",
+                    "border-[rgba(16,185,129,0.28)] bg-[linear-gradient(180deg,rgba(16,185,129,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
                   isLoss &&
-                    "border-rose-100 bg-[linear-gradient(180deg,#FFF1F2_0%,rgba(255,255,255,0.95)_100%)]",
+                    "border-[rgba(244,63,94,0.30)] bg-[linear-gradient(180deg,rgba(244,63,94,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
                   isSelected &&
-                    "border-violet-300 shadow-[inset_0_0_0_1px_rgba(109,93,246,0.28),0_14px_28px_rgba(109,93,246,0.10)]",
+                    "border-[rgba(124,92,255,0.70)] shadow-[inset_0_0_0_1px_rgba(124,92,255,0.30),0_0_24px_rgba(124,92,255,0.18)]",
                 )}
               >
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-sm font-semibold text-slate-800">
+                  <span className="text-sm font-semibold text-slate-200">
                     {cell.day}
                   </span>
                   <span
                     className={cn(
                       "h-2 w-2 rounded-full",
-                      isReviewed && "bg-violet-500",
-                      !isReviewed && hasTrades && "bg-slate-300",
+                      isReviewed &&
+                        "bg-violet-300 shadow-[0_0_10px_rgba(124,92,255,0.8)]",
+                      !isReviewed && hasTrades && "bg-slate-600",
                       !isReviewed && !hasTrades && "bg-transparent",
                     )}
                   />
@@ -101,23 +102,23 @@ export default function CalendarMonthGrid({
                   <div className="mt-auto space-y-2">
                     <p
                       className={cn(
-                        "text-base font-semibold tracking-[-0.03em]",
-                        isProfit && "text-emerald-700",
-                        isLoss && "text-rose-700",
-                        !isProfit && !isLoss && "text-slate-700",
+                        "text-base font-semibold tracking-normal",
+                        isProfit && "text-emerald-300",
+                        isLoss && "text-rose-300",
+                        !isProfit && !isLoss && "text-slate-300",
                       )}
                     >
                       {formatCompactCurrency(pnl, settings.currency)}
                     </p>
-                    <p className="text-xs font-medium text-slate-500">
+                    <p className="text-xs font-medium text-slate-400">
                       {tradeCount} {copy.calendarPage.trades}
                     </p>
                     <span
                       className={cn(
                         "inline-flex w-fit rounded-full px-2 py-1 text-[11px] font-semibold",
                         isReviewed
-                          ? "bg-violet-50 text-violet-600"
-                          : "bg-slate-100 text-slate-500",
+                          ? "bg-[rgba(124,92,255,0.14)] text-violet-200"
+                          : "bg-[rgba(148,163,184,0.10)] text-slate-400",
                       )}
                     >
                       {isReviewed
@@ -126,7 +127,7 @@ export default function CalendarMonthGrid({
                     </span>
                   </div>
                 ) : isReviewed ? (
-                  <span className="mt-auto inline-flex w-fit rounded-full bg-violet-50 px-2 py-1 text-[11px] font-semibold text-violet-600">
+                  <span className="mt-auto inline-flex w-fit rounded-full bg-[rgba(124,92,255,0.14)] px-2 py-1 text-[11px] font-semibold text-violet-200">
                     {copy.calendarPage.reviewed}
                   </span>
                 ) : null}

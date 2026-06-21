@@ -18,7 +18,15 @@ import {
   type PlaybookInput,
 } from "@/lib/playbook-types";
 
+// Legacy localStorage key — only read once, during the one-time migration into
+// SQLite. Playbooks are now persisted server-side via /api/playbooks.
 export const PLAYBOOK_STORAGE_KEY = "trade-journal-playbooks-v1";
+
+// Set in localStorage after the legacy playbooks have been imported into SQLite
+// so the migration never runs twice. The legacy data itself is left in place.
+const PLAYBOOK_MIGRATION_FLAG_KEY = "playbooks-migrated-to-sqlite";
+
+const JSON_HEADERS = { "Content-Type": "application/json" } as const;
 
 interface PlaybookStoreContextValue {
   playbooks: Playbook[];
@@ -62,75 +70,190 @@ function sortPlaybooks(playbooks: Playbook[]) {
   return [...playbooks].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-function persistPlaybooks(playbooks: Playbook[]) {
-  window.localStorage.setItem(PLAYBOOK_STORAGE_KEY, JSON.stringify(playbooks));
+async function fetchPlaybooks(): Promise<Playbook[]> {
+  const response = await fetch("/api/playbooks");
+
+  if (!response.ok) {
+    throw new Error(`GET /api/playbooks failed with status ${response.status}`);
+  }
+
+  const data: unknown = await response.json();
+  return Array.isArray(data) ? (data as Playbook[]) : [];
+}
+
+// One-time import of legacy localStorage playbooks into SQLite. Runs only when
+// the migration flag is unset (checked here) and the database is empty (checked
+// by the caller). The flag is recorded even when there is no legacy data so the
+// check never runs again — the marker, not "database empty", is the real gate.
+async function migrateLegacyPlaybooksIfNeeded(): Promise<boolean> {
+  if (typeof window === "undefined") {
+    return false;
+  }
+
+  if (window.localStorage.getItem(PLAYBOOK_MIGRATION_FLAG_KEY)) {
+    return false;
+  }
+
+  const legacyPlaybooks = parseStoredPlaybooks(
+    window.localStorage.getItem(PLAYBOOK_STORAGE_KEY),
+  );
+
+  if (!legacyPlaybooks || legacyPlaybooks.length === 0) {
+    window.localStorage.setItem(
+      PLAYBOOK_MIGRATION_FLAG_KEY,
+      new Date().toISOString(),
+    );
+    return false;
+  }
+
+  try {
+    const response = await fetch("/api/playbooks/import", {
+      method: "POST",
+      headers: JSON_HEADERS,
+      body: JSON.stringify(legacyPlaybooks),
+    });
+
+    if (!response.ok) {
+      throw new Error(`import failed with status ${response.status}`);
+    }
+
+    window.localStorage.setItem(
+      PLAYBOOK_MIGRATION_FLAG_KEY,
+      new Date().toISOString(),
+    );
+
+    return true;
+  } catch (error) {
+    console.error("[playbooks] migration from localStorage failed", error);
+    return false;
+  }
 }
 
 export function PlaybookStoreProvider({ children }: { children: ReactNode }) {
-  const [playbooks, setPlaybooks] = useState<Playbook[]>(seedPlaybooks);
-  const playbooksRef = useRef<Playbook[]>(seedPlaybooks);
+  const [playbooks, setPlaybooks] = useState<Playbook[]>([]);
+  const playbooksRef = useRef<Playbook[]>([]);
 
-  const commitPlaybooks = useCallback((nextPlaybooks: Playbook[]) => {
+  const applyPlaybooks = useCallback((nextPlaybooks: Playbook[]) => {
     const sortedPlaybooks = sortPlaybooks(nextPlaybooks);
     playbooksRef.current = sortedPlaybooks;
     setPlaybooks(sortedPlaybooks);
-    persistPlaybooks(sortedPlaybooks);
   }, []);
+
+  const persist = useCallback(
+    async (
+      request: () => Promise<Response>,
+      previousPlaybooks: Playbook[],
+      label: string,
+    ) => {
+      try {
+        const response = await request();
+
+        if (!response.ok) {
+          throw new Error(`${label} failed with status ${response.status}`);
+        }
+      } catch (error) {
+        console.error(`[playbooks] ${label} failed — rolling back`, error);
+        applyPlaybooks(previousPlaybooks);
+      }
+    },
+    [applyPlaybooks],
+  );
 
   useEffect(() => {
-    const storedPlaybooks = parseStoredPlaybooks(
-      window.localStorage.getItem(PLAYBOOK_STORAGE_KEY),
-    );
+    let cancelled = false;
 
-    if (storedPlaybooks) {
-      const timeoutId = window.setTimeout(() => {
-        const sortedPlaybooks = sortPlaybooks(storedPlaybooks);
-        playbooksRef.current = sortedPlaybooks;
-        setPlaybooks(sortedPlaybooks);
-      }, 0);
+    async function load() {
+      try {
+        let serverPlaybooks = await fetchPlaybooks();
 
-      return () => window.clearTimeout(timeoutId);
+        if (serverPlaybooks.length === 0) {
+          const migrated = await migrateLegacyPlaybooksIfNeeded();
+
+          if (migrated) {
+            serverPlaybooks = await fetchPlaybooks();
+          }
+        }
+
+        if (!cancelled) {
+          applyPlaybooks(serverPlaybooks);
+        }
+      } catch (error) {
+        console.error("[playbooks] failed to load from API", error);
+      }
     }
 
-    persistPlaybooks(seedPlaybooks);
-  }, []);
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [applyPlaybooks]);
 
   const addPlaybook = useCallback(
     (input: PlaybookInput) => {
       const now = new Date().toISOString();
-      const nextPlaybooks = [
-        ...playbooksRef.current,
-        {
-          ...input,
-          id: createPlaybookId(),
-          createdAt: now,
-          updatedAt: now,
-        },
-      ];
+      const nextPlaybook: Playbook = {
+        ...input,
+        id: createPlaybookId(),
+        createdAt: now,
+        updatedAt: now,
+      };
+      const previousPlaybooks = playbooksRef.current;
 
-      commitPlaybooks(nextPlaybooks);
+      applyPlaybooks([...previousPlaybooks, nextPlaybook]);
+
+      void persist(
+        () =>
+          fetch("/api/playbooks", {
+            method: "POST",
+            headers: JSON_HEADERS,
+            body: JSON.stringify(nextPlaybook),
+          }),
+        previousPlaybooks,
+        "POST /api/playbooks",
+      );
     },
-    [commitPlaybooks],
+    [applyPlaybooks, persist],
   );
 
   const updatePlaybook = useCallback(
     (id: string, patch: Partial<PlaybookInput>) => {
-      const now = new Date().toISOString();
-      const nextPlaybooks = playbooksRef.current.map((playbook) =>
-        playbook.id === id
-          ? {
-              ...playbook,
-              ...patch,
-              id: playbook.id,
-              createdAt: playbook.createdAt,
-              updatedAt: now,
-            }
-          : playbook,
+      const existingPlaybook = playbooksRef.current.find(
+        (playbook) => playbook.id === id,
       );
 
-      commitPlaybooks(nextPlaybooks);
+      if (!existingPlaybook) {
+        return;
+      }
+
+      const now = new Date().toISOString();
+      const nextPlaybook: Playbook = {
+        ...existingPlaybook,
+        ...patch,
+        id: existingPlaybook.id,
+        createdAt: existingPlaybook.createdAt,
+        updatedAt: now,
+      };
+      const previousPlaybooks = playbooksRef.current;
+
+      applyPlaybooks(
+        previousPlaybooks.map((playbook) =>
+          playbook.id === id ? nextPlaybook : playbook,
+        ),
+      );
+
+      void persist(
+        () =>
+          fetch(`/api/playbooks/${id}`, {
+            method: "PUT",
+            headers: JSON_HEADERS,
+            body: JSON.stringify(nextPlaybook),
+          }),
+        previousPlaybooks,
+        `PUT /api/playbooks/${id}`,
+      );
     },
-    [commitPlaybooks],
+    [applyPlaybooks, persist],
   );
 
   const archivePlaybook = useCallback(
@@ -149,27 +272,76 @@ export function PlaybookStoreProvider({ children }: { children: ReactNode }) {
 
   const deletePlaybook = useCallback(
     (id: string) => {
-      commitPlaybooks(
-        playbooksRef.current.filter((playbook) => playbook.id !== id),
+      const previousPlaybooks = playbooksRef.current;
+
+      applyPlaybooks(
+        previousPlaybooks.filter((playbook) => playbook.id !== id),
+      );
+
+      void persist(
+        () => fetch(`/api/playbooks/${id}`, { method: "DELETE" }),
+        previousPlaybooks,
+        `DELETE /api/playbooks/${id}`,
       );
     },
-    [commitPlaybooks],
+    [applyPlaybooks, persist],
   );
 
   const replacePlaybooks = useCallback(
     (nextPlaybooks: Playbook[]) => {
-      commitPlaybooks([...nextPlaybooks]);
+      const previousPlaybooks = playbooksRef.current;
+      const snapshot = [...nextPlaybooks];
+
+      applyPlaybooks(snapshot);
+
+      void persist(
+        () =>
+          fetch("/api/playbooks/import", {
+            method: "POST",
+            headers: JSON_HEADERS,
+            body: JSON.stringify(snapshot),
+          }),
+        previousPlaybooks,
+        "POST /api/playbooks/import (replace)",
+      );
     },
-    [commitPlaybooks],
+    [applyPlaybooks, persist],
   );
 
   const clearPlaybooks = useCallback(() => {
-    commitPlaybooks([]);
-  }, [commitPlaybooks]);
+    const previousPlaybooks = playbooksRef.current;
+
+    applyPlaybooks([]);
+
+    void persist(
+      () =>
+        fetch("/api/playbooks/import", {
+          method: "POST",
+          headers: JSON_HEADERS,
+          body: JSON.stringify([]),
+        }),
+      previousPlaybooks,
+      "POST /api/playbooks/import (clear)",
+    );
+  }, [applyPlaybooks, persist]);
 
   const resetPlaybooksToSeed = useCallback(() => {
-    commitPlaybooks(seedPlaybooks);
-  }, [commitPlaybooks]);
+    const previousPlaybooks = playbooksRef.current;
+    const snapshot = [...seedPlaybooks];
+
+    applyPlaybooks(snapshot);
+
+    void persist(
+      () =>
+        fetch("/api/playbooks/import", {
+          method: "POST",
+          headers: JSON_HEADERS,
+          body: JSON.stringify(snapshot),
+        }),
+      previousPlaybooks,
+      "POST /api/playbooks/import (reset)",
+    );
+  }, [applyPlaybooks, persist]);
 
   const getPlaybookById = useCallback(
     (id: string) => playbooks.find((playbook) => playbook.id === id),

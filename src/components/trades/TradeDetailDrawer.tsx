@@ -35,10 +35,10 @@ interface DetailRowProps {
 function DetailRow({ label, value, valueClassName }: DetailRowProps) {
   return (
     <div className="flex items-center justify-between gap-4 border-b border-[rgba(148,163,184,0.12)] py-3 last:border-b-0">
-      <p className="text-sm text-slate-500">{label}</p>
+      <p className="text-sm text-slate-400">{label}</p>
       <p
         className={cn(
-          "text-right text-sm font-semibold text-slate-900",
+          "text-right text-sm font-semibold text-slate-100",
           valueClassName,
         )}
       >
@@ -88,7 +88,7 @@ export default function TradeDetailDrawer({
       }
     >
         <div className="space-y-5">
-          <div className="rounded-[20px] border border-slate-100 bg-slate-50/70 px-4">
+          <div className="rounded-[20px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4">
             <DetailRow
               label={copy.tradeForm.closeTime}
               value={formatTradeTimestamp(trade.closedAt)}
@@ -115,13 +115,15 @@ export default function TradeDetailDrawer({
             <DetailRow
               label={copy.tradeForm.netPnl}
               value={formatCurrency(trade.pnl, settings.currency)}
-              valueClassName={trade.pnl >= 0 ? "text-emerald-600" : "text-rose-600"}
+              valueClassName={
+                trade.pnl >= 0 ? "text-emerald-300" : "text-rose-300"
+              }
             />
             <DetailRow
               label={copy.tradeForm.rMultiple}
               value={formatRMultiple(trade.rMultiple)}
               valueClassName={
-                trade.rMultiple >= 0 ? "text-emerald-600" : "text-rose-600"
+                trade.rMultiple >= 0 ? "text-emerald-300" : "text-rose-300"
               }
             />
             <DetailRow
@@ -131,16 +133,16 @@ export default function TradeDetailDrawer({
           </div>
 
           <div className="mt-5">
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-slate-100">
               {copy.tradesPage.notes}
             </p>
-            <div className="mt-2 rounded-[18px] border border-slate-100 bg-slate-50/80 p-4 text-sm leading-6 text-slate-600">
+            <div className="mt-2 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] p-4 text-sm leading-6 text-slate-300">
               {trade.notes || copy.tradesPage.noNotes}
             </div>
           </div>
 
           <div className="mt-5">
-            <p className="text-sm font-semibold text-slate-900">
+            <p className="text-sm font-semibold text-slate-100">
               {copy.tradesPage.tags}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">

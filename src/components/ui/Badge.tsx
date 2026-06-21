@@ -4,19 +4,34 @@ import type { HTMLAttributes } from "react";
 
 import { cn } from "@/lib/utils";
 
-type BadgeVariant = "purple" | "green" | "red" | "amber" | "gray" | "blue";
+type BadgeVariant =
+  | "purple"
+  | "green"
+  | "red"
+  | "amber"
+  | "gray"
+  | "blue"
+  | "cyan";
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
 }
 
 const variantClassMap: Record<BadgeVariant, string> = {
-  purple: "border-violet-100 bg-violet-50 text-violet-600",
-  green: "border-emerald-100 bg-emerald-50 text-emerald-700",
-  red: "border-rose-100 bg-rose-50 text-rose-600",
-  amber: "border-amber-100 bg-amber-50 text-amber-700",
-  gray: "border-slate-200 bg-slate-50 text-slate-600",
-  blue: "border-blue-100 bg-blue-50 text-blue-700",
+  purple:
+    "border-[rgba(124,92,255,0.32)] bg-[rgba(124,92,255,0.12)] text-violet-200",
+  green:
+    "border-[rgba(16,185,129,0.24)] bg-[rgba(16,185,129,0.12)] text-emerald-300",
+  red:
+    "border-[rgba(244,63,94,0.24)] bg-[rgba(244,63,94,0.12)] text-rose-300",
+  amber:
+    "border-[rgba(245,158,11,0.24)] bg-[rgba(245,158,11,0.12)] text-amber-300",
+  gray:
+    "border-[rgba(148,163,184,0.18)] bg-[rgba(148,163,184,0.10)] text-slate-300",
+  blue:
+    "border-[rgba(99,102,241,0.26)] bg-[rgba(99,102,241,0.12)] text-indigo-200",
+  cyan:
+    "border-[rgba(34,211,238,0.24)] bg-[rgba(34,211,238,0.12)] text-cyan-200",
 };
 
 export default function Badge({
