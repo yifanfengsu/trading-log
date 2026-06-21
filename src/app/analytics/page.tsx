@@ -1,5 +1,5 @@
-import AnalyticsPage from "@/components/analytics/AnalyticsPage";
+import AnalyticsWorkspace from "@/components/analytics/AnalyticsWorkspace";
 
 export default function AnalyticsRoutePage() {
-  return <AnalyticsPage />;
+  return <AnalyticsWorkspace />;
 }

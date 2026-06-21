@@ -41,6 +41,8 @@ export interface Dictionary {
     title: string;
     subtitle: string;
     localMode: string;
+    goalsOverview: string;
+    manageGoals: string;
   };
   menu: Record<SidebarMenuId, string>;
   metrics: Record<
@@ -112,6 +114,8 @@ export interface Dictionary {
   analyticsPage: {
     title: string;
     subtitle: string;
+    tabAnalytics: string;
+    tabReports: string;
     month: string;
     allSymbols: string;
     setupPerformance: string;
@@ -566,16 +570,15 @@ export const dictionaries: Record<Locale, Dictionary> = {
       title: "交易日志",
       subtitle: "追踪交易表现、复盘执行质量，并沉淀你的交易系统。",
       localMode: "本地模式",
+      goalsOverview: "目标 / 风控进度",
+      manageGoals: "管理目标",
     },
     menu: {
       dashboard: "仪表盘",
       trades: "交易记录",
       calendar: "日历",
       analytics: "数据分析",
-      reports: "报告",
       playbook: "交易手册",
-      notes: "笔记",
-      goals: "目标",
       settings: "设置",
     },
     metrics: {
@@ -666,6 +669,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     analyticsPage: {
       title: "数据分析",
       subtitle: "从策略、交易对、方向、时间和行为维度分析交易表现。",
+      tabAnalytics: "分析",
+      tabReports: "周期报告",
       month: "月份",
       allSymbols: "全部交易对",
       setupPerformance: "按策略表现",
@@ -1200,16 +1205,15 @@ export const dictionaries: Record<Locale, Dictionary> = {
       subtitle:
         "Track performance, review execution, and improve your trading system.",
       localMode: "Local Mode",
+      goalsOverview: "Goals & Risk",
+      manageGoals: "Manage Goals",
     },
     menu: {
       dashboard: "Dashboard",
       trades: "Trades",
       calendar: "Calendar",
       analytics: "Analytics",
-      reports: "Reports",
       playbook: "Playbook",
-      notes: "Notes",
-      goals: "Goals",
       settings: "Settings",
     },
     metrics: {
@@ -1308,6 +1312,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
     analyticsPage: {
       title: "Analytics",
       subtitle: "Analyze performance by setup, symbol, side, timing, and behavior.",
+      tabAnalytics: "Analytics",
+      tabReports: "Period Report",
       month: "Month",
       allSymbols: "All Symbols",
       setupPerformance: "Setup Performance",

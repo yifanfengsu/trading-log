@@ -10,10 +10,7 @@ export const sidebarMenuIds = [
   "trades",
   "calendar",
   "analytics",
-  "reports",
   "playbook",
-  "notes",
-  "goals",
   "settings",
 ] as const;
 

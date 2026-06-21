@@ -7,13 +7,10 @@ import {
   BarChart3,
   BookOpenText,
   CalendarDays,
-  FileText,
   LayoutDashboard,
   LineChart,
   type LucideIcon,
-  NotebookPen,
   Settings2,
-  Target,
 } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -26,10 +23,7 @@ const menuIconMap: Record<SidebarMenuId, LucideIcon> = {
   trades: ArrowLeftRight,
   calendar: CalendarDays,
   analytics: BarChart3,
-  reports: FileText,
   playbook: BookOpenText,
-  notes: NotebookPen,
-  goals: Target,
   settings: Settings2,
 };
 
@@ -63,26 +57,17 @@ export default function Sidebar() {
                   ? "/calendar"
                   : item === "analytics"
                     ? "/analytics"
-                    : item === "reports"
-                      ? "/reports"
-                      : item === "playbook"
-                        ? "/playbook"
-                        : item === "notes"
-                          ? "/notes"
-                          : item === "goals"
-                            ? "/goals"
-                            : item === "settings"
-                              ? "/settings"
-                              : "#";
+                    : item === "playbook"
+                      ? "/playbook"
+                      : item === "settings"
+                        ? "/settings"
+                        : "#";
           const isActive =
             (item === "dashboard" && pathname === "/") ||
             (item === "trades" && pathname.startsWith("/trades")) ||
             (item === "calendar" && pathname.startsWith("/calendar")) ||
             (item === "analytics" && pathname.startsWith("/analytics")) ||
-            (item === "reports" && pathname.startsWith("/reports")) ||
             (item === "playbook" && pathname.startsWith("/playbook")) ||
-            (item === "notes" && pathname.startsWith("/notes")) ||
-            (item === "goals" && pathname.startsWith("/goals")) ||
             (item === "settings" && pathname.startsWith("/settings"));
           const content = (
             <>

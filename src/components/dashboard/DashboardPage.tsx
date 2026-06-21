@@ -5,6 +5,7 @@ import {
   type MetricData,
   type Tone,
 } from "@/lib/mock-data";
+import GoalsOverview from "@/components/dashboard/GoalsOverview";
 import MetricCard from "@/components/dashboard/MetricCard";
 import PnlCalendar from "@/components/dashboard/PnlCalendar";
 import TodayReview from "@/components/dashboard/TodayReview";
@@ -162,6 +163,8 @@ export default function DashboardPage() {
         <EquityCurve data={equityCurveData} selectedMonth={selectedMonth} />
         <StrategyPerformance rows={strategyStats} />
       </section>
+
+      <GoalsOverview />
 
       <RecentTrades rows={recentTrades} />
     </>

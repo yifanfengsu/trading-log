@@ -298,7 +298,7 @@ export default function GoalEditorDrawer({
   return (
     <DrawerShell
       title={title}
-      eyebrow={copy.menu.goals}
+      eyebrow={copy.goalsPage.title}
       closeLabel={copy.tradeForm.cancel}
       labelledById="goal-editor-title"
       onClose={onClose}
