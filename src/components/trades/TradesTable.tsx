@@ -1,6 +1,15 @@
 "use client";
 
-import { ArrowDown, ArrowUp, Eye, NotebookPen, Pencil, Trash2 } from "lucide-react";
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronLeft,
+  ChevronRight,
+  Eye,
+  NotebookPen,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
@@ -29,12 +38,18 @@ import {
 } from "@/lib/utils";
 
 interface TradesTableProps {
+  // The current page slice to render (already filtered, sorted, and paginated).
   trades: Trade[];
   hasAnyTrades: boolean;
   sortState: TradeSortState;
   onSort: (key: TradeSortKey) => void;
   onView: (trade: Trade) => void;
   onResetFilters: () => void;
+  // Total count across all pages (filtered) — used for the header count.
+  totalCount: number;
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 interface SortableHeaderProps {
@@ -98,8 +113,15 @@ export default function TradesTable({
   onSort,
   onView,
   onResetFilters,
+  totalCount,
+  page,
+  totalPages,
+  onPageChange,
 }: TradesTableProps) {
   const { dictionary: copy } = useLanguage();
+  const pageIndicator = copy.tradesPage.pageIndicator
+    .replace("{current}", String(page))
+    .replace("{total}", String(totalPages));
   const router = useRouter();
   const { settings } = useUserSettings();
   const { deleteTrade } = useTrades();
@@ -120,7 +142,7 @@ export default function TradesTable({
     <Card>
       <SectionHeader
         title={copy.tradesPage.filteredResults}
-        description={`${trades.length} ${copy.tradesPage.tradeCountLabel}`}
+        description={`${totalCount} ${copy.tradesPage.tradeCountLabel}`}
       />
 
       <DataTable minWidth={1380} className="mt-5">
@@ -348,6 +370,32 @@ export default function TradesTable({
             )}
           </tbody>
       </DataTable>
+
+      {totalPages > 1 ? (
+        <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-medium text-slate-400">{pageIndicator}</p>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => onPageChange(page - 1)}
+              disabled={page <= 1}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              {copy.tradesPage.previousPage}
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => onPageChange(page + 1)}
+              disabled={page >= totalPages}
+            >
+              {copy.tradesPage.nextPage}
+              <ChevronRight className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      ) : null}
     </Card>
   );
 }

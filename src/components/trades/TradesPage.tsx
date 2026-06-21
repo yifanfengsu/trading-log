@@ -26,6 +26,8 @@ import {
 import type { Trade } from "@/lib/trade-types";
 import { formatCurrency, formatPercent, formatRMultiple } from "@/lib/utils";
 
+const TRADES_PER_PAGE = 25;
+
 function getAverageR(trades: Trade[]) {
   if (trades.length === 0) {
     return 0;
@@ -44,13 +46,36 @@ export default function TradesPage() {
   const [filters, setFilters] = useState<TradeFilters>(defaultTradeFilters);
   const [sortState, setSortState] = useState<TradeSortState>(null);
   const [detailTrade, setDetailTrade] = useState<Trade | null>(null);
+  const [page, setPage] = useState(1);
   const filteredTrades = filterTrades(trades, filters);
   const sortedTrades = sortTrades(filteredTrades, sortState);
   const stats = getPeriodStats(filteredTrades);
   const avgR = getAverageR(filteredTrades);
 
+  // Display-layer pagination over the already filtered + sorted list. Clamp the
+  // current page so deletions / filter changes can never strand it on a blank
+  // page; the slice never triggers a refetch (data already lives in the store).
+  const totalPages = Math.max(1, Math.ceil(sortedTrades.length / TRADES_PER_PAGE));
+  const currentPage = Math.min(Math.max(page, 1), totalPages);
+  const pagedTrades = sortedTrades.slice(
+    (currentPage - 1) * TRADES_PER_PAGE,
+    currentPage * TRADES_PER_PAGE,
+  );
+
   function handleSort(key: TradeSortKey) {
     setSortState((currentSort) => getNextSortState(currentSort, key));
+  }
+
+  // Any filter change resets to page 1 so the user never lands on a page that no
+  // longer exists after the result set shrinks.
+  function handleFiltersChange(nextFilters: TradeFilters) {
+    setFilters(nextFilters);
+    setPage(1);
+  }
+
+  function handleResetFilters() {
+    setFilters(defaultTradeFilters);
+    setPage(1);
   }
 
   function handleEditFromDetail(trade: Trade) {
@@ -100,17 +125,21 @@ export default function TradesPage() {
 
       <TradesToolbar
         filters={filters}
-        onFiltersChange={setFilters}
-        onReset={() => setFilters(defaultTradeFilters)}
+        onFiltersChange={handleFiltersChange}
+        onReset={handleResetFilters}
       />
 
       <TradesTable
-        trades={sortedTrades}
+        trades={pagedTrades}
         hasAnyTrades={trades.length > 0}
         sortState={sortState}
         onSort={handleSort}
         onView={setDetailTrade}
-        onResetFilters={() => setFilters(defaultTradeFilters)}
+        onResetFilters={handleResetFilters}
+        totalCount={sortedTrades.length}
+        page={currentPage}
+        totalPages={totalPages}
+        onPageChange={setPage}
       />
 
       {detailTrade ? (

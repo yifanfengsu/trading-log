@@ -391,6 +391,9 @@ export interface Dictionary {
     legacyManualHint: string;
     filteredResults: string;
     tradeCountLabel: string;
+    previousPage: string;
+    nextPage: string;
+    pageIndicator: string;
   };
   notesPage: {
     title: string;
@@ -1057,6 +1060,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       legacyManualHint: "历史手填数据，缺少数量与止损价",
       filteredResults: "筛选结果",
       tradeCountLabel: "笔交易",
+      previousPage: "上一页",
+      nextPage: "下一页",
+      pageIndicator: "第 {current} / {total} 页",
     },
     notesPage: {
       title: "笔记",
@@ -1734,6 +1740,9 @@ export const dictionaries: Record<Locale, Dictionary> = {
       legacyManualHint: "Legacy manual entry — missing quantity and stop price",
       filteredResults: "Filtered Results",
       tradeCountLabel: "trades",
+      previousPage: "Previous",
+      nextPage: "Next",
+      pageIndicator: "Page {current} of {total}",
     },
     notesPage: {
       title: "Notes",
