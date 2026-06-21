@@ -104,7 +104,7 @@ export default function SetupPerformanceChart({
                 >
                   <CartesianGrid
                     vertical={false}
-                    stroke="rgba(148,163,184,0.12)"
+                    stroke="rgba(148,163,184,0.07)"
                     strokeDasharray="4 6"
                   />
                   <XAxis
@@ -113,14 +113,14 @@ export default function SetupPerformanceChart({
                     tickLine={false}
                     tickMargin={12}
                     minTickGap={16}
-                    tick={{ fill: "#94A3B8", fontSize: 12 }}
+                    tick={{ fill: "#64748B", fontSize: 12 }}
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
                     tickMargin={12}
                     width={54}
-                    tick={{ fill: "#94A3B8", fontSize: 12 }}
+                    tick={{ fill: "#64748B", fontSize: 12 }}
                     tickFormatter={(value: number) =>
                       formatAxisCurrencyTick(value, settings.currency)
                     }

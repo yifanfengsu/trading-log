@@ -84,7 +84,7 @@ export default function RMultipleDistribution({
                 >
                   <CartesianGrid
                     vertical={false}
-                    stroke="rgba(148,163,184,0.12)"
+                    stroke="rgba(148,163,184,0.07)"
                     strokeDasharray="4 6"
                   />
                   <XAxis
@@ -92,7 +92,7 @@ export default function RMultipleDistribution({
                     axisLine={false}
                     tickLine={false}
                     tickMargin={12}
-                    tick={{ fill: "#94A3B8", fontSize: 12 }}
+                    tick={{ fill: "#64748B", fontSize: 12 }}
                   />
                   <YAxis
                     allowDecimals={false}
@@ -100,7 +100,7 @@ export default function RMultipleDistribution({
                     tickLine={false}
                     tickMargin={12}
                     width={36}
-                    tick={{ fill: "#94A3B8", fontSize: 12 }}
+                    tick={{ fill: "#64748B", fontSize: 12 }}
                   />
                   <Tooltip
                     cursor={{ fill: "rgba(124,92,255,0.08)" }}

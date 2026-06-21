@@ -1,6 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 
 import Card from "@/components/ui/Card";
 import { cn } from "@/lib/utils";
@@ -14,6 +15,9 @@ interface StatCardProps {
   delta?: string;
   icon?: LucideIcon;
   tone?: StatTone;
+  // Optional small visualization rendered in the lower area of the card. Other
+  // StatCard usages omit it and stay number-only.
+  visual?: ReactNode;
   className?: string;
 }
 
@@ -42,13 +46,15 @@ export default function StatCard({
   delta,
   icon: Icon,
   tone = "neutral",
+  visual,
   className,
 }: StatCardProps) {
   return (
     <Card
       as="article"
+      density="spacious"
       className={cn(
-        "relative min-h-[150px] overflow-hidden",
+        "relative min-h-[168px] overflow-hidden",
         tone === "positive" &&
           "shadow-[0_22px_70px_rgba(2,6,23,0.32),0_0_34px_rgba(16,185,129,0.08)]",
         tone === "negative" &&
@@ -60,9 +66,11 @@ export default function StatCard({
       <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,transparent,rgba(124,92,255,0.58),rgba(34,211,238,0.34),transparent)]" />
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
-          <p className="text-sm font-medium text-slate-400">{label}</p>
+          <p className="text-[13px] font-medium uppercase tracking-[0.08em] text-slate-400">
+            {label}
+          </p>
           {description ? (
-            <p className="mt-1 text-sm leading-5 text-slate-500">
+            <p className="mt-1.5 text-xs leading-5 text-slate-500">
               {description}
             </p>
           ) : null}
@@ -73,19 +81,21 @@ export default function StatCard({
           </div>
         ) : null}
       </div>
-      <div className="mt-7 flex flex-wrap items-end justify-between gap-3">
+      <div className="mt-6 flex items-center justify-between gap-3">
         <p
           className={cn(
-            "text-[30px] font-semibold leading-none tracking-normal",
+            "min-w-0 text-[34px] font-bold leading-none tracking-tight tabular-nums sm:text-[40px]",
             valueToneClassMap[tone],
           )}
         >
           {value}
         </p>
-        {delta ? (
+        {visual ? (
+          <div className="shrink-0">{visual}</div>
+        ) : delta ? (
           <span
             className={cn(
-              "inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold",
+              "inline-flex shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold",
               deltaToneClassMap[tone],
             )}
           >

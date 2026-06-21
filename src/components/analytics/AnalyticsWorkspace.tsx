@@ -11,9 +11,17 @@ type AnalyticsView = "analytics" | "reports";
 
 const views: AnalyticsView[] = ["analytics", "reports"];
 
-export default function AnalyticsWorkspace() {
+interface AnalyticsWorkspaceProps {
+  // Initial tab, derived from the ?view= query param by the route (defaults to
+  // "analytics"). /reports redirects here with ?view=reports.
+  initialView?: AnalyticsView;
+}
+
+export default function AnalyticsWorkspace({
+  initialView = "analytics",
+}: AnalyticsWorkspaceProps) {
   const { dictionary: copy } = useLanguage();
-  const [view, setView] = useState<AnalyticsView>("analytics");
+  const [view, setView] = useState<AnalyticsView>(initialView);
 
   return (
     <>

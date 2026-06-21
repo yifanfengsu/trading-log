@@ -7,7 +7,7 @@ import {
 } from "@/lib/mock-data";
 import GoalsOverview from "@/components/dashboard/GoalsOverview";
 import MetricCard from "@/components/dashboard/MetricCard";
-import PnlCalendar from "@/components/dashboard/PnlCalendar";
+import PerformanceRadar from "@/components/dashboard/PerformanceRadar";
 import TodayReview from "@/components/dashboard/TodayReview";
 import EquityCurve from "@/components/dashboard/EquityCurve";
 import StrategyPerformance from "@/components/dashboard/StrategyPerformance";
@@ -18,9 +18,9 @@ import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import Badge from "@/components/ui/Badge";
 import PageHeader from "@/components/ui/PageHeader";
+import { getAnalyticsSummary } from "@/lib/analytics-calculations";
 import {
   getCalendarStats,
-  getDailyPnlMap,
   getDailyWeeklyMonthlyPnl,
   getEquityCurveData,
   getMaxDrawdown,
@@ -103,14 +103,31 @@ export default function DashboardPage() {
   const { dictionary: copy, locale } = useLanguage();
   const { trades } = useTrades();
   const { settings } = useUserSettings();
-  const { selectedMonth, setSelectedMonth } = useSelectedMonth();
+  const { selectedMonth } = useSelectedMonth();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const monthTrades = getTradesByMonth(trades, year, month);
-  const dailyPnlMap = getDailyPnlMap(trades, year, month);
+  // calendarStats is still needed for the PerformanceRadar consistency metric
+  // below, even though the monthly P&L calendar block was removed.
   const calendarStats = getCalendarStats(trades, year, month);
   const equityCurveData = getEquityCurveData(monthTrades);
   const strategyStats = getStrategyStats(monthTrades);
   const dashboardMetrics = buildMetrics(monthTrades, settings.startingBalance);
+  // Radar inputs — all reuse existing aggregates; normalization lives in the
+  // PerformanceRadar display layer.
+  const performanceSummary = getAnalyticsSummary(
+    monthTrades,
+    settings.startingBalance,
+  );
+  const periodStats = getPeriodStats(monthTrades);
+  const payoffRatio =
+    periodStats.averageLoss < 0
+      ? periodStats.averageWin / Math.abs(periodStats.averageLoss)
+      : periodStats.averageWin > 0
+        ? Number.POSITIVE_INFINITY
+        : 0;
+  const tradedDays = calendarStats.winningDays + calendarStats.losingDays;
+  const dayConsistency =
+    tradedDays > 0 ? (calendarStats.winningDays / tradedDays) * 100 : 0;
   const recentTrades = [...trades]
     .sort((a, b) => b.closedAt.localeCompare(a.closedAt))
     .slice(0, 6);
@@ -139,25 +156,37 @@ export default function DashboardPage() {
         }
       />
 
-      <section className="grid gap-5 md:grid-cols-2 2xl:grid-cols-4">
+      <section className="grid gap-6 md:grid-cols-2 2xl:grid-cols-4">
         {dashboardMetrics.map((metric) => (
-          <MetricCard key={metric.id} metric={metric} />
+          <MetricCard
+            key={metric.id}
+            metric={metric}
+            sparkline={
+              metric.id === "netPnl"
+                ? equityCurveData.map((point) => point.equity)
+                : undefined
+            }
+          />
         ))}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.7fr)_minmax(320px,0.92fr)]">
-        <PnlCalendar
-          selectedMonth={selectedMonth}
-          dailyPnlMap={dailyPnlMap}
-          summary={calendarStats}
-          onMonthChange={setSelectedMonth}
-        />
-        <TodayReview
-          items={todayReviewItems}
-          activeDate={activeDate}
-          pnlSummary={reviewPnlSummary}
-        />
-      </section>
+      <PerformanceRadar
+        winRate={performanceSummary.winRate}
+        profitFactor={performanceSummary.profitFactor}
+        avgR={performanceSummary.avgR}
+        payoffRatio={payoffRatio}
+        maxDrawdownPercent={performanceSummary.maxDrawdownPercent}
+        consistency={dayConsistency}
+      />
+
+      {/* The monthly P&L calendar lived here next to Today's Review; it was
+          removed (it duplicated the dedicated /calendar page) and Today's Review
+          now spans the full width to fill the space. */}
+      <TodayReview
+        items={todayReviewItems}
+        activeDate={activeDate}
+        pnlSummary={reviewPnlSummary}
+      />
 
       <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
         <EquityCurve data={equityCurveData} selectedMonth={selectedMonth} />

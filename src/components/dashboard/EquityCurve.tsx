@@ -4,7 +4,6 @@ import { useSyncExternalStore } from "react";
 import {
   Area,
   AreaChart,
-  CartesianGrid,
   ReferenceDot,
   ResponsiveContainer,
   Tooltip,
@@ -85,11 +84,6 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                   <stop offset="100%" stopColor="#22D3EE" />
                 </linearGradient>
               </defs>
-              <CartesianGrid
-                vertical={false}
-                stroke="rgba(148,163,184,0.12)"
-                strokeDasharray="4 6"
-              />
               <XAxis
                 dataKey="date"
                 axisLine={false}
@@ -97,7 +91,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 tickMargin={14}
                 ticks={chartTicks}
                 minTickGap={32}
-                tick={{ fill: "#94A3B8", fontSize: 12 }}
+                tick={{ fill: "#64748B", fontSize: 12 }}
                 tickFormatter={(value: string) =>
                   formatShortDateLabel(value, locale)
                 }
@@ -109,7 +103,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 width={54}
                 domain={[-4000, 12000]}
                 ticks={[-4000, 0, 4000, 8000, 12000]}
-                tick={{ fill: "#94A3B8", fontSize: 12 }}
+                tick={{ fill: "#64748B", fontSize: 12 }}
                 tickFormatter={(value: number) =>
                   formatAxisCurrencyTick(value, settings.currency)
                 }

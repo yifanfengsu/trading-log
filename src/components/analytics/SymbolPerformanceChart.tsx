@@ -91,7 +91,7 @@ export default function SymbolPerformanceChart({
               >
                 <CartesianGrid
                   horizontal={false}
-                  stroke="rgba(148,163,184,0.12)"
+                  stroke="rgba(148,163,184,0.07)"
                   strokeDasharray="4 6"
                 />
                 <XAxis
@@ -99,7 +99,7 @@ export default function SymbolPerformanceChart({
                   axisLine={false}
                   tickLine={false}
                   tickMargin={10}
-                  tick={{ fill: "#94A3B8", fontSize: 12 }}
+                  tick={{ fill: "#64748B", fontSize: 12 }}
                   tickFormatter={(value: number) =>
                     formatAxisCurrencyTick(value, settings.currency)
                   }

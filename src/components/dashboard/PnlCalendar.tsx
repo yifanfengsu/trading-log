@@ -10,6 +10,7 @@ import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import SectionHeader from "@/components/ui/SectionHeader";
+import { getMaxAbsPnl, getPnlHeatStyle } from "@/lib/pnl-heat";
 import type { CalendarStats } from "@/lib/trade-calculations";
 import {
   buildCalendarGrid,
@@ -42,6 +43,7 @@ export default function PnlCalendar({
   const { dailyReviews } = useDailyReviews();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const cells = buildCalendarGrid(year, month - 1, dailyPnlMap);
+  const maxAbsPnl = getMaxAbsPnl(dailyPnlMap);
   const reviewedDates = new Set(dailyReviews.map((review) => review.date));
   const tradedDays = summary.winningDays + summary.losingDays;
   const winningDayRate =
@@ -118,6 +120,12 @@ export default function PnlCalendar({
             const isToday = dateKey === todayDateKey;
             const isProfit = (cell.pnl ?? 0) > 0;
             const isLoss = (cell.pnl ?? 0) < 0;
+            // Magnitude-scaled green/red heat for traded days (deeper = larger);
+            // no-trade days stay neutral.
+            const heatStyle =
+              hasTrade && cell.pnl !== null
+                ? getPnlHeatStyle(cell.pnl, maxAbsPnl)
+                : undefined;
             const className = cn(
               "flex min-h-[84px] flex-col rounded-[18px] border p-3 transition-all lg:min-h-[96px]",
               !cell.inCurrentMonth &&
@@ -125,10 +133,6 @@ export default function PnlCalendar({
               cell.inCurrentMonth &&
                 !hasTrade &&
                 "border-white/10 bg-[rgba(15,23,42,0.46)] hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.66)]",
-              isProfit &&
-                "border-[rgba(16,185,129,0.28)] bg-[linear-gradient(180deg,rgba(16,185,129,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
-              isLoss &&
-                "border-[rgba(244,63,94,0.30)] bg-[linear-gradient(180deg,rgba(244,63,94,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
               isToday &&
                 "ring-2 ring-[rgba(124,92,255,0.60)] ring-offset-1 ring-offset-[#0b1020] shadow-[0_0_22px_rgba(124,92,255,0.18)]",
             );
@@ -169,11 +173,12 @@ export default function PnlCalendar({
                 key={cell.key}
                 href={`/calendar?date=${dateKey}`}
                 className={cn(className, "hover:border-violet-200")}
+                style={heatStyle}
               >
                 {content}
               </Link>
             ) : (
-              <div key={cell.key} className={className}>
+              <div key={cell.key} className={className} style={heatStyle}>
                 {content}
               </div>
             );

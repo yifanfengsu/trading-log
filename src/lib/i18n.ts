@@ -216,6 +216,17 @@ export interface Dictionary {
   equityCurve: {
     title: string;
   };
+  performanceRadar: {
+    title: string;
+    subtitle: string;
+    score: string;
+    winRate: string;
+    profitFactor: string;
+    avgR: string;
+    payoff: string;
+    riskControl: string;
+    consistency: string;
+  };
   strategyPerformance: {
     title: string;
     subtitle: string;
@@ -560,6 +571,8 @@ export interface Dictionary {
     restoreData: string;
     backupAndRestore: string;
     settingsSaved: string;
+    allNotes: string;
+    allNotesHint: string;
   };
   language: {
     zh: string;
@@ -800,6 +813,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     equityCurve: {
       title: "资金曲线",
+    },
+    performanceRadar: {
+      title: "综合表现",
+      subtitle: "六维交易评分(0–100)",
+      score: "综合评分",
+      winRate: "胜率",
+      profitFactor: "盈利因子",
+      avgR: "平均R",
+      payoff: "盈亏比",
+      riskControl: "风险控制",
+      consistency: "一致性",
     },
     strategyPerformance: {
       title: "策略表现",
@@ -1215,6 +1239,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       restoreData: "恢复数据",
       backupAndRestore: "备份与恢复",
       settingsSaved: "设置已保存",
+      allNotes: "全部笔记",
+      allNotesHint: "打开完整的笔记管理界面",
     },
     language: {
       zh: "中文",
@@ -1464,6 +1490,17 @@ export const dictionaries: Record<Locale, Dictionary> = {
     },
     equityCurve: {
       title: "Equity Curve",
+    },
+    performanceRadar: {
+      title: "Performance Overview",
+      subtitle: "Six-factor trading score (0–100)",
+      score: "Overall Score",
+      winRate: "Win Rate",
+      profitFactor: "Profit Factor",
+      avgR: "Avg R",
+      payoff: "Payoff Ratio",
+      riskControl: "Risk Control",
+      consistency: "Consistency",
     },
     strategyPerformance: {
       title: "Strategy Performance",
@@ -1880,6 +1917,8 @@ export const dictionaries: Record<Locale, Dictionary> = {
       restoreData: "Restore Data",
       backupAndRestore: "Backup & Restore",
       settingsSaved: "Settings saved",
+      allNotes: "All Notes",
+      allNotesHint: "Open the full notes management page",
     },
     language: {
       zh: "中文",

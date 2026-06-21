@@ -4,6 +4,7 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import Card from "@/components/ui/Card";
 import { getDateDisplay, getMonthMatrix } from "@/lib/calendar-utils";
+import { getMaxAbsPnl, getPnlHeatStyle } from "@/lib/pnl-heat";
 import {
   cn,
   formatCompactCurrency,
@@ -31,6 +32,7 @@ export default function CalendarMonthGrid({
   const { settings } = useUserSettings();
   const { year, month } = parseSelectedMonth(selectedMonth);
   const cells = getMonthMatrix(year, month);
+  const maxAbsPnl = getMaxAbsPnl(dailyPnlMap);
 
   return (
     <Card className="overflow-hidden">
@@ -53,6 +55,10 @@ export default function CalendarMonthGrid({
             const isLoss = hasTrades && pnl < 0;
             const isReviewed = reviewedDates.has(cell.dateKey);
             const isSelected = selectedDate === cell.dateKey;
+            // Magnitude-scaled green/red heat for traded days (deeper = larger).
+            const heatStyle = hasTrades
+              ? getPnlHeatStyle(pnl, maxAbsPnl)
+              : undefined;
 
             if (!cell.isCurrentMonth) {
               return (
@@ -71,14 +77,11 @@ export default function CalendarMonthGrid({
                 type="button"
                 onClick={() => onSelectDate(cell.dateKey)}
                 aria-label={getDateDisplay(cell.dateKey, locale)}
+                style={heatStyle}
                 className={cn(
                   "flex min-h-[122px] flex-col rounded-[18px] border p-3 text-left transition-all hover:-translate-y-0.5 hover:shadow-[0_14px_32px_rgba(2,6,23,0.28)]",
                   !hasTrades &&
                     "border-white/10 bg-[rgba(15,23,42,0.46)] hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.66)]",
-                  isProfit &&
-                    "border-[rgba(16,185,129,0.28)] bg-[linear-gradient(180deg,rgba(16,185,129,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
-                  isLoss &&
-                    "border-[rgba(244,63,94,0.30)] bg-[linear-gradient(180deg,rgba(244,63,94,0.18)_0%,rgba(15,23,42,0.62)_100%)]",
                   isSelected &&
                     "border-[rgba(124,92,255,0.70)] shadow-[inset_0_0_0_1px_rgba(124,92,255,0.30),0_0_24px_rgba(124,92,255,0.18)]",
                 )}

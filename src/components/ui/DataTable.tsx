@@ -15,7 +15,7 @@ export const dataTableHeadCellClassName =
   "bg-[rgba(2,6,23,0.42)] px-3 py-3 text-left text-xs font-semibold uppercase tracking-[0.08em] text-slate-400 first:rounded-l-[16px] last:rounded-r-[16px]";
 
 export const dataTableCellClassName =
-  "border-b border-white/5 bg-[rgba(15,23,42,0.46)] px-3 py-4 text-sm text-slate-300 transition-colors first:rounded-l-[16px] last:rounded-r-[16px] group-hover:bg-[rgba(124,92,255,0.08)]";
+  "border-b border-white/5 bg-[rgba(15,23,42,0.46)] px-3 py-4 text-sm text-slate-300 tabular-nums transition-colors first:rounded-l-[16px] last:rounded-r-[16px] group-hover:bg-[rgba(124,92,255,0.08)]";
 
 export default function DataTable({
   children,
