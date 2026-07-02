@@ -56,7 +56,7 @@ export default function MiniSparkline({
           </AreaChart>
         </ResponsiveContainer>
       ) : (
-        <div className="h-full w-full rounded-md bg-[rgba(148,163,184,0.10)]" />
+        <div className="h-full w-full rounded-md bg-[rgba(155,163,155,0.10)]" />
       )}
     </div>
   );

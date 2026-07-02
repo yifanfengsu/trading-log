@@ -48,7 +48,7 @@ interface StatTileProps {
 
 function DetailRow({ label, value }: DetailRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[rgba(148,163,184,0.12)] py-3 last:border-b-0">
+    <div className="flex items-center justify-between gap-4 border-b border-[rgba(155,163,155,0.12)] py-3 last:border-b-0">
       <p className="text-sm text-slate-500">{label}</p>
       <p className="text-right text-sm font-semibold text-slate-900">{value}</p>
     </div>
@@ -187,7 +187,7 @@ export default function PlaybookDetailDrawer({
             <h3 className="text-sm font-semibold text-slate-900">
               {copy.playbookPage.description}
             </h3>
-            <div className="mt-2 rounded-[18px] bg-[rgba(15,23,42,0.04)] p-4 text-sm leading-6 text-slate-600">
+            <div className="mt-2 rounded-[18px] bg-[rgba(30,33,30,0.04)] p-4 text-sm leading-6 text-slate-600">
               {playbook.description || "—"}
             </div>
           </section>
@@ -232,7 +232,7 @@ export default function PlaybookDetailDrawer({
                       <span className="min-w-0">{item.text}</span>
                     </label>
                     {item.required ? (
-                      <span className="shrink-0 rounded-full bg-violet-50 px-3 py-1 text-xs font-semibold text-violet-600">
+                      <span className="shrink-0 rounded-full bg-[var(--accent-soft)] px-3 py-1 text-xs font-semibold text-[var(--accent)]">
                         {copy.playbookPage.required}
                       </span>
                     ) : null}

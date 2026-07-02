@@ -30,7 +30,7 @@ export default function SettingsPage() {
             <h2 className="panel-title">{copy.settingsPage.allNotes}</h2>
             <Link
               href="/notes"
-              className="mt-5 flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3 text-left text-sm font-semibold text-slate-200 shadow-[0_10px_24px_rgba(2,6,23,0.20)] transition-colors hover:border-[rgba(124,92,255,0.34)] hover:text-white"
+              className="mt-5 flex min-h-12 items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3 text-left text-sm font-semibold text-slate-200 shadow-[0_10px_24px_rgba(0,0,0,0.20)] transition-colors hover:border-[rgba(184,241,53,0.34)] hover:text-white"
             >
               <span className="min-w-0">
                 {copy.settingsPage.allNotes}

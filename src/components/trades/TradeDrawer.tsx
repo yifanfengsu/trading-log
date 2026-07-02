@@ -551,8 +551,8 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
               />
             </label>
 
-            <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3">
-              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-violet-300">
+            <div className="rounded-2xl border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3">
+              <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[var(--accent)]">
                 {copy.tradeForm.computedPreview}
               </p>
               <div className="mt-3 grid grid-cols-2 gap-3">
@@ -564,7 +564,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                       pnlPreview === null
                         ? "text-slate-500"
                         : pnlPreview >= 0
-                          ? "text-emerald-300"
+                          ? "text-[var(--success)]"
                           : "text-rose-300",
                     )}
                   >
@@ -583,7 +583,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                       rPreview === null
                         ? "text-slate-500"
                         : rPreview >= 0
-                          ? "text-emerald-300"
+                          ? "text-[var(--success)]"
                           : "text-rose-300",
                     )}
                   >
@@ -608,7 +608,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                       returnOnMarginPreview === null
                         ? "text-slate-500"
                         : returnOnMarginPreview >= 0
-                          ? "text-emerald-300"
+                          ? "text-[var(--success)]"
                           : "text-rose-300",
                     )}
                   >
@@ -626,7 +626,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                 {screenshots.map((screenshot, index) => (
                   <div
                     key={screenshot}
-                    className="relative h-20 w-20 overflow-hidden rounded-2xl border border-white/10 bg-[rgba(2,6,23,0.34)]"
+                    className="relative h-20 w-20 overflow-hidden rounded-2xl border border-white/10 bg-[rgba(0,0,0,0.34)]"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -639,7 +639,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
                       onClick={() => handleRemoveScreenshot(index)}
                       aria-label={copy.tradeForm.removeScreenshot}
                       title={copy.tradeForm.removeScreenshot}
-                      className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(2,6,23,0.78)] text-slate-200 ring-1 ring-white/10 transition-colors hover:bg-rose-500/80 hover:text-white"
+                      className="absolute right-1 top-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[rgba(0,0,0,0.78)] text-slate-200 ring-1 ring-white/10 transition-colors hover:bg-rose-500/80 hover:text-white"
                     >
                       <X className="h-3.5 w-3.5" />
                     </button>
@@ -648,7 +648,7 @@ export default function TradeDrawer({ mode, trade, onClose }: TradeDrawerProps) 
 
                 <label
                   className={cn(
-                    "inline-flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[rgba(148,163,184,0.30)] bg-[rgba(2,6,23,0.30)] text-xs font-medium text-slate-400 transition-colors hover:border-[rgba(124,92,255,0.50)] hover:text-slate-100",
+                    "inline-flex h-20 w-20 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl border border-dashed border-[rgba(155,163,155,0.30)] bg-[rgba(0,0,0,0.30)] text-xs font-medium text-slate-400 transition-colors hover:border-[rgba(184,241,53,0.50)] hover:text-slate-100",
                     uploading && "pointer-events-none opacity-60",
                   )}
                 >

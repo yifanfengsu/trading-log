@@ -100,7 +100,7 @@ export default function PreferencesSettings() {
           <p className="text-sm font-medium text-slate-600">
             {copy.settingsPage.language}
           </p>
-          <div className="mt-2 inline-flex rounded-full bg-violet-50 p-1 ring-1 ring-inset ring-violet-100">
+          <div className="mt-2 inline-flex rounded-full bg-[var(--card-strong)] p-1">
             {(["zh", "en"] as const).map((item) => {
               const isActive = locale === item;
 
@@ -113,7 +113,7 @@ export default function PreferencesSettings() {
                   className={cn(
                     "rounded-full px-4 py-2 text-sm font-semibold transition-all",
                     isActive
-                      ? "bg-white text-violet-600 shadow-[0_6px_16px_rgba(109,93,246,0.14)]"
+                      ? "bg-[var(--accent)] text-[#0a0b0a]"
                       : "text-slate-500 hover:text-slate-950",
                   )}
                 >

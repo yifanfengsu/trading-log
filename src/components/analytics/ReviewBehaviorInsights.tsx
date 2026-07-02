@@ -51,7 +51,7 @@ function InsightMetric({
   tone = "neutral",
 }: InsightMetricProps) {
   return (
-    <div className="rounded-[18px] bg-[rgba(15,23,42,0.03)] px-4 py-3">
+    <div className="rounded-[18px] bg-[rgba(30,33,30,0.03)] px-4 py-3">
       <p className="text-xs font-semibold text-slate-400">{label}</p>
       <p className={cn("mt-1 text-lg font-semibold", toneClassMap[tone])}>
         {value}

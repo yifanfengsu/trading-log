@@ -95,14 +95,14 @@ function getSymbolBadge(symbol: string) {
     return {
       label: "E",
       className:
-        "bg-[rgba(99,102,241,0.14)] text-indigo-200 ring-[rgba(99,102,241,0.24)]",
+        "bg-[rgba(184,241,53,0.14)] text-[var(--accent)] ring-[rgba(184,241,53,0.24)]",
     };
   }
 
   return {
     label: asset.slice(0, 1) || "T",
     className:
-      "bg-[rgba(34,211,238,0.12)] text-cyan-200 ring-[rgba(34,211,238,0.22)]",
+      "bg-[rgba(184,241,53,0.12)] text-[var(--accent)] ring-[rgba(184,241,53,0.22)]",
   };
 }
 
@@ -214,7 +214,7 @@ export default function TradesTable({
               <tr>
                 <td
                   colSpan={13}
-                  className="rounded-[18px] bg-[rgba(15,23,42,0.46)] px-3 py-6 text-center"
+                  className="rounded-[18px] bg-[rgba(30,33,30,0.46)] px-3 py-6 text-center"
                 >
                   <EmptyState
                     title={
@@ -294,7 +294,7 @@ export default function TradesTable({
                       className={cn(
                         dataTableCellClassName,
                         "font-semibold",
-                        trade.pnl >= 0 ? "text-emerald-300" : "text-rose-300",
+                        trade.pnl >= 0 ? "text-[var(--success)]" : "text-rose-300",
                       )}
                     >
                       {formatCurrency(trade.pnl, settings.currency)}
@@ -304,7 +304,7 @@ export default function TradesTable({
                         dataTableCellClassName,
                         "font-semibold",
                         trade.rMultiple >= 0
-                          ? "text-emerald-300"
+                          ? "text-[var(--success)]"
                           : "text-rose-300",
                       )}
                     >

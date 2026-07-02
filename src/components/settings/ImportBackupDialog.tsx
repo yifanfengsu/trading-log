@@ -24,7 +24,7 @@ interface SummaryRowProps {
 
 function SummaryRow({ label, value }: SummaryRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[rgba(148,163,184,0.12)] py-3 last:border-b-0">
+    <div className="flex items-center justify-between gap-4 border-b border-[rgba(155,163,155,0.12)] py-3 last:border-b-0">
       <p className="text-sm text-slate-500">{label}</p>
       <p className="text-right text-sm font-semibold text-slate-950">{value}</p>
     </div>

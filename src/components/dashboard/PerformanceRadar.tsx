@@ -125,11 +125,11 @@ export default function PerformanceRadar({
     }
 
     return (
-      <div className="rounded-2xl border border-white/10 bg-[#0F172A] p-3 text-sm text-slate-200 shadow-[0_18px_44px_rgba(2,6,23,0.42)]">
+      <div className="rounded-2xl bg-[#1e211e] p-3 text-sm text-slate-200 shadow-[0_18px_44px_rgba(0,0,0,0.42)]">
         <p className="font-semibold text-slate-50">{row.label}</p>
         <div className="mt-1 grid gap-0.5 text-slate-400">
           <span className="tabular-nums">{row.raw}</span>
-          <span className="tabular-nums text-violet-200">
+          <span className="tabular-nums text-[var(--accent)]">
             {Math.round(row.score)} / 100
           </span>
         </div>
@@ -173,12 +173,12 @@ export default function PerformanceRadar({
               </RadarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(124,92,255,0.12),rgba(15,23,42,0.58))]" />
+            <div className="h-full rounded-[20px] bg-[var(--card-strong)]" />
           )}
         </div>
 
         <div className="flex flex-col justify-center gap-3">
-          <div className="rounded-[18px] border border-[rgba(124,92,255,0.24)] bg-[rgba(124,92,255,0.10)] px-4 py-3">
+          <div className="rounded-[18px] bg-[var(--accent-soft)] px-4 py-3">
             <p className="text-xs font-medium uppercase tracking-[0.08em] text-slate-400">
               {labels.score}
             </p>
@@ -198,11 +198,9 @@ export default function PerformanceRadar({
                   {Math.round(dim.score)}
                 </span>
               </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[rgba(148,163,184,0.14)]">
+              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
                 <div
-                  className={cn(
-                    "h-full rounded-full bg-[linear-gradient(90deg,#7C5CFF,#22D3EE)]",
-                  )}
+                  className={cn("h-full rounded-full bg-[var(--accent)]")}
                   style={{ width: `${clamp(dim.score)}%` }}
                 />
               </div>

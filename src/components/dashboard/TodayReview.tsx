@@ -35,8 +35,8 @@ const iconMap: Record<ReviewId, LucideIcon> = {
 const toneClasses = {
   positive: {
     wrapper:
-      "bg-[rgba(16,185,129,0.12)] text-emerald-300 ring-[rgba(16,185,129,0.24)]",
-    icon: "text-emerald-300",
+      "bg-[rgba(184,241,53,0.12)] text-[var(--success)] ring-[rgba(184,241,53,0.24)]",
+    icon: "text-[var(--success)]",
   },
   negative: {
     wrapper:
@@ -45,13 +45,13 @@ const toneClasses = {
   },
   neutral: {
     wrapper:
-      "bg-[rgba(148,163,184,0.10)] text-slate-300 ring-[rgba(148,163,184,0.18)]",
+      "bg-[rgba(155,163,155,0.10)] text-slate-300 ring-[rgba(155,163,155,0.18)]",
     icon: "text-slate-400",
   },
   accent: {
     wrapper:
-      "bg-[rgba(124,92,255,0.12)] text-violet-200 ring-[rgba(124,92,255,0.26)]",
-    icon: "text-violet-200",
+      "bg-[rgba(184,241,53,0.12)] text-[var(--accent)] ring-[rgba(184,241,53,0.26)]",
+    icon: "text-[var(--accent)]",
   },
 } as const;
 
@@ -105,13 +105,13 @@ export default function TodayReview({
         {pnlItems.map((item) => (
           <div
             key={item.label}
-            className="rounded-[16px] border border-[rgba(124,92,255,0.22)] bg-[rgba(124,92,255,0.08)] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
+            className="rounded-[16px] border border-[rgba(184,241,53,0.22)] bg-[rgba(184,241,53,0.08)] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
           >
             <p className="text-xs font-medium text-slate-400">{item.label}</p>
             <p
               className={cn(
                 "mt-1 text-sm font-semibold",
-                item.value > 0 && "text-emerald-300",
+                item.value > 0 && "text-[var(--success)]",
                 item.value < 0 && "text-rose-300",
                 item.value === 0 && "text-slate-300",
               )}
@@ -133,7 +133,7 @@ export default function TodayReview({
           return (
             <article
               key={item.id}
-              className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.44)] p-4 transition-colors hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.62)]"
+              className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.44)] p-4 transition-colors hover:border-[rgba(184,241,53,0.24)] hover:bg-[rgba(30,33,30,0.62)]"
             >
               <div className="flex items-start gap-3">
                 <div

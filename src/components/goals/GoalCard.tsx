@@ -126,7 +126,7 @@ export default function GoalCard({
       </p>
 
       <div className="mt-5 grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-3 py-3">
+        <div className="rounded-2xl border border-white/10 bg-[rgba(30,33,30,0.46)] px-3 py-3">
           <p className="text-xs font-medium text-slate-400">
             {copy.goalsPage.currentValue}
           </p>
@@ -135,7 +135,7 @@ export default function GoalCard({
               "mt-1 text-sm font-semibold text-slate-100",
               goal.metric === "netPnl" &&
                 progress.currentValue > 0 &&
-                "text-emerald-300",
+                "text-[var(--success)]",
               goal.metric === "netPnl" &&
                 progress.currentValue < 0 &&
                 "text-rose-300",
@@ -144,7 +144,7 @@ export default function GoalCard({
             {currentValue}
           </p>
         </div>
-        <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-3 py-3">
+        <div className="rounded-2xl border border-white/10 bg-[rgba(30,33,30,0.46)] px-3 py-3">
           <p className="text-xs font-medium text-slate-400">
             {copy.goalsPage.targetValue}
           </p>
@@ -162,13 +162,13 @@ export default function GoalCard({
         />
       </div>
 
-      <div className="mt-4 grid gap-2 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-3 text-sm">
+      <div className="mt-4 grid gap-2 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.42)] px-4 py-3 text-sm">
         <div className="flex items-center justify-between gap-3">
           <span className="text-slate-400">{copy.goalsPage.remaining}</span>
           <span
             className={cn(
               "font-semibold text-slate-100",
-              progress.remainingValue === 0 && "text-emerald-300",
+              progress.remainingValue === 0 && "text-[var(--success)]",
               progress.atRisk && "text-rose-300",
             )}
           >
@@ -181,7 +181,7 @@ export default function GoalCard({
               "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
               progress.achieved || isCompleted
                 ? "bg-emerald-50 text-emerald-700"
-                : "bg-[rgba(148,163,184,0.10)] text-slate-400",
+                : "bg-[rgba(155,163,155,0.10)] text-slate-400",
             )}
           >
             {progress.achieved || isCompleted
@@ -255,7 +255,7 @@ export default function GoalCard({
             }}
             variant="outline"
             size="sm"
-            className="border-[rgba(16,185,129,0.26)] bg-[rgba(16,185,129,0.12)] text-emerald-300 hover:bg-[rgba(16,185,129,0.18)]"
+            className="border-[rgba(184,241,53,0.26)] bg-[rgba(184,241,53,0.12)] text-[var(--success)] hover:bg-[rgba(184,241,53,0.18)]"
           >
             <CheckCircle2 className="h-4 w-4" />
             {copy.goalsPage.markComplete}

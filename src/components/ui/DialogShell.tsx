@@ -31,7 +31,7 @@ export default function DialogShell({
     <div className="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto px-4 py-4 sm:py-6">
       <button
         type="button"
-        className="absolute inset-0 bg-slate-950/70 backdrop-blur-[4px]"
+        className="absolute inset-0 bg-black/70 backdrop-blur-[4px]"
         onClick={onClose}
         aria-label={closeLabel}
       />
@@ -39,12 +39,12 @@ export default function DialogShell({
         role="dialog"
         aria-modal="true"
         aria-labelledby={labelledById}
-        className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-[560px] flex-col overflow-hidden rounded-[24px] border border-white/10 bg-[rgba(15,23,42,0.96)] shadow-[0_30px_100px_rgba(2,6,23,0.56)] backdrop-blur-xl"
+        className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-[560px] flex-col overflow-hidden rounded-[20px] bg-[var(--card)] shadow-[0_30px_100px_rgba(0,0,0,0.6)]"
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 bg-[rgba(15,23,42,0.54)] px-5 py-5 sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/5 bg-white/[0.02] px-5 py-5 sm:px-6">
           <div>
             {eyebrow ? (
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
                 {eyebrow}
               </p>
             ) : null}
@@ -61,7 +61,7 @@ export default function DialogShell({
             onClick={onClose}
             aria-label={closeLabel}
             title={closeLabel}
-            className="h-10 w-10 bg-[rgba(15,23,42,0.68)] text-slate-300 hover:bg-[rgba(124,92,255,0.14)]"
+            className="h-10 w-10 bg-[var(--card-strong)] text-[var(--muted)] hover:bg-[var(--card-strong-hover)]"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -70,7 +70,7 @@ export default function DialogShell({
           {children}
         </div>
         {footer ? (
-          <div className="shrink-0 border-t border-white/10 bg-[rgba(15,23,42,0.82)] px-5 py-4 sm:px-6">
+          <div className="shrink-0 border-t border-white/5 bg-white/[0.02] px-5 py-4 sm:px-6">
             {footer}
           </div>
         ) : null}

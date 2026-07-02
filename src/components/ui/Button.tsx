@@ -14,15 +14,15 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClassMap: Record<ButtonVariant, string> = {
   primary:
-    "border border-[rgba(124,92,255,0.65)] bg-[linear-gradient(135deg,#7C5CFF_0%,#6366F1_48%,#22D3EE_100%)] text-white shadow-[0_14px_32px_rgba(124,92,255,0.28)] hover:border-[rgba(34,211,238,0.65)] hover:shadow-[0_18px_42px_rgba(124,92,255,0.34),0_0_24px_rgba(34,211,238,0.16)] active:scale-[0.99]",
+    "border border-transparent bg-[var(--accent)] text-[#0a0b0a] hover:bg-[var(--accent-strong)] active:scale-[0.99]",
   secondary:
-    "border border-white/10 bg-[rgba(15,23,42,0.66)] text-slate-200 shadow-[0_10px_24px_rgba(2,6,23,0.22)] hover:border-[rgba(124,92,255,0.38)] hover:bg-[rgba(30,41,59,0.78)] hover:text-white",
+    "border border-transparent bg-[var(--card-strong)] text-[var(--foreground)] hover:bg-[var(--card-strong-hover)]",
   ghost:
-    "border border-transparent bg-transparent text-slate-300 hover:bg-[rgba(124,92,255,0.10)] hover:text-white",
+    "border border-transparent bg-transparent text-[var(--muted)] hover:bg-white/5 hover:text-[var(--foreground)]",
   danger:
-    "border border-[rgba(244,63,94,0.30)] bg-[rgba(244,63,94,0.10)] text-rose-300 hover:border-[rgba(244,63,94,0.46)] hover:bg-[rgba(244,63,94,0.16)] hover:text-rose-200",
+    "border border-transparent bg-[var(--danger-soft)] text-rose-300 hover:bg-[rgba(244,63,94,0.20)] hover:text-rose-200",
   outline:
-    "border border-[rgba(124,92,255,0.30)] bg-[rgba(124,92,255,0.08)] text-violet-200 hover:border-[rgba(34,211,238,0.34)] hover:bg-[rgba(124,92,255,0.14)] hover:text-white",
+    "border border-transparent bg-[var(--accent-soft)] text-[var(--accent)] hover:bg-[rgba(184,241,53,0.22)]",
 };
 
 const sizeClassMap: Record<ButtonSize, string> = {
@@ -44,7 +44,7 @@ export default function Button({
       type={type ?? "button"}
       className={cn(
         "inline-flex shrink-0 items-center justify-center font-semibold transition-all duration-200",
-        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgba(124,92,255,0.55)]",
+        "focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgba(184,241,53,0.55)]",
         "disabled:pointer-events-none disabled:opacity-50",
         variantClassMap[variant],
         sizeClassMap[size],

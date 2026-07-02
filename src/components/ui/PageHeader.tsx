@@ -30,7 +30,7 @@ export default function PageHeader({
     >
       <div className="max-w-3xl">
         {eyebrow ? (
-          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-violet-600">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--accent)]">
             {eyebrow}
           </p>
         ) : null}

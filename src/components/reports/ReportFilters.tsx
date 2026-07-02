@@ -47,7 +47,7 @@ export default function ReportFilters({
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.reportsPage.reportType}
           </span>
-          <div className="grid h-11 grid-cols-2 rounded-2xl border border-[rgba(148,163,184,0.16)] bg-white p-1">
+          <div className="grid h-11 grid-cols-2 rounded-2xl border border-[rgba(155,163,155,0.16)] bg-white p-1">
             {options.map((option) => {
               const isActive = periodType === option.value;
 
@@ -60,7 +60,7 @@ export default function ReportFilters({
                   className={cn(
                     "rounded-[14px] px-3 text-sm font-semibold transition-all",
                     isActive
-                      ? "bg-[var(--accent)] text-white shadow-[0_10px_18px_rgba(108,77,255,0.20)]"
+                      ? "bg-[var(--accent)] text-[#0a0b0a]"
                       : "text-slate-500 hover:text-slate-900",
                   )}
                 >
@@ -86,7 +86,7 @@ export default function ReportFilters({
           <span className="px-1 text-xs font-semibold text-slate-400">
             {copy.reportsPage.period}
           </span>
-          <div className="flex h-11 items-center rounded-2xl border border-[rgba(108,77,255,0.12)] bg-[rgba(108,77,255,0.08)] px-3 text-sm font-semibold text-[var(--accent)]">
+          <div className="flex h-11 items-center rounded-2xl border border-[rgba(184,241,53,0.12)] bg-[rgba(184,241,53,0.08)] px-3 text-sm font-semibold text-[var(--accent)]">
             {rangeLabel}
           </div>
         </div>

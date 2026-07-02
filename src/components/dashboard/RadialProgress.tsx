@@ -33,7 +33,7 @@ function useIsClient() {
 export default function RadialProgress({
   value,
   color,
-  trackColor = "rgba(148,163,184,0.16)",
+  trackColor = "rgba(155,163,155,0.16)",
   size = 64,
   centerLabel,
   className,

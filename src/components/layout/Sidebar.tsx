@@ -32,10 +32,10 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-full shrink-0 flex-col gap-5 rounded-[24px] border border-white/10 bg-[rgba(8,13,28,0.82)] p-4 shadow-[0_24px_80px_rgba(2,6,23,0.36)] backdrop-blur-xl lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[276px] lg:p-5">
+    <aside className="flex w-full shrink-0 flex-col gap-5 rounded-[20px] bg-[var(--card)] p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[276px] lg:p-5">
       <div className="flex items-center gap-3 px-1">
-        <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[linear-gradient(135deg,#7C5CFF_0%,#6366F1_50%,#22D3EE_100%)] shadow-[0_16px_34px_rgba(124,92,255,0.34)]">
-          <LineChart className="h-6 w-6 text-white" />
+        <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[var(--accent)]">
+          <LineChart className="h-6 w-6 text-[#0a0b0a]" />
         </div>
         <div>
           <p className="text-sm font-semibold tracking-normal text-slate-50">
@@ -74,7 +74,7 @@ export default function Sidebar() {
               <Icon
                 className={cn(
                   "h-[18px] w-[18px] shrink-0",
-                  isActive ? "text-white" : "text-slate-500",
+                  isActive ? "text-[#0a0b0a]" : "text-slate-500",
                 )}
               />
               <span className="truncate">{copy.menu[item]}</span>
@@ -86,10 +86,10 @@ export default function Sidebar() {
               key={item}
               type="button"
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all",
+                "flex items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[linear-gradient(135deg,rgba(124,92,255,0.22),rgba(34,211,238,0.08))] text-white shadow-[inset_0_0_0_1px_rgba(124,92,255,0.24),0_0_24px_rgba(124,92,255,0.12)]"
-                  : "text-slate-400 hover:bg-[rgba(124,92,255,0.10)] hover:text-slate-50",
+                  ? "bg-[var(--accent)] font-semibold text-[#0a0b0a]"
+                  : "text-slate-400 hover:bg-white/5 hover:text-slate-50",
               )}
             >
               {content}
@@ -99,10 +99,10 @@ export default function Sidebar() {
               key={item}
               href={href}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm font-medium transition-all",
+                "flex items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-all",
                 isActive
-                  ? "bg-[linear-gradient(135deg,rgba(124,92,255,0.22),rgba(34,211,238,0.08))] text-white shadow-[inset_0_0_0_1px_rgba(124,92,255,0.24),0_0_24px_rgba(124,92,255,0.12)]"
-                  : "text-slate-400 hover:bg-[rgba(124,92,255,0.10)] hover:text-slate-50",
+                  ? "bg-[var(--accent)] font-semibold text-[#0a0b0a]"
+                  : "text-slate-400 hover:bg-white/5 hover:text-slate-50",
               )}
             >
               {content}
@@ -111,7 +111,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto overflow-hidden rounded-[20px] border border-[rgba(124,92,255,0.24)] bg-[linear-gradient(180deg,rgba(124,92,255,0.16),rgba(15,23,42,0.84))] p-4 shadow-[0_0_32px_rgba(124,92,255,0.10)]">
+      <div className="mt-auto overflow-hidden rounded-[20px] bg-[var(--card-strong)] p-4">
         <div className="flex items-center justify-between gap-4">
           <div>
             <Badge variant="purple">{copy.monthlyLabel}</Badge>
@@ -129,8 +129,8 @@ export default function Sidebar() {
         >
           <defs>
             <linearGradient id="sidebar-line" x1="0%" x2="100%" y1="0%" y2="0%">
-              <stop offset="0%" stopColor="#22D3EE" />
-              <stop offset="100%" stopColor="#7C5CFF" />
+              <stop offset="0%" stopColor="#8FC220" />
+              <stop offset="100%" stopColor="#B8F135" />
             </linearGradient>
           </defs>
           <path
@@ -139,7 +139,7 @@ export default function Sidebar() {
             strokeWidth="4"
             strokeLinecap="round"
           />
-          <circle cx="214" cy="16" r="5" fill="#22D3EE" />
+          <circle cx="214" cy="16" r="5" fill="#B8F135" />
         </svg>
       </div>
     </aside>

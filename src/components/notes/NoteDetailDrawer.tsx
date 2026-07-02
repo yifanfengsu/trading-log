@@ -35,7 +35,7 @@ interface DetailRowProps {
 
 function DetailRow({ label, children }: DetailRowProps) {
   return (
-    <div className="flex items-start justify-between gap-4 border-b border-[rgba(148,163,184,0.12)] py-3 last:border-b-0">
+    <div className="flex items-start justify-between gap-4 border-b border-[rgba(155,163,155,0.12)] py-3 last:border-b-0">
       <p className="text-sm text-slate-500">{label}</p>
       <div className="min-w-0 text-right text-sm font-semibold text-slate-900">
         {children}
@@ -158,7 +158,7 @@ export default function NoteDetailDrawer({
             <h3 className="text-sm font-semibold text-slate-950">
               {copy.notesPage.content}
             </h3>
-            <div className="mt-3 min-h-48 whitespace-pre-wrap rounded-[20px] bg-[rgba(15,23,42,0.04)] p-4 text-sm leading-7 text-slate-600">
+            <div className="mt-3 min-h-48 whitespace-pre-wrap rounded-[20px] bg-[rgba(30,33,30,0.04)] p-4 text-sm leading-7 text-slate-600">
               {note.content || "—"}
             </div>
           </section>

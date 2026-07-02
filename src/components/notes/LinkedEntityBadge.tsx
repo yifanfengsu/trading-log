@@ -30,7 +30,7 @@ export default function LinkedEntityBadge({
   className,
 }: LinkedEntityBadgeProps) {
   const baseClassName = cn(
-    "inline-flex max-w-full items-center gap-1.5 rounded-full bg-[rgba(108,77,255,0.08)] px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-inset ring-[rgba(108,77,255,0.08)]",
+    "inline-flex max-w-full items-center gap-1.5 rounded-full bg-[rgba(184,241,53,0.08)] px-3 py-1 text-xs font-semibold text-slate-600 ring-1 ring-inset ring-[rgba(184,241,53,0.08)]",
     className,
   );
 

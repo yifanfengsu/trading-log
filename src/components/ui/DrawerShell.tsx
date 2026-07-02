@@ -44,7 +44,7 @@ export default function DrawerShell({
     <div className={cn("fixed inset-0 flex justify-end", zIndexClassName)}>
       <button
         type="button"
-        className="absolute inset-0 bg-slate-950/70 backdrop-blur-[4px] transition-opacity"
+        className="absolute inset-0 bg-black/70 backdrop-blur-[4px] transition-opacity"
         onClick={onClose}
         aria-label={closeLabel}
       />
@@ -53,14 +53,14 @@ export default function DrawerShell({
         aria-modal="true"
         aria-labelledby={labelledById}
         className={cn(
-          "relative flex h-full w-full max-w-[100vw] flex-col overflow-hidden border-l border-white/10 bg-[rgba(11,16,32,0.96)] shadow-[0_30px_100px_rgba(2,6,23,0.56)] backdrop-blur-xl",
+          "relative flex h-full w-full max-w-[100vw] flex-col overflow-hidden bg-[var(--card)] shadow-[0_30px_100px_rgba(0,0,0,0.6)]",
           sizeClassMap[size],
         )}
       >
-        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/10 bg-[rgba(15,23,42,0.48)] px-5 py-5 sm:px-6">
+        <div className="flex shrink-0 items-start justify-between gap-4 border-b border-white/5 bg-white/[0.02] px-5 py-5 sm:px-6">
           <div className="min-w-0">
             {eyebrow ? (
-              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-violet-600">
+              <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[var(--accent)]">
                 {eyebrow}
               </p>
             ) : null}
@@ -77,7 +77,7 @@ export default function DrawerShell({
             onClick={onClose}
             aria-label={closeLabel}
             title={closeLabel}
-            className="h-10 w-10 shrink-0 bg-[rgba(15,23,42,0.68)] text-slate-300 hover:bg-[rgba(124,92,255,0.14)]"
+            className="h-10 w-10 shrink-0 bg-[var(--card-strong)] text-[var(--muted)] hover:bg-[var(--card-strong-hover)]"
           >
             <X className="h-5 w-5" />
           </Button>
@@ -88,7 +88,7 @@ export default function DrawerShell({
         </div>
 
         {footer ? (
-          <div className="shrink-0 border-t border-white/10 bg-[rgba(15,23,42,0.82)] px-5 py-4 backdrop-blur sm:px-6">
+          <div className="shrink-0 border-t border-white/5 bg-white/[0.02] px-5 py-4 sm:px-6">
             {footer}
           </div>
         ) : null}

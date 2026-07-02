@@ -33,12 +33,12 @@ interface MetricProps {
 
 function Metric({ label, value, tone = "neutral" }: MetricProps) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-[rgba(15,23,42,0.46)] px-3 py-3">
+    <div className="rounded-2xl border border-white/10 bg-[rgba(30,33,30,0.46)] px-3 py-3">
       <p className="text-xs font-medium text-slate-400">{label}</p>
       <p
         className={cn(
           "mt-1 text-sm font-semibold text-slate-100",
-          tone === "positive" && "text-emerald-300",
+          tone === "positive" && "text-[var(--success)]",
           tone === "negative" && "text-rose-300",
         )}
       >
@@ -109,7 +109,7 @@ export default function PlaybookCard({
           playbook.tags.slice(0, 4).map((tag) => (
             <span
               key={tag}
-              className="inline-flex rounded-full border border-[rgba(148,163,184,0.16)] bg-[rgba(148,163,184,0.10)] px-3 py-1 text-xs font-medium text-slate-300"
+              className="inline-flex rounded-full border border-[rgba(155,163,155,0.16)] bg-[rgba(155,163,155,0.10)] px-3 py-1 text-xs font-medium text-slate-300"
             >
               {tag}
             </span>

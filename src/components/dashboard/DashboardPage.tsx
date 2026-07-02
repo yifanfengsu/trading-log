@@ -145,7 +145,7 @@ export default function DashboardPage() {
         description={copy.dashboardPage.subtitle}
         badge={
           <Badge variant="cyan" className="h-8 px-3">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(52,211,153,0.8)]" />
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] shadow-[0_0_12px_rgba(184,241,53,0.8)]" />
             {copy.dashboardPage.localMode}
           </Badge>
         }

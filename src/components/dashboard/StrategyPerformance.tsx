@@ -38,7 +38,7 @@ export default function StrategyPerformance({
         action={
           <Link
             href="/analytics"
-            className="inline-flex items-center gap-1 text-sm font-semibold text-violet-200 transition-colors hover:text-cyan-200"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
           >
             {copy.strategyPerformance.viewAll}
             <ArrowRight className="h-4 w-4" />
@@ -86,7 +86,7 @@ export default function StrategyPerformance({
                       className={cn(
                         dataTableCellClassName,
                         "font-semibold",
-                        row.netPnl >= 0 ? "text-emerald-300" : "text-rose-300",
+                        row.netPnl >= 0 ? "text-[var(--success)]" : "text-rose-300",
                       )}
                     >
                       {formatCurrency(row.netPnl, settings.currency)}
@@ -98,9 +98,9 @@ export default function StrategyPerformance({
                             {formatPercent(row.winRate)}
                           </span>
                         </div>
-                        <div className="mt-2 h-2 rounded-full bg-[rgba(148,163,184,0.14)]">
+                        <div className="mt-2 h-2 rounded-full bg-[rgba(155,163,155,0.14)]">
                           <div
-                            className="h-full rounded-full bg-[linear-gradient(90deg,#7C5CFF,#22D3EE)] shadow-[0_0_14px_rgba(124,92,255,0.34)]"
+                            className="h-full rounded-full bg-[var(--accent)]"
                             style={{ width: winRateWidth }}
                           />
                         </div>
@@ -114,16 +114,16 @@ export default function StrategyPerformance({
                               "font-semibold",
                               row.profitFactor >= 1.5 ||
                               row.profitFactor === Infinity
-                                ? "text-cyan-200"
+                                ? "text-[var(--accent)]"
                                 : "text-slate-100",
                             )}
                           >
                             {formatProfitFactor(row.profitFactor)}
                           </span>
                         </div>
-                        <div className="mt-2 h-2 rounded-full bg-[rgba(148,163,184,0.14)]">
+                        <div className="mt-2 h-2 rounded-full bg-[rgba(155,163,155,0.14)]">
                           <div
-                            className="h-full rounded-full bg-[linear-gradient(90deg,#6366F1,#22D3EE)] shadow-[0_0_14px_rgba(34,211,238,0.22)]"
+                            className="h-full rounded-full bg-[var(--accent)]"
                             style={{ width: factorWidth }}
                           />
                         </div>

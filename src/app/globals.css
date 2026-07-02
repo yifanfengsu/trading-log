@@ -1,30 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #070a13;
-  --foreground: #f8fafc;
-  --muted: #cbd5e1;
-  --weak: #64748b;
-  --subtle: #94a3b8;
-  --card: rgba(15, 23, 42, 0.72);
-  --card-strong: #0f172a;
-  --card-border: rgba(255, 255, 255, 0.08);
-  --muted-border: rgba(148, 163, 184, 0.16);
-  --accent: #7c5cff;
-  --accent-strong: #6366f1;
-  --accent-cyan: #22d3ee;
-  --accent-soft: rgba(124, 92, 255, 0.16);
-  --accent-softer: rgba(124, 92, 255, 0.08);
-  --success: #34d399;
-  --success-soft: rgba(16, 185, 129, 0.12);
+  --background: #0a0b0a;
+  --foreground: #f2f4f2;
+  --muted: #9ba39b;
+  --subtle: #9ba39b;
+  --weak: #5f675f;
+  --card: #141614;
+  --card-hover: #1a1d1a;
+  --card-strong: #1e211e;
+  --card-strong-hover: #252a25;
+  --card-border: rgba(255, 255, 255, 0.06);
+  --muted-border: rgba(255, 255, 255, 0.08);
+  --accent: #b8f135;
+  --accent-strong: #8fc220;
+  --accent-soft: rgba(184, 241, 53, 0.14);
+  --accent-softer: rgba(184, 241, 53, 0.08);
+  --success: #b8f135;
+  --success-soft: rgba(184, 241, 53, 0.12);
   --danger: #fb7185;
   --danger-soft: rgba(244, 63, 94, 0.12);
   --warning: #fbbf24;
   --warning-soft: rgba(245, 158, 11, 0.12);
-  --shadow-card: 0 22px 70px rgba(2, 6, 23, 0.32),
-    0 0 0 1px rgba(124, 92, 255, 0.02);
-  --shadow-card-hover: 0 28px 90px rgba(2, 6, 23, 0.42),
-    0 0 34px rgba(124, 92, 255, 0.12);
+  --shadow-card: 0 12px 32px rgba(0, 0, 0, 0.24);
+  --shadow-card-hover: 0 16px 40px rgba(0, 0, 0, 0.32);
   --font-sans-stack:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC",
@@ -34,6 +33,13 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+  --color-success: var(--success);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-card: var(--card);
+  --color-card-strong: var(--card-strong);
   --font-sans: var(--font-sans-stack);
 }
 
@@ -51,12 +57,7 @@ html {
 
 body {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at top left, rgba(124, 92, 255, 0.18), transparent 32rem),
-    radial-gradient(circle at top right, rgba(34, 211, 238, 0.1), transparent 28rem),
-    radial-gradient(circle at 52% 0%, rgba(99, 102, 241, 0.08), transparent 34rem),
-    linear-gradient(180deg, #070a13 0%, #0b1020 100%);
-  background-attachment: fixed;
+  background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans-stack);
   text-rendering: optimizeLegibility;
@@ -79,13 +80,13 @@ a:focus-visible,
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 2px solid rgba(124, 92, 255, 0.36);
+  outline: 2px solid rgba(184, 241, 53, 0.5);
   outline-offset: 2px;
 }
 
 ::selection {
-  background: rgba(124, 92, 255, 0.32);
-  color: #f8fafc;
+  background: rgba(184, 241, 53, 0.3);
+  color: #f2f4f2;
 }
 
 ::-webkit-scrollbar {
@@ -100,12 +101,12 @@ textarea:focus-visible {
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
-  background: rgba(148, 163, 184, 0.24);
+  background: rgba(155, 163, 155, 0.24);
   background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 92, 255, 0.44);
+  background: rgba(184, 241, 53, 0.4);
   background-clip: padding-box;
 }
 
@@ -116,23 +117,22 @@ textarea {
 }
 
 option {
-  background: #0f172a;
-  color: #f8fafc;
+  background: #1e211e;
+  color: #f2f4f2;
 }
 
 .panel-card {
-  border: 1px solid var(--card-border);
-  border-radius: 22px;
+  border: none;
+  border-radius: 20px;
   background: var(--card);
   box-shadow: var(--shadow-card);
-  backdrop-filter: blur(12px);
 }
 
 .panel-title {
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0;
-  color: #f8fafc;
+  color: var(--foreground);
 }
 
 .soft-pill {
@@ -140,65 +140,58 @@ option {
   align-items: center;
   gap: 0.5rem;
   border-radius: 999px;
-  border: 1px solid var(--muted-border);
-  background: rgba(15, 23, 42, 0.62);
+  border: 1px solid transparent;
+  background: var(--card-strong);
   padding: 0.625rem 0.875rem;
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--muted);
-  box-shadow: 0 10px 26px rgba(2, 6, 23, 0.2);
   transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
+    background-color 160ms ease,
     color 160ms ease,
     transform 160ms ease;
 }
 
 .soft-pill:hover {
-  border-color: rgba(124, 92, 255, 0.34);
-  color: #f8fafc;
-  box-shadow: 0 14px 30px rgba(2, 6, 23, 0.26),
-    0 0 24px rgba(124, 92, 255, 0.1);
+  background: var(--card-strong-hover);
+  color: var(--foreground);
 }
 
 .table-surface {
-  border: 1px solid var(--muted-border);
+  border: none;
   border-radius: 20px;
-  background: rgba(15, 23, 42, 0.58);
+  background: var(--background);
 }
 
 .table-head-row {
-  background: rgba(2, 6, 23, 0.42);
-  color: #94a3b8;
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--weak);
 }
 
 .table-row-surface {
-  background: rgba(15, 23, 42, 0.48);
-  transition:
-    background-color 160ms ease,
-    box-shadow 160ms ease;
+  background: var(--card);
+  transition: background-color 160ms ease;
 }
 
 .table-row-surface:hover {
-  background: rgba(124, 92, 255, 0.08);
-  box-shadow: 0 12px 28px rgba(2, 6, 23, 0.22);
+  background: var(--card-hover);
 }
 
 /* Dark compatibility layer for legacy light utility classes still used in page components. */
 :is(.bg-white, .bg-white\/95, .bg-white\/88, .bg-white\/80, .bg-white\/78, .bg-white\/75) {
-  background-color: rgba(15, 23, 42, 0.74);
+  background-color: var(--card-strong);
 }
 
 :is(.bg-slate-50, .bg-slate-50\/70, .bg-slate-50\/80, .bg-slate-100) {
-  background-color: rgba(15, 23, 42, 0.5);
+  background-color: var(--card-hover);
 }
 
 :is(.bg-violet-50, .bg-violet-100) {
-  background-color: rgba(124, 92, 255, 0.12);
+  background-color: var(--accent-softer);
 }
 
 :is(.bg-emerald-50, .bg-emerald-100) {
-  background-color: rgba(16, 185, 129, 0.12);
+  background-color: var(--success-soft);
 }
 
 :is(.bg-rose-50, .bg-rose-100) {
@@ -210,68 +203,72 @@ option {
 }
 
 :is(.bg-blue-50, .bg-indigo-50, .bg-cyan-50) {
-  background-color: rgba(34, 211, 238, 0.12);
+  background-color: var(--accent-softer);
 }
 
 [class*="bg-[rgba(250,250,255"],
 [class*="bg-[rgba(255,255,255"] {
-  background-color: rgba(15, 23, 42, 0.58);
+  background-color: var(--card-strong);
 }
 
 :is(.text-slate-950, .text-slate-900) {
-  color: #f8fafc;
+  color: #f2f4f2;
+}
+
+:is(.text-slate-50, .text-slate-100, .text-slate-200) {
+  color: #e7ebe7;
 }
 
 :is(.text-slate-800, .text-slate-700) {
-  color: #cbd5e1;
+  color: #c9cfc9;
 }
 
 .text-slate-600 {
-  color: #cbd5e1;
+  color: #c9cfc9;
 }
 
 .text-slate-500 {
-  color: #94a3b8;
+  color: #9ba39b;
 }
 
 .text-slate-400 {
-  color: #94a3b8;
+  color: #9ba39b;
 }
 
 .text-slate-300 {
-  color: #64748b;
+  color: #5f675f;
 }
 
 :is(.text-violet-600, .text-violet-700, .text-indigo-600, .text-indigo-700) {
-  color: #a78bfa;
+  color: var(--accent);
 }
 
 :is(.text-blue-600, .text-blue-700, .text-cyan-600, .text-cyan-700) {
-  color: #22d3ee;
+  color: var(--accent);
 }
 
 :is(.text-emerald-600, .text-emerald-700) {
-  color: #34d399;
+  color: var(--success);
 }
 
 :is(.text-rose-600, .text-rose-700) {
-  color: #fb7185;
+  color: var(--danger);
 }
 
 :is(.text-amber-600, .text-amber-700) {
-  color: #fbbf24;
+  color: var(--warning);
 }
 
 :is(.border-slate-100, .border-slate-200, .border-\[\#E8EAF2\]) {
-  border-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.06);
 }
 
 :is(.border-violet-100, .border-violet-200) {
-  border-color: rgba(124, 92, 255, 0.28);
+  border-color: rgba(184, 241, 53, 0.3);
 }
 
 :is(.border-emerald-100, .border-emerald-200) {
-  border-color: rgba(16, 185, 129, 0.24);
+  border-color: rgba(184, 241, 53, 0.26);
 }
 
 :is(.border-rose-100, .border-rose-200) {
@@ -279,11 +276,11 @@ option {
 }
 
 :is(.ring-slate-100, .ring-slate-200) {
-  --tw-ring-color: rgba(148, 163, 184, 0.16);
+  --tw-ring-color: rgba(255, 255, 255, 0.08);
 }
 
 :is(.ring-violet-100, .ring-violet-200) {
-  --tw-ring-color: rgba(124, 92, 255, 0.28);
+  --tw-ring-color: rgba(184, 241, 53, 0.3);
 }
 
 :is(.ring-emerald-100, .ring-rose-100, .ring-amber-100) {
@@ -291,11 +288,11 @@ option {
 }
 
 :is(.hover\:bg-white:hover, .hover\:bg-slate-50:hover, .hover\:bg-slate-100:hover) {
-  background-color: rgba(124, 92, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.04);
 }
 
 :is(.hover\:bg-violet-50:hover, .hover\:bg-violet-100:hover) {
-  background-color: rgba(124, 92, 255, 0.18);
+  background-color: var(--accent-soft);
 }
 
 :is(.hover\:bg-rose-50:hover, .hover\:bg-rose-100:hover) {
@@ -303,15 +300,15 @@ option {
 }
 
 :is(.hover\:text-slate-950:hover, .hover\:text-slate-900:hover, .hover\:text-slate-700:hover) {
-  color: #f8fafc;
+  color: #f2f4f2;
 }
 
 :is(.hover\:text-violet-600:hover, .hover\:text-violet-700:hover) {
-  color: #c4b5fd;
+  color: var(--accent-strong);
 }
 
 :is(.hover\:border-violet-200:hover, .hover\:border-\[rgba\(108\,77\,255\,0\.24\)\]:hover) {
-  border-color: rgba(124, 92, 255, 0.42);
+  border-color: rgba(184, 241, 53, 0.4);
 }
 
 @media (max-width: 768px) {

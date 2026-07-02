@@ -37,14 +37,14 @@ interface PreviewMetricProps {
 
 const toneClassMap = {
   neutral: "text-slate-100",
-  positive: "text-emerald-300",
+  positive: "text-[var(--success)]",
   negative: "text-rose-300",
-  accent: "text-violet-200",
+  accent: "text-[var(--accent)]",
 } as const;
 
 function PreviewMetric({ label, value, tone = "neutral" }: PreviewMetricProps) {
   return (
-    <div className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3">
+    <div className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3">
       <p className="text-xs font-semibold text-slate-400">{label}</p>
       <p className={cn("mt-1 text-sm font-semibold", toneClassMap[tone])}>
         {value}
@@ -94,7 +94,7 @@ export default function ReportPreview({
       </div>
 
       {stats.totalTrades === 0 ? (
-        <div className="mt-5 rounded-[20px] border border-dashed border-[rgba(148,163,184,0.22)] bg-[rgba(15,23,42,0.42)] px-5 py-8 text-sm font-medium text-slate-400">
+        <div className="mt-5 rounded-[20px] border border-dashed border-[rgba(155,163,155,0.22)] bg-[rgba(30,33,30,0.42)] px-5 py-8 text-sm font-medium text-slate-400">
           {copy.reportsPage.noTradeData}
         </div>
       ) : null}
@@ -146,7 +146,7 @@ export default function ReportPreview({
               {setupBreakdown.slice(0, 3).map((row) => (
                 <div
                   key={row.setup}
-                  className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3"
                 >
                   <span className="text-sm font-medium text-slate-300">
                     {copy.strategies[row.setup]}
@@ -154,7 +154,7 @@ export default function ReportPreview({
                   <span
                     className={cn(
                       "text-sm font-semibold",
-                      row.netPnl >= 0 ? "text-emerald-300" : "text-rose-300",
+                      row.netPnl >= 0 ? "text-[var(--success)]" : "text-rose-300",
                     )}
                   >
                     {formatCurrency(row.netPnl, settings.currency)}
@@ -162,7 +162,7 @@ export default function ReportPreview({
                 </div>
               ))}
               {setupBreakdown.length === 0 ? (
-                <div className="rounded-[18px] border border-dashed border-[rgba(148,163,184,0.22)] px-4 py-6 text-center text-sm font-medium text-slate-400">
+                <div className="rounded-[18px] border border-dashed border-[rgba(155,163,155,0.22)] px-4 py-6 text-center text-sm font-medium text-slate-400">
                   {copy.reportsPage.noData}
                 </div>
               ) : null}
@@ -180,7 +180,7 @@ export default function ReportPreview({
                   className={cn(
                     "inline-flex rounded-full px-3 py-1 text-xs font-semibold",
                     row.netPnl >= 0
-                      ? "border border-[rgba(16,185,129,0.24)] bg-[rgba(16,185,129,0.12)] text-emerald-300"
+                      ? "border border-[rgba(184,241,53,0.24)] bg-[rgba(184,241,53,0.12)] text-[var(--success)]"
                       : "border border-[rgba(244,63,94,0.24)] bg-[rgba(244,63,94,0.12)] text-rose-300",
                   )}
                 >
@@ -188,7 +188,7 @@ export default function ReportPreview({
                 </span>
               ))}
               {tagBreakdown.length === 0 ? (
-                <div className="w-full rounded-[18px] border border-dashed border-[rgba(148,163,184,0.22)] px-4 py-6 text-center text-sm font-medium text-slate-400">
+                <div className="w-full rounded-[18px] border border-dashed border-[rgba(155,163,155,0.22)] px-4 py-6 text-center text-sm font-medium text-slate-400">
                   {copy.reportsPage.noData}
                 </div>
               ) : null}
@@ -206,7 +206,7 @@ export default function ReportPreview({
               {topTradeRows.map((trade) => (
                 <div
                   key={trade.id}
-                  className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
+                  className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3"
                 >
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-slate-100">
@@ -220,7 +220,7 @@ export default function ReportPreview({
                     <p
                       className={cn(
                         "text-sm font-semibold",
-                        trade.pnl >= 0 ? "text-emerald-300" : "text-rose-300",
+                        trade.pnl >= 0 ? "text-[var(--success)]" : "text-rose-300",
                       )}
                     >
                       {formatCurrency(trade.pnl, settings.currency)}
@@ -229,7 +229,7 @@ export default function ReportPreview({
                       className={cn(
                         "text-xs font-semibold",
                         trade.rMultiple >= 0
-                          ? "text-emerald-300"
+                          ? "text-[var(--success)]"
                           : "text-rose-300",
                       )}
                     >
@@ -240,7 +240,7 @@ export default function ReportPreview({
               ))}
             </div>
           ) : (
-            <div className="mt-3 rounded-[18px] border border-dashed border-[rgba(148,163,184,0.22)] px-4 py-6 text-center text-sm font-medium text-slate-400">
+            <div className="mt-3 rounded-[18px] border border-dashed border-[rgba(155,163,155,0.22)] px-4 py-6 text-center text-sm font-medium text-slate-400">
               {copy.reportsPage.noData}
             </div>
           )}
@@ -254,7 +254,7 @@ export default function ReportPreview({
             {reviewBlocks.map((block) => (
               <div
                 key={block.label}
-                className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
+                className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3"
               >
                 <p className="text-xs font-semibold text-slate-400">
                   {block.label}
@@ -268,7 +268,7 @@ export default function ReportPreview({
         </div>
       </div>
 
-      <p className="mt-6 rounded-[18px] border border-[rgba(124,92,255,0.18)] bg-[rgba(124,92,255,0.08)] px-4 py-3 text-sm font-medium text-violet-200">
+      <p className="mt-6 rounded-[18px] border border-[rgba(184,241,53,0.18)] bg-[rgba(184,241,53,0.08)] px-4 py-3 text-sm font-medium text-[var(--accent)]">
         {copy.reportsPage.copyMarkdownHint}
       </p>
     </section>

@@ -39,7 +39,7 @@ interface DetailRowProps {
 
 function DetailRow({ label, value, valueClassName }: DetailRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[rgba(148,163,184,0.12)] py-3 last:border-b-0">
+    <div className="flex items-center justify-between gap-4 border-b border-[rgba(155,163,155,0.12)] py-3 last:border-b-0">
       <p className="text-sm text-slate-400">{label}</p>
       <p
         className={cn(
@@ -117,7 +117,7 @@ export default function TradeDetailDrawer({
             </div>
           ) : null}
 
-          <div className="rounded-[20px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4">
+          <div className="rounded-[20px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4">
             <DetailRow
               label={copy.tradeForm.closeTime}
               value={formatTradeTimestamp(trade.closedAt)}
@@ -179,14 +179,14 @@ export default function TradeDetailDrawer({
               label={copy.tradeForm.netPnl}
               value={formatCurrency(trade.pnl, settings.currency)}
               valueClassName={
-                trade.pnl >= 0 ? "text-emerald-300" : "text-rose-300"
+                trade.pnl >= 0 ? "text-[var(--success)]" : "text-rose-300"
               }
             />
             <DetailRow
               label={copy.tradeForm.rMultiple}
               value={formatRMultiple(trade.rMultiple)}
               valueClassName={
-                trade.rMultiple >= 0 ? "text-emerald-300" : "text-rose-300"
+                trade.rMultiple >= 0 ? "text-[var(--success)]" : "text-rose-300"
               }
             />
             <DetailRow
@@ -208,7 +208,7 @@ export default function TradeDetailDrawer({
                 returnOnMargin === null
                   ? undefined
                   : returnOnMargin >= 0
-                    ? "text-emerald-300"
+                    ? "text-[var(--success)]"
                     : "text-rose-300"
               }
             />
@@ -222,7 +222,7 @@ export default function TradeDetailDrawer({
             <p className="text-sm font-semibold text-slate-100">
               {copy.tradesPage.notes}
             </p>
-            <div className="mt-2 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] p-4 text-sm leading-6 text-slate-300">
+            <div className="mt-2 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] p-4 text-sm leading-6 text-slate-300">
               {trade.notes || copy.tradesPage.noNotes}
             </div>
           </div>
@@ -258,7 +258,7 @@ export default function TradeDetailDrawer({
                     href={`/api/${screenshot}`}
                     target="_blank"
                     rel="noreferrer"
-                    className="block h-24 w-24 overflow-hidden rounded-2xl border border-white/10 bg-[rgba(2,6,23,0.34)] transition-transform hover:-translate-y-0.5"
+                    className="block h-24 w-24 overflow-hidden rounded-2xl border border-white/10 bg-[rgba(0,0,0,0.34)] transition-transform hover:-translate-y-0.5"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img

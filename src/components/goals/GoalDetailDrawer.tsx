@@ -60,7 +60,7 @@ interface StatTileProps {
 
 function DetailRow({ label, value, tone = "neutral" }: DetailRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 border-b border-[rgba(148,163,184,0.12)] py-3 last:border-b-0">
+    <div className="flex items-center justify-between gap-4 border-b border-[rgba(155,163,155,0.12)] py-3 last:border-b-0">
       <p className="text-sm text-slate-500">{label}</p>
       <p
         className={cn(
@@ -239,7 +239,7 @@ export default function GoalDetailDrawer({
             <h3 className="text-sm font-semibold text-slate-900">
               {copy.goalsPage.description}
             </h3>
-            <div className="mt-2 rounded-[18px] bg-[rgba(15,23,42,0.04)] p-4 text-sm leading-6 text-slate-600">
+            <div className="mt-2 rounded-[18px] bg-[rgba(30,33,30,0.04)] p-4 text-sm leading-6 text-slate-600">
               {goal.description || "—"}
             </div>
           </section>
@@ -248,7 +248,7 @@ export default function GoalDetailDrawer({
             <h3 className="text-sm font-semibold text-slate-900">
               {copy.goalsPage.notes}
             </h3>
-            <div className="mt-2 rounded-[18px] bg-[rgba(15,23,42,0.04)] p-4 text-sm leading-6 text-slate-600">
+            <div className="mt-2 rounded-[18px] bg-[rgba(30,33,30,0.04)] p-4 text-sm leading-6 text-slate-600">
               {goal.notes || "—"}
             </div>
           </section>

@@ -67,7 +67,7 @@ export default function PnlCalendar({
         action={
           <Badge variant="purple" className="h-9 px-3">
             <span>{copy.monthlyLabel}</span>
-            <ChevronDown className="h-4 w-4 text-violet-200" />
+            <ChevronDown className="h-4 w-4 text-[var(--accent)]" />
           </Badge>
         }
       />
@@ -78,7 +78,7 @@ export default function PnlCalendar({
           size="icon"
           aria-label={copy.calendarPage.previousMonth}
           title={copy.calendarPage.previousMonth}
-          className="h-8 w-8 bg-[rgba(124,92,255,0.12)] text-violet-200 hover:bg-[rgba(124,92,255,0.20)]"
+          className="h-8 w-8 bg-[rgba(184,241,53,0.12)] text-[var(--accent)] hover:bg-[rgba(184,241,53,0.20)]"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -91,7 +91,7 @@ export default function PnlCalendar({
           size="icon"
           aria-label={copy.calendarPage.nextMonth}
           title={copy.calendarPage.nextMonth}
-          className="h-8 w-8 bg-[rgba(124,92,255,0.12)] text-violet-200 hover:bg-[rgba(124,92,255,0.20)]"
+          className="h-8 w-8 bg-[rgba(184,241,53,0.12)] text-[var(--accent)] hover:bg-[rgba(184,241,53,0.20)]"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -129,12 +129,12 @@ export default function PnlCalendar({
             const className = cn(
               "flex min-h-[84px] flex-col rounded-[18px] border p-3 transition-all lg:min-h-[96px]",
               !cell.inCurrentMonth &&
-                "border-white/5 bg-[rgba(15,23,42,0.22)]",
+                "border-white/5 bg-[rgba(30,33,30,0.22)]",
               cell.inCurrentMonth &&
                 !hasTrade &&
-                "border-white/10 bg-[rgba(15,23,42,0.46)] hover:border-[rgba(124,92,255,0.24)] hover:bg-[rgba(15,23,42,0.66)]",
+                "border-white/10 bg-[rgba(30,33,30,0.46)] hover:border-[rgba(184,241,53,0.24)] hover:bg-[rgba(30,33,30,0.66)]",
               isToday &&
-                "ring-2 ring-[rgba(124,92,255,0.60)] ring-offset-1 ring-offset-[#0b1020] shadow-[0_0_22px_rgba(124,92,255,0.18)]",
+                "ring-2 ring-[rgba(184,241,53,0.60)] ring-offset-1 ring-offset-[#0a0b0a] shadow-[0_0_22px_rgba(184,241,53,0.18)]",
             );
             const content = (
               <>
@@ -148,7 +148,7 @@ export default function PnlCalendar({
                 </span>
                 <div className="mt-1 flex gap-1">
                   {isReviewed ? (
-                    <span className="h-1.5 w-1.5 rounded-full bg-violet-300 shadow-[0_0_10px_rgba(124,92,255,0.8)]" />
+                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_10px_rgba(184,241,53,0.8)]" />
                   ) : null}
                   {!isReviewed && hasTrade ? (
                     <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
@@ -158,7 +158,7 @@ export default function PnlCalendar({
                   <span
                     className={cn(
                       "mt-auto text-sm font-semibold tracking-normal",
-                      isProfit && "text-emerald-300",
+                      isProfit && "text-[var(--success)]",
                       isLoss && "text-rose-300",
                     )}
                   >
@@ -172,7 +172,7 @@ export default function PnlCalendar({
               <Link
                 key={cell.key}
                 href={`/calendar?date=${dateKey}`}
-                className={cn(className, "hover:border-violet-200")}
+                className={cn(className, "hover:border-[rgba(184,241,53,0.40)]")}
                 style={heatStyle}
               >
                 {content}
@@ -187,12 +187,12 @@ export default function PnlCalendar({
       </div>
 
       <div className="mt-6 grid gap-3 md:grid-cols-2 2xl:grid-cols-4">
-        <div className="rounded-[18px] border border-[rgba(124,92,255,0.24)] bg-[rgba(124,92,255,0.10)] px-4 py-4">
+        <div className="rounded-[18px] border border-[rgba(184,241,53,0.24)] bg-[rgba(184,241,53,0.10)] px-4 py-4">
           <p className="text-sm text-slate-400">{copy.calendar.summary.totalPnl}</p>
           <p
             className={cn(
               "mt-2 text-lg font-semibold",
-              summary.totalPnl > 0 && "text-emerald-300",
+              summary.totalPnl > 0 && "text-[var(--success)]",
               summary.totalPnl < 0 && "text-rose-300",
               summary.totalPnl === 0 && "text-slate-100",
             )}
@@ -200,7 +200,7 @@ export default function PnlCalendar({
             {formatCurrency(summary.totalPnl, settings.currency)}
           </p>
         </div>
-        <div className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-4">
+        <div className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.42)] px-4 py-4">
           <p className="text-sm text-slate-400">
             {copy.calendar.summary.winningDays}
           </p>
@@ -208,7 +208,7 @@ export default function PnlCalendar({
             {summary.winningDays} ({formatPercent(winningDayRate)})
           </p>
         </div>
-        <div className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-4">
+        <div className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.42)] px-4 py-4">
           <p className="text-sm text-slate-400">
             {copy.calendar.summary.losingDays}
           </p>
@@ -216,9 +216,9 @@ export default function PnlCalendar({
             {summary.losingDays} ({formatPercent(losingDayRate)})
           </p>
         </div>
-        <div className="rounded-[18px] border border-[rgba(34,211,238,0.18)] bg-[rgba(34,211,238,0.08)] px-4 py-4">
+        <div className="rounded-[18px] border border-[rgba(184,241,53,0.18)] bg-[rgba(184,241,53,0.08)] px-4 py-4">
           <p className="text-sm text-slate-400">{copy.calendar.summary.bestDay}</p>
-          <p className="mt-2 text-lg font-semibold text-cyan-200">
+          <p className="mt-2 text-lg font-semibold text-[var(--accent)]">
             {formatCurrency(summary.bestDayPnl, settings.currency)}
           </p>
         </div>

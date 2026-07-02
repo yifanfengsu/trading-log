@@ -112,12 +112,12 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 cursor={{ stroke: "rgba(124,92,255,0.28)", strokeWidth: 1.5 }}
                 contentStyle={{
                   borderRadius: 16,
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  boxShadow: "0 18px 44px rgba(2,6,23,0.42)",
-                  backgroundColor: "#0F172A",
-                  color: "#F8FAFC",
+                  border: "none",
+                  boxShadow: "0 18px 44px rgba(0,0,0,0.42)",
+                  backgroundColor: "#1E211E",
+                  color: "#F2F4F2",
                 }}
-                labelStyle={{ color: "#F8FAFC", fontWeight: 600 }}
+                labelStyle={{ color: "#F2F4F2", fontWeight: 600 }}
                 formatter={(value) =>
                   formatCurrency(Number(value ?? 0), {
                     currency: settings.currency,
@@ -160,7 +160,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
             </AreaChart>
           </ResponsiveContainer>
         ) : (
-          <div className="h-full rounded-[20px] bg-[linear-gradient(180deg,rgba(124,92,255,0.12),rgba(15,23,42,0.58))]" />
+          <div className="h-full rounded-[20px] bg-[var(--card-strong)]" />
         )}
       </div>
     </Card>

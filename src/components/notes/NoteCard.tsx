@@ -63,12 +63,12 @@ export default function NoteCard({
       onKeyDown={handleKeyDown}
       className={cn(
         "group relative flex min-h-[280px] cursor-pointer flex-col overflow-hidden",
-        note.pinned && "ring-1 ring-[rgba(124,92,255,0.34)]",
+        note.pinned && "ring-1 ring-[rgba(184,241,53,0.34)]",
       )}
       hover
     >
       {note.pinned ? (
-        <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#7C5CFF,#22D3EE)]" />
+        <div className="absolute inset-x-0 top-0 h-1 bg-[var(--accent)]" />
       ) : null}
 
       <div className="flex items-start justify-between gap-3">
@@ -81,7 +81,7 @@ export default function NoteCard({
           </p>
         </div>
         {note.pinned ? (
-          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgba(124,92,255,0.14)] text-violet-200 ring-1 ring-inset ring-[rgba(124,92,255,0.24)]">
+          <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[rgba(184,241,53,0.14)] text-[var(--accent)] ring-1 ring-inset ring-[rgba(184,241,53,0.24)]">
             <Star className="h-4 w-4 fill-current" />
           </span>
         ) : null}
@@ -105,7 +105,7 @@ export default function NoteCard({
           note.tags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex rounded-full border border-[rgba(148,163,184,0.16)] bg-[rgba(148,163,184,0.10)] px-2.5 py-1 text-xs font-semibold text-slate-300"
+              className="inline-flex rounded-full border border-[rgba(155,163,155,0.16)] bg-[rgba(155,163,155,0.10)] px-2.5 py-1 text-xs font-semibold text-slate-300"
             >
               {tag}
             </span>

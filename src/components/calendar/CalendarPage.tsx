@@ -49,14 +49,14 @@ interface InsightRowProps {
 
 const toneClasses = {
   neutral: "text-slate-100",
-  positive: "text-emerald-300",
+  positive: "text-[var(--success)]",
   negative: "text-rose-300",
-  accent: "text-violet-200",
+  accent: "text-[var(--accent)]",
 } as const;
 
 function InsightRow({ label, value, tone = "neutral" }: InsightRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-3">
+    <div className="flex items-center justify-between gap-4 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.42)] px-4 py-3">
       <p className="text-sm text-slate-400">{label}</p>
       <p className={cn("text-sm font-semibold", toneClasses[tone])}>{value}</p>
     </div>

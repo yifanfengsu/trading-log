@@ -45,14 +45,14 @@ function getSymbolBadge(symbol: string) {
     return {
       label: "E",
       className:
-        "bg-[rgba(99,102,241,0.14)] text-indigo-200 ring-[rgba(99,102,241,0.24)]",
+        "bg-[rgba(184,241,53,0.14)] text-[var(--accent)] ring-[rgba(184,241,53,0.24)]",
     };
   }
 
   return {
     label: "S",
     className:
-      "bg-[rgba(34,211,238,0.12)] text-cyan-200 ring-[rgba(34,211,238,0.22)]",
+      "bg-[rgba(184,241,53,0.12)] text-[var(--accent)] ring-[rgba(184,241,53,0.22)]",
   };
 }
 
@@ -76,7 +76,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
         action={
           <Link
             href="/trades"
-            className="inline-flex items-center gap-2 text-sm font-semibold text-violet-200 transition-colors hover:text-cyan-200"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
           >
             {copy.recentTrades.viewAll}
             <ArrowRightLeft className="h-4 w-4" />
@@ -127,7 +127,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
               <tr>
                 <td
                   colSpan={11}
-                  className="rounded-[18px] bg-[rgba(15,23,42,0.46)] px-3 py-6"
+                  className="rounded-[18px] bg-[rgba(30,33,30,0.46)] px-3 py-6"
                 >
                   <EmptyState title={copy.emptyState} className="min-h-[180px]" />
                 </td>
@@ -174,7 +174,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
                     className={cn(
                       dataTableCellClassName,
                       "font-semibold",
-                      row.pnl >= 0 ? "text-emerald-300" : "text-rose-300",
+                      row.pnl >= 0 ? "text-[var(--success)]" : "text-rose-300",
                     )}
                   >
                     {formatCurrency(row.pnl, settings.currency)}
@@ -183,7 +183,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
                     className={cn(
                       dataTableCellClassName,
                       "font-semibold",
-                      row.rMultiple >= 0 ? "text-emerald-300" : "text-rose-300",
+                      row.rMultiple >= 0 ? "text-[var(--success)]" : "text-rose-300",
                     )}
                   >
                     {formatRMultiple(row.rMultiple)}

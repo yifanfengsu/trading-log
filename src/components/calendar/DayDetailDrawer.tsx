@@ -41,14 +41,14 @@ interface StatCardProps {
 
 const toneClasses = {
   neutral: "text-slate-100",
-  positive: "text-emerald-300",
+  positive: "text-[var(--success)]",
   negative: "text-rose-300",
-  accent: "text-violet-200",
+  accent: "text-[var(--accent)]",
 } as const;
 
 function StatCard({ label, value, tone = "neutral" }: StatCardProps) {
   return (
-    <div className="rounded-[18px] border border-[rgba(124,92,255,0.18)] bg-[rgba(124,92,255,0.08)] px-4 py-4">
+    <div className="rounded-[18px] border border-[rgba(184,241,53,0.18)] bg-[rgba(184,241,53,0.08)] px-4 py-4">
       <p className="text-xs font-medium text-slate-400">{label}</p>
       <p className={cn("mt-2 text-lg font-semibold", toneClasses[tone])}>
         {value}
@@ -146,7 +146,7 @@ export default function DayDetailDrawer({
                   return (
                     <article
                       key={trade.id}
-                      className="rounded-[20px] border border-white/10 bg-[rgba(15,23,42,0.46)] p-4"
+                      className="rounded-[20px] border border-white/10 bg-[rgba(30,33,30,0.46)] p-4"
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
@@ -182,7 +182,7 @@ export default function DayDetailDrawer({
                         <p
                           className={cn(
                             "text-lg font-semibold tracking-normal",
-                            isProfit && "text-emerald-300",
+                            isProfit && "text-[var(--success)]",
                             isLoss && "text-rose-300",
                             !isProfit && !isLoss && "text-slate-300",
                           )}
@@ -193,12 +193,12 @@ export default function DayDetailDrawer({
                           className={cn(
                             "rounded-full px-3 py-1 text-xs font-semibold",
                             isProfit &&
-                              "bg-[rgba(16,185,129,0.12)] text-emerald-300",
+                              "bg-[rgba(184,241,53,0.12)] text-[var(--success)]",
                             isLoss &&
                               "bg-[rgba(244,63,94,0.12)] text-rose-300",
                             !isProfit &&
                               !isLoss &&
-                              "bg-[rgba(148,163,184,0.10)] text-slate-300",
+                              "bg-[rgba(155,163,155,0.10)] text-slate-300",
                           )}
                         >
                           {formatRMultiple(trade.rMultiple)}
@@ -220,7 +220,7 @@ export default function DayDetailDrawer({
             <h3 className="text-sm font-semibold text-slate-100">
               {copy.calendarPage.dailyReview}
             </h3>
-            <div className="mt-3 rounded-[20px] border border-white/10 bg-[rgba(15,23,42,0.46)] p-4">
+            <div className="mt-3 rounded-[20px] border border-white/10 bg-[rgba(30,33,30,0.46)] p-4">
               <DailyReviewForm
                 key={`${date}-${review?.updatedAt ?? "new"}`}
                 date={date}

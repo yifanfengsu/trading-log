@@ -31,14 +31,14 @@ interface SummaryTileProps {
 
 const tileToneClasses = {
   neutral: "text-slate-100",
-  positive: "text-emerald-300",
+  positive: "text-[var(--success)]",
   negative: "text-rose-300",
-  accent: "text-violet-200",
+  accent: "text-[var(--accent)]",
 } as const;
 
 function SummaryTile({ label, value, tone = "neutral" }: SummaryTileProps) {
   return (
-    <div className="rounded-[16px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3">
+    <div className="rounded-[16px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3">
       <p className="text-xs font-medium text-slate-400">{label}</p>
       <p className={cn("mt-1 text-lg font-semibold", tileToneClasses[tone])}>
         {value}
@@ -86,7 +86,7 @@ export default function GoalsOverview() {
   const manageLink = (
     <Link
       href="/goals"
-      className="inline-flex items-center gap-1 text-sm font-semibold text-violet-200 transition-colors hover:text-cyan-200"
+      className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--accent)] transition-colors hover:text-[var(--accent-strong)]"
     >
       {copy.dashboardPage.manageGoals}
       <ArrowRight className="h-4 w-4" />
@@ -141,7 +141,7 @@ export default function GoalsOverview() {
         </div>
 
         {activeGoals.length === 0 ? (
-          <p className="mt-5 rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.42)] px-4 py-8 text-center text-sm font-medium text-slate-400">
+          <p className="mt-5 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.42)] px-4 py-8 text-center text-sm font-medium text-slate-400">
             {copy.goalsPage.noData}
           </p>
         ) : (
@@ -149,7 +149,7 @@ export default function GoalsOverview() {
             {activeGoals.map(({ goal, progress }) => (
               <article
                 key={goal.id}
-                className="rounded-[18px] border border-white/10 bg-[rgba(15,23,42,0.46)] px-4 py-3"
+                className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">

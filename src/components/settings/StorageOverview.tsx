@@ -31,7 +31,7 @@ function OverviewItem({ icon: Icon, label, value }: OverviewItemProps) {
   return (
     <div className="flex items-center justify-between gap-4 rounded-[18px] bg-[rgba(250,250,255,0.88)] px-4 py-3">
       <div className="flex min-w-0 items-center gap-3">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[rgba(108,77,255,0.09)] text-[var(--accent)]">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[rgba(184,241,53,0.09)] text-[var(--accent)]">
           <Icon className="h-5 w-5" />
         </div>
         <p className="truncate text-sm font-medium text-slate-500">{label}</p>
