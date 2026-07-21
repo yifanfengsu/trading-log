@@ -31,7 +31,7 @@ export default function MiniSparkline({
   const points = data.map((value, index) => ({ index, value }));
 
   return (
-    <div className={cn("h-12 w-24 shrink-0", className)}>
+    <div className={cn("h-12 w-24 min-w-0", className)}>
       {isClient && points.length > 1 ? (
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart

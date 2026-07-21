@@ -94,23 +94,28 @@ export default function TodayReview({
         description={formatDateLabel(activeDate, locale)}
         action={
           <Link href={`/calendar?date=${activeDate}`} className="inline-flex">
-            <Badge variant="purple" className="h-9 px-3">
+            <Badge variant="purple" className="h-8 px-3">
               {copy.calendarPage.editReview}
             </Badge>
           </Link>
         }
       />
 
-      <div className="mt-5 grid gap-2 sm:grid-cols-3">
+      {/* Neutral tiles — the number carries the win/loss colour. Previously
+          every tile was wrapped in green regardless of sign, so a losing day
+          still read as green at a glance. */}
+      <div className="mt-4 grid gap-2 sm:grid-cols-3">
         {pnlItems.map((item) => (
           <div
             key={item.label}
-            className="rounded-[16px] border border-[rgba(184,241,53,0.22)] bg-[rgba(184,241,53,0.08)] px-3 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]"
+            className="rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] px-3 py-2.5"
           >
-            <p className="text-xs font-medium text-slate-400">{item.label}</p>
+            <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--weak)]">
+              {item.label}
+            </p>
             <p
               className={cn(
-                "mt-1 text-sm font-semibold",
+                "mt-1 text-[17px] font-semibold tabular-nums",
                 item.value > 0 && "text-[var(--success)]",
                 item.value < 0 && "text-rose-300",
                 item.value === 0 && "text-slate-300",
@@ -122,7 +127,7 @@ export default function TodayReview({
         ))}
       </div>
 
-      <div className="mt-6 space-y-3">
+      <div className="mt-3 grid gap-2 sm:grid-cols-2">
         {items.map((item) => {
           const Icon = iconMap[item.id];
           const content = copy.review.items[item.id];
@@ -133,24 +138,24 @@ export default function TodayReview({
           return (
             <article
               key={item.id}
-              className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.44)] p-4 transition-colors hover:border-[rgba(184,241,53,0.24)] hover:bg-[rgba(30,33,30,0.62)]"
+              className="rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] p-3 transition-colors hover:border-[var(--card-border-hover)]"
             >
-              <div className="flex items-start gap-3">
+              <div className="flex items-start gap-2.5">
                 <div
                   className={cn(
-                    "flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ring-1 ring-inset",
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-[10px] ring-1 ring-inset",
                     toneClasses[item.tone].wrapper,
                   )}
                 >
                   <Icon
-                    className={cn("h-[18px] w-[18px]", toneClasses[item.tone].icon)}
+                    className={cn("h-4 w-4", toneClasses[item.tone].icon)}
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-100">
+                  <p className="text-[13px] font-semibold text-slate-100">
                     {content.label}
                   </p>
-                  <p className="mt-1 text-sm leading-6 text-slate-400">
+                  <p className="mt-0.5 text-[13px] leading-5 text-slate-400">
                     {body}
                   </p>
                 </div>

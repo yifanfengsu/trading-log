@@ -38,9 +38,16 @@ const tileToneClasses = {
 
 function SummaryTile({ label, value, tone = "neutral" }: SummaryTileProps) {
   return (
-    <div className="rounded-[16px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3">
-      <p className="text-xs font-medium text-slate-400">{label}</p>
-      <p className={cn("mt-1 text-lg font-semibold", tileToneClasses[tone])}>
+    <div className="rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] px-3 py-2.5">
+      <p className="text-[11px] font-medium uppercase tracking-[0.06em] text-[var(--weak)]">
+        {label}
+      </p>
+      <p
+        className={cn(
+          "mt-1 text-[17px] font-semibold tabular-nums",
+          tileToneClasses[tone],
+        )}
+      >
         {value}
       </p>
     </div>
@@ -110,14 +117,14 @@ export default function GoalsOverview() {
   }
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
+    <section className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
       <Card>
         <SectionHeader
           title={copy.dashboardPage.goalsOverview}
           action={manageLink}
         />
 
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4">
           <SummaryTile
             label={copy.goalsPage.activeGoals}
             value={String(summary.activeGoals)}
@@ -141,15 +148,15 @@ export default function GoalsOverview() {
         </div>
 
         {activeGoals.length === 0 ? (
-          <p className="mt-5 rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.42)] px-4 py-8 text-center text-sm font-medium text-slate-400">
+          <p className="mt-4 rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] px-4 py-8 text-center text-sm font-medium text-slate-400">
             {copy.goalsPage.noData}
           </p>
         ) : (
-          <div className="mt-5 grid gap-3">
+          <div className="mt-4 grid gap-2">
             {activeGoals.map(({ goal, progress }) => (
               <article
                 key={goal.id}
-                className="rounded-[18px] border border-white/10 bg-[rgba(30,33,30,0.46)] px-4 py-3"
+                className="rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] px-3 py-2.5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">

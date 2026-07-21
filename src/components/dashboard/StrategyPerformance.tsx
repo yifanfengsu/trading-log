@@ -11,6 +11,7 @@ import DataTable, {
   dataTableHeadCellClassName,
 } from "@/components/ui/DataTable";
 import EmptyState from "@/components/ui/EmptyState";
+import ProgressBar from "@/components/ui/ProgressBar";
 import SectionHeader from "@/components/ui/SectionHeader";
 import type { StrategyStats } from "@/lib/trade-calculations";
 import {
@@ -47,9 +48,9 @@ export default function StrategyPerformance({
       />
 
       {rows.length === 0 ? (
-        <EmptyState title={copy.emptyState} className="mt-5 min-h-[248px]" />
+        <EmptyState title={copy.emptyState} className="mt-4 min-h-[220px]" />
       ) : (
-        <DataTable minWidth={640} className="mt-5">
+        <DataTable minWidth={400} className="mt-4">
           <thead>
             <tr className="table-head-row">
               <th className={dataTableHeadCellClassName}>
@@ -61,20 +62,13 @@ export default function StrategyPerformance({
               <th className={dataTableHeadCellClassName}>
                 {copy.strategyPerformance.winRate}
               </th>
-              <th className={dataTableHeadCellClassName}>
+              <th className={cn(dataTableHeadCellClassName, "text-right")}>
                 {copy.strategyPerformance.profitFactor}
               </th>
             </tr>
           </thead>
           <tbody>
             {rows.map((row) => {
-              const winRateWidth = `${Math.min(row.winRate, 100)}%`;
-              const factorWidth = `${
-                Number.isFinite(row.profitFactor)
-                  ? Math.min((row.profitFactor / 2.5) * 100, 100)
-                  : 100
-              }%`;
-
                 return (
                   <tr key={row.setup} className="table-row-surface">
                     <td className={dataTableCellClassName}>
@@ -92,42 +86,34 @@ export default function StrategyPerformance({
                       {formatCurrency(row.netPnl, settings.currency)}
                     </td>
                     <td className={dataTableCellClassName}>
-                      <div className="min-w-[132px]">
+                      <div className="min-w-[84px]">
                         <div className="flex items-center justify-between gap-2 text-sm">
                           <span className="font-semibold text-slate-100">
                             {formatPercent(row.winRate)}
                           </span>
                         </div>
-                        <div className="mt-2 h-2 rounded-full bg-[rgba(155,163,155,0.14)]">
-                          <div
-                            className="h-full rounded-full bg-[var(--accent)]"
-                            style={{ width: winRateWidth }}
-                          />
-                        </div>
+                        <ProgressBar
+                          className="mt-1.5"
+                          value={row.winRate}
+                          size="sm"
+                        />
                       </div>
                     </td>
-                    <td className={dataTableCellClassName}>
-                      <div className="min-w-[132px]">
-                        <div className="flex items-center justify-between gap-2 text-sm">
-                          <span
-                            className={cn(
-                              "font-semibold",
-                              row.profitFactor >= 1.5 ||
-                              row.profitFactor === Infinity
-                                ? "text-[var(--accent)]"
-                                : "text-slate-100",
-                            )}
-                          >
-                            {formatProfitFactor(row.profitFactor)}
-                          </span>
-                        </div>
-                        <div className="mt-2 h-2 rounded-full bg-[rgba(155,163,155,0.14)]">
-                          <div
-                            className="h-full rounded-full bg-[var(--accent)]"
-                            style={{ width: factorWidth }}
-                          />
-                        </div>
-                      </div>
+                    {/* Number only — a second progress bar next to the win-rate
+                        one added noise without adding information, and it was
+                        what pushed the table past the card's width. */}
+                    <td className={cn(dataTableCellClassName, "text-right")}>
+                      <span
+                        className={cn(
+                          "font-semibold",
+                          row.profitFactor >= 1.5 ||
+                          row.profitFactor === Infinity
+                            ? "text-[var(--accent)]"
+                            : "text-slate-100",
+                        )}
+                      >
+                        {formatProfitFactor(row.profitFactor)}
+                      </span>
                     </td>
                   </tr>
                 );

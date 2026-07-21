@@ -22,12 +22,14 @@ interface FilterChipProps {
 
 function FilterChip({ icon: Icon, label }: FilterChipProps) {
   return (
+    // Read-only context, not a control — kept visually quiet (no fill, hairline
+    // outline) so it does not advertise a click that goes nowhere.
     <div
-      className="inline-flex h-10 max-w-full cursor-default items-center gap-2 rounded-full bg-[var(--card-strong)] px-3.5 text-sm font-medium text-[var(--muted)]"
+      className="inline-flex h-8 max-w-full cursor-default items-center gap-2 rounded-full border border-[var(--inner-border)] px-3 text-[13px] font-medium text-[var(--muted)]"
       aria-hidden="true"
     >
-      <span className="flex min-w-0 items-center gap-2">
-        <Icon className="h-4 w-4 shrink-0 text-[var(--weak)]" />
+      <span className="flex min-w-0 items-center gap-1.5">
+        <Icon className="h-3.5 w-3.5 shrink-0 text-[var(--weak)]" />
         <span className="truncate">{label}</span>
       </span>
     </div>
@@ -40,7 +42,7 @@ export default function TopBar() {
   const { openCreateTrade } = useTradeDrawer();
 
   return (
-    <header className="flex flex-col gap-4 rounded-[20px] bg-[var(--card)] px-4 py-4 sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:px-6">
+    <header className="flex flex-col gap-3 rounded-[var(--radius-card)] border border-[var(--card-border)] bg-[var(--card)] px-3.5 py-3 shadow-[var(--shadow-card)] sm:px-4 lg:flex-row lg:items-center lg:justify-between lg:px-5">
       <div className="flex flex-wrap items-center gap-2">
         <FilterChip
           icon={CalendarDays}
@@ -52,7 +54,7 @@ export default function TopBar() {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3 sm:justify-end">
-        <div className="inline-flex rounded-full bg-[var(--card-strong)] p-1">
+        <div className="inline-flex rounded-full border border-[var(--inner-border)] bg-[var(--card-strong)] p-0.5">
           {(["zh", "en"] as const).map((item) => {
             const isActive = locale === item;
 
@@ -63,7 +65,7 @@ export default function TopBar() {
                 onClick={() => setLocale(item)}
                 aria-pressed={isActive}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-semibold transition-all",
+                  "rounded-full px-3 py-1.5 text-[13px] font-semibold transition-all",
                   isActive
                     ? "bg-[var(--accent)] text-[#0a0b0a]"
                     : "text-slate-400 hover:text-slate-50",
@@ -75,15 +77,12 @@ export default function TopBar() {
           })}
         </div>
 
-        <Button
-          onClick={openCreateTrade}
-          title={copy.addTrade}
-        >
+        <Button onClick={openCreateTrade} size="sm" title={copy.addTrade}>
           <Plus className="h-4 w-4" />
           {copy.addTrade}
         </Button>
 
-        <div className="hidden h-11 w-11 items-center justify-center rounded-full bg-[var(--accent)] text-sm font-semibold text-[#0a0b0a] sm:flex">
+        <div className="hidden h-9 w-9 items-center justify-center rounded-full bg-[var(--accent)] text-xs font-semibold text-[#0a0b0a] sm:flex">
           JD
         </div>
       </div>

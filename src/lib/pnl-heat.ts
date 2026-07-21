@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 // magnitude relative to the month's largest absolute P&L. Bigger win/loss =>
 // deeper, more saturated block. Shared by both calendars so the dashboard mini
 // calendar and the full calendar render identical heat.
-const PROFIT_RGB = "16, 185, 129"; // emerald — matches --success-soft hue
+const PROFIT_RGB = "184, 241, 53"; // accent green — matches --accent hue
 const LOSS_RGB = "244, 63, 94"; // rose — matches --danger-soft hue
 
 // Largest absolute daily P&L in the month, used to normalize the heat scale.
@@ -30,7 +30,7 @@ export function getPnlHeatStyle(pnl: number, maxAbsPnl: number): CSSProperties {
   const rgb = pnl >= 0 ? PROFIT_RGB : LOSS_RGB;
 
   return {
-    background: `linear-gradient(160deg, rgba(${rgb}, ${fill}) 0%, rgba(${rgb}, ${fill * 0.5}) 70%, rgba(15, 23, 42, 0.55) 100%)`,
+    background: `linear-gradient(160deg, rgba(${rgb}, ${fill}) 0%, rgba(${rgb}, ${fill * 0.5}) 70%, rgba(10, 11, 10, 0.55) 100%)`,
     borderColor: `rgba(${rgb}, ${edge})`,
   };
 }

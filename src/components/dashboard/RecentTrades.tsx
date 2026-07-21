@@ -84,7 +84,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
         }
       />
 
-      <DataTable minWidth={1180} className="mt-5">
+      <DataTable minWidth={1180} className="mt-4">
           <thead>
             <tr className="table-head-row">
               <th className={dataTableHeadCellClassName}>
@@ -127,7 +127,7 @@ export default function RecentTrades({ rows }: RecentTradesProps) {
               <tr>
                 <td
                   colSpan={11}
-                  className="rounded-[18px] bg-[rgba(30,33,30,0.46)] px-3 py-6"
+                  className="px-3 py-6"
                 >
                   <EmptyState title={copy.emptyState} className="min-h-[180px]" />
                 </td>

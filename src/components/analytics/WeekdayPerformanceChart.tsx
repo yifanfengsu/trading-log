@@ -31,7 +31,7 @@ interface WeekdayChartDatum extends WeekdayPerformanceRow {
   weekdayLabel: string;
 }
 
-const positiveColor = "#34D399";
+const positiveColor = "#B8F135";
 const negativeColor = "#FB7185";
 
 function useIsClient() {
@@ -97,7 +97,7 @@ export default function WeekdayPerformanceChart({
               >
                 <CartesianGrid
                   vertical={false}
-                  stroke="rgba(148,163,184,0.07)"
+                  stroke="rgba(155,163,155,0.08)"
                   strokeDasharray="4 6"
                 />
                 <XAxis
@@ -105,20 +105,20 @@ export default function WeekdayPerformanceChart({
                   axisLine={false}
                   tickLine={false}
                   tickMargin={12}
-                  tick={{ fill: "#64748B", fontSize: 12 }}
+                  tick={{ fill: "#5F675F", fontSize: 12 }}
                 />
                 <YAxis
                   axisLine={false}
                   tickLine={false}
                   tickMargin={12}
                   width={54}
-                  tick={{ fill: "#64748B", fontSize: 12 }}
+                  tick={{ fill: "#5F675F", fontSize: 12 }}
                   tickFormatter={(value: number) =>
                     formatAxisCurrencyTick(value, settings.currency)
                   }
                 />
                 <Tooltip
-                  cursor={{ fill: "rgba(124,92,255,0.08)" }}
+                  cursor={{ fill: "rgba(184,241,53,0.08)" }}
                   content={renderTooltip}
                 />
                 <Bar dataKey="netPnl" radius={[8, 8, 8, 8]}>

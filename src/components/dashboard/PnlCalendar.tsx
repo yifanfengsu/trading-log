@@ -146,14 +146,10 @@ export default function PnlCalendar({
                 >
                   {cell.day ?? ""}
                 </span>
-                <div className="mt-1 flex gap-1">
-                  {isReviewed ? (
-                    <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_10px_rgba(184,241,53,0.8)]" />
-                  ) : null}
-                  {!isReviewed && hasTrade ? (
-                    <span className="h-1.5 w-1.5 rounded-full bg-slate-600" />
-                  ) : null}
-                </div>
+                {/* Reviewed is the only marked state; unreviewed renders nothing. */}
+                {isReviewed ? (
+                  <span className="mt-1 h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
+                ) : null}
                 {hasTrade && cell.pnl !== null ? (
                   <span
                     className={cn(

@@ -4,6 +4,7 @@ import { ArrowDownRight, ArrowUpRight } from "lucide-react";
 
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
+import ProgressBar from "@/components/ui/ProgressBar";
 import type { SidePerformanceRow } from "@/lib/analytics-calculations";
 import {
   cn,
@@ -46,7 +47,7 @@ export default function SidePerformanceCard({ rows }: SidePerformanceCardProps) 
                 avgR: 0,
               };
             const Icon = side === "long" ? ArrowUpRight : ArrowDownRight;
-            const barWidth = `${Math.max((Math.abs(row.netPnl) / maxAbsPnl) * 100, 6)}%`;
+            const barPercent = Math.max((Math.abs(row.netPnl) / maxAbsPnl) * 100, 6);
             const isPositive = row.netPnl >= 0;
 
             return (
@@ -85,15 +86,11 @@ export default function SidePerformanceCard({ rows }: SidePerformanceCardProps) 
                   </p>
                 </div>
 
-                <div className="mt-4 h-2.5 rounded-full bg-[rgba(155,163,155,0.14)]">
-                  <div
-                    className={cn(
-                      "h-full rounded-full",
-                      isPositive ? "bg-[var(--success)]" : "bg-[var(--danger)]",
-                    )}
-                    style={{ width: barWidth }}
-                  />
-                </div>
+                <ProgressBar
+                  className="mt-3.5"
+                  value={barPercent}
+                  tone={isPositive ? "accent" : "danger"}
+                />
 
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
                   <div>

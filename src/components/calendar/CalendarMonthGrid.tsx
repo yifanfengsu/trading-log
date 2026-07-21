@@ -90,15 +90,10 @@ export default function CalendarMonthGrid({
                   <span className="text-sm font-semibold text-slate-200">
                     {cell.day}
                   </span>
-                  <span
-                    className={cn(
-                      "h-2 w-2 rounded-full",
-                      isReviewed &&
-                        "bg-[var(--accent)] shadow-[0_0_10px_rgba(184,241,53,0.8)]",
-                      !isReviewed && hasTrades && "bg-slate-600",
-                      !isReviewed && !hasTrades && "bg-transparent",
-                    )}
-                  />
+                  {/* Reviewed is the only marked state; unreviewed renders nothing. */}
+                  {isReviewed ? (
+                    <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
+                  ) : null}
                 </div>
 
                 {hasTrades ? (
@@ -116,18 +111,11 @@ export default function CalendarMonthGrid({
                     <p className="text-xs font-medium text-slate-400">
                       {tradeCount} {copy.calendarPage.trades}
                     </p>
-                    <span
-                      className={cn(
-                        "inline-flex w-fit rounded-full px-2 py-1 text-[11px] font-semibold",
-                        isReviewed
-                          ? "bg-[rgba(184,241,53,0.14)] text-[var(--accent)]"
-                          : "bg-[rgba(155,163,155,0.10)] text-slate-400",
-                      )}
-                    >
-                      {isReviewed
-                        ? copy.calendarPage.reviewed
-                        : copy.calendarPage.notReviewed}
-                    </span>
+                    {isReviewed ? (
+                      <span className="inline-flex w-fit rounded-full bg-[rgba(184,241,53,0.14)] px-2 py-1 text-[11px] font-semibold text-[var(--accent)]">
+                        {copy.calendarPage.reviewed}
+                      </span>
+                    ) : null}
                   </div>
                 ) : isReviewed ? (
                   <span className="mt-auto inline-flex w-fit rounded-full bg-[rgba(184,241,53,0.14)] px-2 py-1 text-[11px] font-semibold text-[var(--accent)]">

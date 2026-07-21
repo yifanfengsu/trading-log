@@ -9,7 +9,6 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 
-import MiniSparkline from "@/components/dashboard/MiniSparkline";
 import RadialProgress from "@/components/dashboard/RadialProgress";
 import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
@@ -19,12 +18,9 @@ import { formatMetricValue, formatProfitFactor } from "@/lib/utils";
 
 interface MetricCardProps {
   metric: MetricData;
-  // Only the net P&L card uses this: the equity series already drawn by the
-  // dashboard EquityCurve, reused (not recomputed) for a mini sparkline.
-  sparkline?: number[];
 }
 
-const RING_SIZE = 72;
+const RING_SIZE = 56;
 
 const iconMap: Record<MetricId, LucideIcon> = {
   netPnl: Wallet,
@@ -34,19 +30,21 @@ const iconMap: Record<MetricId, LucideIcon> = {
 };
 
 // Visualization sitting beside the number, driven entirely by the metric's own
-// value (plus, for net P&L, the reused equity series).
-function renderVisual(metric: MetricData, sparkline?: number[]): ReactNode {
+// value; the net P&L card stays number-only.
+function renderVisual(metric: MetricData): ReactNode {
   const { id, value } = metric;
 
   if (id === "winRate") {
-    // Green arc = win share; rose track hints at the losing share.
+    // Accent-green arc = win share on the shared neutral track (red stays
+    // reserved for actual loss values, not ring tracks). Center matches the
+    // big number's one-decimal formatting so the card never shows two
+    // conflicting values.
     return (
       <RadialProgress
         value={value}
-        color="#34D399"
-        trackColor="rgba(244,63,94,0.22)"
+        color="#B8F135"
         size={RING_SIZE}
-        centerLabel={`${Math.round(value)}%`}
+        centerLabel={`${value.toFixed(1)}%`}
       />
     );
   }
@@ -60,8 +58,7 @@ function renderVisual(metric: MetricData, sparkline?: number[]): ReactNode {
     return (
       <RadialProgress
         value={score}
-        color="#22D3EE"
-        trackColor="rgba(148,163,184,0.16)"
+        color="#B8F135"
         size={RING_SIZE}
         centerLabel={formatProfitFactor(value)}
       />
@@ -76,20 +73,8 @@ function renderVisual(metric: MetricData, sparkline?: number[]): ReactNode {
       <RadialProgress
         value={magnitude}
         color="#FB7185"
-        trackColor="rgba(148,163,184,0.16)"
         size={RING_SIZE}
         centerLabel={`${Math.round(Math.abs(value))}%`}
-      />
-    );
-  }
-
-  // netPnl: mini sparkline from the reused equity series; without a usable
-  // series the card stays number-only (no fabricated data).
-  if (id === "netPnl" && sparkline && sparkline.length > 1) {
-    return (
-      <MiniSparkline
-        data={sparkline}
-        color={value >= 0 ? "#34D399" : "#FB7185"}
       />
     );
   }
@@ -97,7 +82,7 @@ function renderVisual(metric: MetricData, sparkline?: number[]): ReactNode {
   return null;
 }
 
-export default function MetricCard({ metric, sparkline }: MetricCardProps) {
+export default function MetricCard({ metric }: MetricCardProps) {
   const { dictionary: copy } = useLanguage();
   const { settings } = useUserSettings();
   const Icon = iconMap[metric.id];
@@ -118,7 +103,7 @@ export default function MetricCard({ metric, sparkline }: MetricCardProps) {
       value={value}
       icon={Icon}
       tone={metric.valueTone}
-      visual={renderVisual(metric, sparkline)}
+      visual={renderVisual(metric)}
     />
   );
 }

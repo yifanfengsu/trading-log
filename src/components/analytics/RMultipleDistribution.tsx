@@ -22,9 +22,11 @@ interface RMultipleDistributionProps {
   rows: RMultipleDistributionRow[];
 }
 
-const positiveColor = "#34D399";
+const positiveColor = "#B8F135";
 const negativeColor = "#FB7185";
-const neutralColor = "#7C5CFF";
+// Zero-P&L buckets are neither win nor loss, so they wear the neutral
+// gray-green (--weak) rather than competing with the accent.
+const neutralColor = "#5F675F";
 
 function useIsClient() {
   return useSyncExternalStore(
@@ -84,7 +86,7 @@ export default function RMultipleDistribution({
                 >
                   <CartesianGrid
                     vertical={false}
-                    stroke="rgba(148,163,184,0.07)"
+                    stroke="rgba(155,163,155,0.08)"
                     strokeDasharray="4 6"
                   />
                   <XAxis
@@ -92,7 +94,7 @@ export default function RMultipleDistribution({
                     axisLine={false}
                     tickLine={false}
                     tickMargin={12}
-                    tick={{ fill: "#64748B", fontSize: 12 }}
+                    tick={{ fill: "#5F675F", fontSize: 12 }}
                   />
                   <YAxis
                     allowDecimals={false}
@@ -100,10 +102,10 @@ export default function RMultipleDistribution({
                     tickLine={false}
                     tickMargin={12}
                     width={36}
-                    tick={{ fill: "#64748B", fontSize: 12 }}
+                    tick={{ fill: "#5F675F", fontSize: 12 }}
                   />
                   <Tooltip
-                    cursor={{ fill: "rgba(124,92,255,0.08)" }}
+                    cursor={{ fill: "rgba(184,241,53,0.08)" }}
                     content={renderTooltip}
                   />
                   <Bar dataKey="count" radius={[8, 8, 8, 8]}>

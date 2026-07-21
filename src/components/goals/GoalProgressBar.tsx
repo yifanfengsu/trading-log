@@ -1,6 +1,7 @@
 "use client";
 
-import { cn, formatPercent } from "@/lib/utils";
+import ProgressBar from "@/components/ui/ProgressBar";
+import { formatPercent } from "@/lib/utils";
 
 interface GoalProgressBarProps {
   progressPercent: number;
@@ -26,18 +27,11 @@ export default function GoalProgressBar({
   const normalizedProgress = normalizeProgress(progressPercent);
 
   return (
-    <div className="grid gap-2">
-      <div className="h-2.5 overflow-hidden rounded-full bg-[rgba(155,163,155,0.14)]">
-        <div
-          className={cn(
-            "h-full rounded-full transition-all",
-            achieved && "bg-[var(--accent)]",
-            atRisk && "bg-[var(--danger)]",
-            !achieved && !atRisk && "bg-[var(--accent)]",
-          )}
-          style={{ width: `${normalizedProgress}%` }}
-        />
-      </div>
+    <div className="grid gap-1.5">
+      <ProgressBar
+        value={normalizedProgress}
+        tone={atRisk ? "danger" : achieved ? "success" : "accent"}
+      />
       {showLabel ? (
         <p className="text-right text-xs font-semibold text-slate-400">
           {formatPercent(normalizedProgress, { digits: 0 })}

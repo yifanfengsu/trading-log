@@ -16,7 +16,6 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import Card from "@/components/ui/Card";
 import SectionHeader from "@/components/ui/SectionHeader";
 import {
-  cn,
   formatPercent,
   formatProfitFactor,
   formatRMultiple,
@@ -141,21 +140,21 @@ export default function PerformanceRadar({
     <Card>
       <SectionHeader title={labels.title} description={labels.subtitle} />
 
-      <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(200px,0.72fr)]">
-        <div className="h-[300px] w-full">
+      <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(200px,0.72fr)]">
+        <div className="h-[260px] w-full">
           {isClient ? (
             <ResponsiveContainer>
               <RadarChart data={dims} outerRadius="72%">
                 <defs>
                   <linearGradient id="radarFill" x1="0" y1="0" x2="1" y2="1">
-                    <stop offset="0%" stopColor="#7C5CFF" stopOpacity={0.55} />
-                    <stop offset="100%" stopColor="#22D3EE" stopOpacity={0.22} />
+                    <stop offset="0%" stopColor="#B8F135" stopOpacity={0.32} />
+                    <stop offset="100%" stopColor="#B8F135" stopOpacity={0.12} />
                   </linearGradient>
                 </defs>
-                <PolarGrid stroke="rgba(148,163,184,0.14)" />
+                <PolarGrid stroke="rgba(95,103,95,0.35)" />
                 <PolarAngleAxis
                   dataKey="label"
-                  tick={{ fill: "#94A3B8", fontSize: 12 }}
+                  tick={{ fill: "#9BA39B", fontSize: 12 }}
                 />
                 <PolarRadiusAxis
                   domain={[0, 100]}
@@ -164,7 +163,7 @@ export default function PerformanceRadar({
                 />
                 <Radar
                   dataKey="score"
-                  stroke="#7C5CFF"
+                  stroke="#B8F135"
                   strokeWidth={2}
                   fill="url(#radarFill)"
                   fillOpacity={1}
@@ -173,16 +172,16 @@ export default function PerformanceRadar({
               </RadarChart>
             </ResponsiveContainer>
           ) : (
-            <div className="h-full rounded-[20px] bg-[var(--card-strong)]" />
+            <div className="h-full rounded-[var(--radius-card)] bg-[var(--card-strong)]" />
           )}
         </div>
 
         <div className="flex flex-col justify-center gap-3">
-          <div className="rounded-[18px] bg-[var(--accent-soft)] px-4 py-3">
+          <div className="rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] px-3.5 py-2.5">
             <p className="text-xs font-medium uppercase tracking-[0.08em] text-slate-400">
               {labels.score}
             </p>
-            <p className="mt-1 text-[32px] font-bold leading-none tabular-nums text-slate-50">
+            <p className="mt-1 text-[26px] font-bold leading-none tabular-nums text-[var(--accent)]">
               {overall}
               <span className="ml-1 text-base font-semibold text-slate-500">
                 / 100
@@ -190,22 +189,22 @@ export default function PerformanceRadar({
             </p>
           </div>
 
-          {dims.map((dim) => (
-            <div key={dim.key}>
-              <div className="flex items-center justify-between text-xs">
+          {/* Scores only. These six dimensions are already plotted on the radar
+              immediately to the left, so drawing a bar per dimension rendered
+              the same data twice and dominated the card. */}
+          <div className="grid">
+            {dims.map((dim) => (
+              <div
+                key={dim.key}
+                className="flex items-center justify-between border-b border-[var(--inner-border)] py-1.5 text-xs last:border-b-0"
+              >
                 <span className="text-slate-400">{dim.label}</span>
                 <span className="font-semibold tabular-nums text-slate-200">
                   {Math.round(dim.score)}
                 </span>
               </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-white/[0.08]">
-                <div
-                  className={cn("h-full rounded-full bg-[var(--accent)]")}
-                  style={{ width: `${clamp(dim.score)}%` }}
-                />
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </Card>

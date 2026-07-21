@@ -48,38 +48,35 @@ export default function StatCard({
   return (
     <Card
       as="article"
-      density="spacious"
-      className={cn("relative min-h-[168px] overflow-hidden", className)}
+      density="normal"
+      className={cn("relative overflow-hidden", className)}
       hover
     >
-      <div className="flex items-start justify-between gap-4">
-        <div className="min-w-0">
-          <p className="text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--weak)]">
-            {label}
-          </p>
-          {description ? (
-            <p className="mt-1.5 text-xs leading-5 text-[var(--weak)]">
-              {description}
-            </p>
-          ) : null}
-        </div>
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 truncate text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--weak)]">
+          {label}
+        </p>
         {Icon ? (
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
-            <Icon className="h-5 w-5" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--accent-soft)] text-[var(--accent)]">
+            <Icon className="h-[15px] w-[15px]" />
           </div>
         ) : null}
       </div>
-      <div className="mt-6 flex items-center justify-between gap-3">
+      <div className="mt-3.5 flex items-center justify-between gap-3">
+        {/* The value never shrinks; the visual yields (down to nothing) so a
+            long number can never overlap it. */}
         <p
           className={cn(
-            "min-w-0 text-[40px] font-bold leading-none tracking-tight tabular-nums sm:text-[48px]",
+            "shrink-0 text-[28px] font-bold leading-none tracking-[-0.02em] tabular-nums sm:text-[32px]",
             valueToneClassMap[tone],
           )}
         >
           {value}
         </p>
         {visual ? (
-          <div className="shrink-0">{visual}</div>
+          <div className="flex min-w-0 flex-1 items-center justify-end">
+            {visual}
+          </div>
         ) : delta ? (
           <span
             className={cn(
@@ -91,6 +88,13 @@ export default function StatCard({
           </span>
         ) : null}
       </div>
+      {/* Helper text reads as a footnote to the number rather than pushing it
+          down the card. */}
+      {description ? (
+        <p className="mt-3 line-clamp-2 text-[11px] leading-4 text-[var(--weak)]">
+          {description}
+        </p>
+      ) : null}
     </Card>
   );
 }

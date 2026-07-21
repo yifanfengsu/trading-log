@@ -32,20 +32,22 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-full shrink-0 flex-col gap-5 rounded-[20px] bg-[var(--card)] p-4 lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[276px] lg:p-5">
-      <div className="flex items-center gap-3 px-1">
-        <div className="flex h-12 w-12 items-center justify-center rounded-[18px] bg-[var(--accent)]">
-          <LineChart className="h-6 w-6 text-[#0a0b0a]" />
+    <aside className="flex w-full shrink-0 flex-col gap-4 rounded-[var(--radius-card)] border border-[var(--card-border)] bg-[var(--card)] p-3.5 shadow-[var(--shadow-card)] lg:sticky lg:top-5 lg:h-[calc(100vh-2.5rem)] lg:w-[248px] lg:p-4">
+      <div className="flex items-center gap-2.5 px-1">
+        <div className="flex h-10 w-10 items-center justify-center rounded-[14px] bg-[var(--accent)]">
+          <LineChart className="h-5 w-5 text-[#0a0b0a]" />
         </div>
-        <div>
-          <p className="text-sm font-semibold tracking-normal text-slate-50">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold tracking-[-0.01em] text-slate-50">
             {copy.appTitle}
           </p>
-          <p className="mt-0.5 text-xs text-slate-400">{copy.appSubtitle}</p>
+          <p className="mt-0.5 truncate text-[11px] text-slate-400">
+            {copy.appSubtitle}
+          </p>
         </div>
       </div>
 
-      <nav className="grid gap-1.5 sm:grid-cols-2 lg:grid-cols-1">
+      <nav className="grid gap-1 sm:grid-cols-2 lg:grid-cols-1">
         {sidebarMenuIds.map((item) => {
           const Icon = menuIconMap[item];
           const href =
@@ -86,7 +88,7 @@ export default function Sidebar() {
               key={item}
               type="button"
               className={cn(
-                "flex items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-all",
+                "flex items-center gap-2.5 rounded-full px-3.5 py-2.5 text-left text-sm font-medium transition-all",
                 isActive
                   ? "bg-[var(--accent)] font-semibold text-[#0a0b0a]"
                   : "text-slate-400 hover:bg-white/5 hover:text-slate-50",
@@ -99,7 +101,7 @@ export default function Sidebar() {
               key={item}
               href={href}
               className={cn(
-                "flex items-center gap-3 rounded-full px-4 py-3 text-left text-sm font-medium transition-all",
+                "flex items-center gap-2.5 rounded-full px-3.5 py-2.5 text-left text-sm font-medium transition-all",
                 isActive
                   ? "bg-[var(--accent)] font-semibold text-[#0a0b0a]"
                   : "text-slate-400 hover:bg-white/5 hover:text-slate-50",
@@ -111,19 +113,21 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-auto overflow-hidden rounded-[20px] bg-[var(--card-strong)] p-4">
+      <div className="mt-auto overflow-hidden rounded-[var(--radius-inner)] border border-[var(--inner-border)] bg-[var(--card-strong)] p-3.5">
         <div className="flex items-center justify-between gap-4">
-          <div>
-            <Badge variant="purple">{copy.monthlyLabel}</Badge>
-            <p className="mt-3 text-sm font-semibold tracking-normal text-slate-50">
+          <div className="min-w-0">
+            <Badge variant="cyan">{copy.monthlyLabel}</Badge>
+            <p className="mt-2.5 text-[13px] font-semibold tracking-[-0.01em] text-slate-50">
               {copy.promo.title}
             </p>
-            <p className="mt-1 text-sm text-slate-400">{copy.promo.subtitle}</p>
+            <p className="mt-0.5 text-xs leading-5 text-slate-400">
+              {copy.promo.subtitle}
+            </p>
           </div>
         </div>
         <svg
           viewBox="0 0 220 80"
-          className="mt-4 h-[72px] w-full overflow-visible"
+          className="mt-3 h-14 w-full overflow-visible"
           fill="none"
           aria-hidden="true"
         >

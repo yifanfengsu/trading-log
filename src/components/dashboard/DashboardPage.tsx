@@ -144,29 +144,21 @@ export default function DashboardPage() {
         title={copy.dashboardPage.title}
         description={copy.dashboardPage.subtitle}
         badge={
-          <Badge variant="cyan" className="h-8 px-3">
+          <Badge variant="cyan" className="h-7 px-2.5">
             <span className="h-1.5 w-1.5 rounded-full bg-[var(--success)] shadow-[0_0_12px_rgba(184,241,53,0.8)]" />
             {copy.dashboardPage.localMode}
           </Badge>
         }
         actions={
-          <Badge variant="purple" className="h-10 px-4 text-sm">
+          <Badge variant="purple" className="h-8 px-3 text-[13px]">
             {formatMonthRange(selectedMonth, locale)}
           </Badge>
         }
       />
 
-      <section className="grid gap-6 md:grid-cols-2 2xl:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
         {dashboardMetrics.map((metric) => (
-          <MetricCard
-            key={metric.id}
-            metric={metric}
-            sparkline={
-              metric.id === "netPnl"
-                ? equityCurveData.map((point) => point.equity)
-                : undefined
-            }
-          />
+          <MetricCard key={metric.id} metric={metric} />
         ))}
       </section>
 
@@ -188,7 +180,7 @@ export default function DashboardPage() {
         pnlSummary={reviewPnlSummary}
       />
 
-      <section className="grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1.45fr)_minmax(320px,0.95fr)]">
         <EquityCurve data={equityCurveData} selectedMonth={selectedMonth} />
         <StrategyPerformance rows={strategyStats} />
       </section>

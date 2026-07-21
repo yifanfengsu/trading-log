@@ -14,9 +14,9 @@ interface CardProps extends HTMLAttributes<HTMLElement> {
 }
 
 const densityClassMap: Record<CardDensity, string> = {
-  compact: "p-4",
-  normal: "p-5 lg:p-6",
-  spacious: "p-6 lg:p-7",
+  compact: "p-3.5",
+  normal: "p-4 lg:p-5",
+  spacious: "p-5 lg:p-6",
   none: "p-0",
 };
 
@@ -30,9 +30,11 @@ export default function Card({
   return (
     <Component
       className={cn(
-        "rounded-[20px] bg-[var(--card)] shadow-[var(--shadow-card)]",
-        "transition-[background-color,transform] duration-200",
-        hover && "hover:-translate-y-0.5 hover:bg-[var(--card-hover)]",
+        "rounded-[var(--radius-card)] border border-[var(--card-border)]",
+        "bg-[var(--card)] shadow-[var(--shadow-card)]",
+        "transition-[background-color,border-color] duration-200",
+        hover &&
+          "hover:border-[var(--card-border-hover)] hover:bg-[var(--card-hover)]",
         densityClassMap[density],
         className,
       )}

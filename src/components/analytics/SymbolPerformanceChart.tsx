@@ -27,7 +27,7 @@ interface SymbolPerformanceChartProps {
   rows: SymbolPerformanceRow[];
 }
 
-const positiveColor = "#34D399";
+const positiveColor = "#B8F135";
 const negativeColor = "#FB7185";
 
 function useIsClient() {
@@ -91,7 +91,7 @@ export default function SymbolPerformanceChart({
               >
                 <CartesianGrid
                   horizontal={false}
-                  stroke="rgba(148,163,184,0.07)"
+                  stroke="rgba(155,163,155,0.08)"
                   strokeDasharray="4 6"
                 />
                 <XAxis
@@ -99,7 +99,7 @@ export default function SymbolPerformanceChart({
                   axisLine={false}
                   tickLine={false}
                   tickMargin={10}
-                  tick={{ fill: "#64748B", fontSize: 12 }}
+                  tick={{ fill: "#5F675F", fontSize: 12 }}
                   tickFormatter={(value: number) =>
                     formatAxisCurrencyTick(value, settings.currency)
                   }
@@ -111,10 +111,10 @@ export default function SymbolPerformanceChart({
                   tickLine={false}
                   tickMargin={10}
                   width={82}
-                  tick={{ fill: "#CBD5E1", fontSize: 12, fontWeight: 600 }}
+                  tick={{ fill: "#9BA39B", fontSize: 12, fontWeight: 600 }}
                 />
                 <Tooltip
-                  cursor={{ fill: "rgba(124,92,255,0.08)" }}
+                  cursor={{ fill: "rgba(184,241,53,0.08)" }}
                   content={renderTooltip}
                 />
                 <Bar dataKey="netPnl" radius={[8, 8, 8, 8]}>

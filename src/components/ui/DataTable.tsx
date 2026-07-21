@@ -12,10 +12,10 @@ interface DataTableProps {
 }
 
 export const dataTableHeadCellClassName =
-  "bg-transparent px-3 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--weak)] first:rounded-l-[16px] last:rounded-r-[16px]";
+  "bg-transparent px-3 py-2.5 text-left text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--weak)]";
 
 export const dataTableCellClassName =
-  "bg-[var(--card)] px-3 py-4 text-sm text-[var(--muted)] tabular-nums transition-colors first:rounded-l-[16px] last:rounded-r-[16px] group-hover:bg-[var(--card-hover)]";
+  "px-3 py-2.5 text-sm text-[var(--muted)] tabular-nums";
 
 export default function DataTable({
   children,
@@ -28,14 +28,9 @@ export default function DataTable({
   };
 
   return (
-    <div
-      className={cn(
-        "overflow-x-auto rounded-[20px] bg-[var(--background)] p-1",
-        className,
-      )}
-    >
+    <div className={cn("overflow-x-auto", className)}>
       <table
-        className={cn("w-full border-separate border-spacing-y-1", tableClassName)}
+        className={cn("w-full border-collapse", tableClassName)}
         style={tableStyle}
       >
         {children}

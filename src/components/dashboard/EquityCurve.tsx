@@ -65,7 +65,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
         }
       />
 
-      <div className="mt-6 h-[320px] w-full">
+      <div className="mt-4 h-[280px] w-full">
         {data.length === 0 ? (
           <EmptyState title={copy.emptyState} className="h-full min-h-0" />
         ) : isClient ? (
@@ -76,13 +76,20 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
             >
               <defs>
                 <linearGradient id="equityGradient" x1="0" x2="0" y1="0" y2="1">
-                  <stop offset="0%" stopColor="#7C5CFF" stopOpacity={0.34} />
-                  <stop offset="100%" stopColor="#22D3EE" stopOpacity={0.02} />
+                  <stop offset="0%" stopColor="#B8F135" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#B8F135" stopOpacity={0} />
                 </linearGradient>
-                <linearGradient id="equityStroke" x1="0" x2="1" y1="0" y2="0">
-                  <stop offset="0%" stopColor="#7C5CFF" />
-                  <stop offset="100%" stopColor="#22D3EE" />
-                </linearGradient>
+                {/* Soft halo for the glow underlay; the generous filter region
+                    keeps the blur from clipping at the path's bounding box. */}
+                <filter
+                  id="equityGlow"
+                  x="-50%"
+                  y="-50%"
+                  width="200%"
+                  height="200%"
+                >
+                  <feGaussianBlur stdDeviation="5" />
+                </filter>
               </defs>
               <XAxis
                 dataKey="date"
@@ -91,7 +98,7 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 tickMargin={14}
                 ticks={chartTicks}
                 minTickGap={32}
-                tick={{ fill: "#64748B", fontSize: 12 }}
+                tick={{ fill: "#5F675F", fontSize: 12 }}
                 tickFormatter={(value: string) =>
                   formatShortDateLabel(value, locale)
                 }
@@ -103,13 +110,13 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 width={54}
                 domain={[-4000, 12000]}
                 ticks={[-4000, 0, 4000, 8000, 12000]}
-                tick={{ fill: "#64748B", fontSize: 12 }}
+                tick={{ fill: "#5F675F", fontSize: 12 }}
                 tickFormatter={(value: number) =>
                   formatAxisCurrencyTick(value, settings.currency)
                 }
               />
               <Tooltip
-                cursor={{ stroke: "rgba(124,92,255,0.28)", strokeWidth: 1.5 }}
+                cursor={{ stroke: "rgba(184,241,53,0.28)", strokeWidth: 1.5 }}
                 contentStyle={{
                   borderRadius: 16,
                   border: "none",
@@ -128,17 +135,32 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                   formatShortDateLabel(String(label), locale)
                 }
               />
+              {/* Glow underlay: a wide low-opacity copy of the line, blurred
+                  into a halo by the filter. Excluded from tooltip and dots so
+                  only the main line below carries the data affordances. */}
               <Area
                 type="monotone"
                 dataKey="equity"
-                stroke="url(#equityStroke)"
-                strokeWidth={3}
+                stroke="#B8F135"
+                strokeWidth={9}
+                strokeOpacity={0.3}
+                fill="none"
+                filter="url(#equityGlow)"
+                dot={false}
+                activeDot={false}
+                tooltipType="none"
+              />
+              <Area
+                type="monotone"
+                dataKey="equity"
+                stroke="#B8F135"
+                strokeWidth={2.5}
                 fill="url(#equityGradient)"
                 dot={false}
                 activeDot={{
                   r: 6,
-                  fill: "#22D3EE",
-                  stroke: "#0F172A",
+                  fill: "#B8F135",
+                  stroke: "#141614",
                   strokeWidth: 3,
                 }}
               />
@@ -146,13 +168,13 @@ export default function EquityCurve({ data, selectedMonth }: EquityCurveProps) {
                 x={lastPoint.date}
                 y={lastPoint.equity}
                 r={5}
-                fill="#22D3EE"
-                stroke="#0F172A"
+                fill="#B8F135"
+                stroke="#141614"
                 strokeWidth={3}
                 label={{
                   value: formatCompactCurrency(lastPoint.equity, settings.currency),
                   position: "right",
-                  fill: "#22D3EE",
+                  fill: "#B8F135",
                   fontSize: 12,
                   fontWeight: 700,
                 }}
