@@ -1,4 +1,11 @@
 import type { Trade, TradeSetup, TradeSide } from "@/lib/trade-types";
+import { DEFAULT_USER_SETTINGS } from "@/lib/settings-types";
+import {
+  computeInitialRisk,
+  computePnl,
+  computeRMultiple,
+  computeRiskPercent,
+} from "@/lib/trade-calculations";
 import {
   getCurrentMonthKey,
   getMonthRangeFromMonthKey,
@@ -64,10 +71,8 @@ interface SeedTradeRow {
   side: TradeSide;
   setup: TradeSetup;
   entryPrice: number;
-  exitPrice?: number;
   riskPercent: number;
   pnl: number;
-  rMultiple?: number;
   notes?: string;
   tags?: string[];
 }
@@ -370,10 +375,8 @@ const seedTradeRows: SeedTradeRow[] = [
     side: "long",
     setup: "trendFollowing",
     entryPrice: 103150,
-    exitPrice: 103980,
     riskPercent: 1,
     pnl: 830,
-    rMultiple: 1.66,
   },
   {
     day: 30,
@@ -382,10 +385,8 @@ const seedTradeRows: SeedTradeRow[] = [
     side: "long",
     setup: "scalping",
     entryPrice: 163.3,
-    exitPrice: 163.7,
     riskPercent: 0.75,
     pnl: -240,
-    rMultiple: -0.8,
   },
   {
     day: 31,
@@ -394,10 +395,8 @@ const seedTradeRows: SeedTradeRow[] = [
     side: "short",
     setup: "trendFollowing",
     entryPrice: 2612.5,
-    exitPrice: 2574.8,
     riskPercent: 1,
     pnl: 377,
-    rMultiple: 0.75,
   },
   {
     day: 31,
@@ -406,27 +405,65 @@ const seedTradeRows: SeedTradeRow[] = [
     side: "long",
     setup: "breakout",
     entryPrice: 104250,
-    exitPrice: 105420,
     riskPercent: 1,
     pnl: 1170,
-    rMultiple: 2.34,
   },
 ];
 
-function getDerivedExitPrice(row: SeedTradeRow) {
-  if (row.exitPrice !== undefined) {
-    return row.exitPrice;
+function getSeedQuantity(symbol: string) {
+  if (symbol.startsWith("BTC")) {
+    return 1;
   }
 
-  const move = Math.max(0.01, Math.abs(row.pnl) / 100);
-  const direction = row.pnl >= 0 ? 1 : -1;
-  const sideMultiplier = row.side === "long" ? 1 : -1;
+  if (symbol.startsWith("ETH")) {
+    return 10;
+  }
 
-  return Number((row.entryPrice + move * direction * sideMultiplier).toFixed(4));
+  if (symbol.startsWith("SOL")) {
+    return 100;
+  }
+
+  if (symbol.startsWith("DOGE")) {
+    return 10_000;
+  }
+
+  return 1_000;
 }
 
-function getDerivedRMultiple(row: SeedTradeRow) {
-  return row.rMultiple ?? Number((row.pnl / 300).toFixed(2));
+function deriveSeedTradeNumbers(row: SeedTradeRow) {
+  const quantity = getSeedQuantity(row.symbol);
+  const intendedRisk =
+    DEFAULT_USER_SETTINGS.startingBalance * (row.riskPercent / 100);
+  const stopDistance = intendedRisk / quantity;
+  const pnlMove = row.pnl / quantity;
+  const sideMultiplier = row.side === "long" ? 1 : -1;
+  const stopPrice = row.entryPrice - stopDistance * sideMultiplier;
+  const exitPrice = row.entryPrice + pnlMove * sideMultiplier;
+  const initialRisk = computeInitialRisk({
+    entryPrice: row.entryPrice,
+    stopPrice,
+    quantity,
+  });
+  const pnl = computePnl({
+    side: row.side,
+    entryPrice: row.entryPrice,
+    exitPrice,
+    quantity,
+    fees: 0,
+  });
+
+  return {
+    quantity,
+    stopPrice,
+    exitPrice,
+    fees: 0,
+    pnl,
+    rMultiple: computeRMultiple({ pnl, initialRisk }),
+    riskPercent: computeRiskPercent({
+      initialRisk,
+      accountBalance: DEFAULT_USER_SETTINGS.startingBalance,
+    }),
+  };
 }
 
 function getSeedDateKey(baseMonthKey: string, day: number) {
@@ -442,6 +479,7 @@ export function getSeedTrades(
 ): Trade[] {
   return seedTradeRows.map((row, index) => {
     const dateKey = getSeedDateKey(baseMonthKey, row.day);
+    const numbers = deriveSeedTradeNumbers(row);
 
     return {
       id: `seed-${dateKey}-${index + 1}`,
@@ -450,10 +488,8 @@ export function getSeedTrades(
       side: row.side,
       setup: row.setup,
       entryPrice: row.entryPrice,
-      exitPrice: getDerivedExitPrice(row),
-      riskPercent: row.riskPercent,
-      pnl: row.pnl,
-      rMultiple: getDerivedRMultiple(row),
+      ...numbers,
+      pnlSource: "computed",
       status: "closed",
       notes: row.notes,
       tags: row.tags,
