@@ -26,6 +26,7 @@ export interface Dictionary {
   appSubtitle: string;
   basedOnCurrentTrades: string;
   monthlyLabel: string;
+  selectMonth: string;
   allAccounts: string;
   allMarkets: string;
   allStrategies: string;
@@ -592,6 +593,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     appSubtitle: "个人交易仪表盘",
     basedOnCurrentTrades: "基于当前交易数据",
     monthlyLabel: "按月",
+    selectMonth: "选择月份",
     allAccounts: "全部账户",
     allMarkets: "全部市场",
     allStrategies: "全部策略",
@@ -1264,6 +1266,7 @@ export const dictionaries: Record<Locale, Dictionary> = {
     appSubtitle: "Personal trading workspace",
     basedOnCurrentTrades: "Based on current trades",
     monthlyLabel: "Monthly",
+    selectMonth: "Select month",
     allAccounts: "All Accounts",
     allMarkets: "All Markets",
     allStrategies: "All Strategies",

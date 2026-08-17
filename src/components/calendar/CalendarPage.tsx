@@ -10,13 +10,12 @@ import { useLanguage } from "@/components/providers/LanguageProvider";
 import { useDailyReviews } from "@/components/providers/ReviewStoreProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
-import Badge from "@/components/ui/Badge";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import EmptyState from "@/components/ui/EmptyState";
+import MonthPicker from "@/components/ui/MonthPicker";
 import PageHeader from "@/components/ui/PageHeader";
 import {
-  getMonthLabel,
   getMonthNavigation,
   isValidDateKey,
 } from "@/lib/calendar-utils";
@@ -143,9 +142,11 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
               <ChevronLeft className="h-4 w-4" />
               {copy.calendarPage.previousMonth}
             </Button>
-            <Badge variant="purple" className="h-11 px-4 text-sm">
-              {getMonthLabel(selectedMonth, locale)}
-            </Badge>
+            <MonthPicker
+              value={selectedMonth}
+              onChange={handleMonthChange}
+              label={copy.selectMonth}
+            />
             <Button
               onClick={() => handleMonthChange(nextMonth)}
               variant="secondary"

@@ -19,6 +19,7 @@ import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import Badge from "@/components/ui/Badge";
+import MonthPicker from "@/components/ui/MonthPicker";
 import PageHeader from "@/components/ui/PageHeader";
 import { getAnalyticsSummary } from "@/lib/analytics-calculations";
 import {
@@ -105,7 +106,7 @@ export default function DashboardPage() {
   const { dictionary: copy, locale } = useLanguage();
   const { trades } = useTrades();
   const { settings } = useUserSettings();
-  const { selectedMonth } = useSelectedMonth();
+  const { selectedMonth, setSelectedMonth } = useSelectedMonth();
   const { year, month } = useMemo(
     () => parseSelectedMonth(selectedMonth),
     [selectedMonth],
@@ -179,9 +180,16 @@ export default function DashboardPage() {
           </Badge>
         }
         actions={
-          <Badge variant="purple" className="h-8 px-3 text-[13px]">
-            {formatMonthRange(selectedMonth, locale)}
-          </Badge>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs text-slate-500 lg:inline">
+              {formatMonthRange(selectedMonth, locale)}
+            </span>
+            <MonthPicker
+              value={selectedMonth}
+              onChange={setSelectedMonth}
+              label={copy.selectMonth}
+            />
+          </div>
         }
       />
 
