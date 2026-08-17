@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 
 import { importBackupData } from "@/lib/db";
-import { restoreScreenshots } from "@/lib/uploads";
+import {
+  collectScreenshotPaths,
+  deleteOrphanedTradeScreenshots,
+  restoreScreenshots,
+} from "@/lib/uploads";
 
 // Writes to a local SQLite file via a native module — must run on the Node.js
 // runtime and must never be statically prerendered.
@@ -23,16 +27,26 @@ export async function POST(request: Request) {
   try {
     const summary = importBackupData(body);
 
+    const data =
+      typeof body === "object" && body !== null && !Array.isArray(body)
+        ? (body as Record<string, unknown>)
+        : undefined;
+
     // Restore screenshot files after the DB transaction commits, so a failed
     // import never writes orphan files. Best-effort: missing/invalid images are
     // skipped and only the count is reported.
-    const screenshots =
-      typeof body === "object" && body !== null && !Array.isArray(body)
-        ? (body as Record<string, unknown>).screenshots
-        : undefined;
-    const restoredScreenshots = await restoreScreenshots(screenshots);
+    const restoredScreenshots = await restoreScreenshots(data?.screenshots);
 
-    return NextResponse.json({ ...summary, screenshots: restoredScreenshots });
+    // Delete screenshots on disk that the imported trades no longer reference.
+    const removedScreenshots = await deleteOrphanedTradeScreenshots(
+      collectScreenshotPaths(data?.trades),
+    );
+
+    return NextResponse.json({
+      ...summary,
+      screenshots: restoredScreenshots,
+      removedScreenshots,
+    });
   } catch (error) {
     console.error("[api/backup/import] POST failed", error);
     return NextResponse.json(

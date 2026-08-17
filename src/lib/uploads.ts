@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
+import { mkdir, readdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 import { isRecord } from "@/lib/guards";
@@ -155,6 +155,76 @@ function decodeScreenshotDataUrl(dataUrl: string): Buffer | null {
     return Buffer.from(match[2], "base64");
   } catch {
     return null;
+  }
+}
+
+// Extracts the screenshot paths referenced by an array of trade-like objects.
+// Accepts unknown input defensively (used on the import boundary).
+export function collectScreenshotPaths(trades: unknown): string[] {
+  if (!Array.isArray(trades)) {
+    return [];
+  }
+
+  const paths: string[] = [];
+
+  for (const trade of trades) {
+    if (!isRecord(trade) || !Array.isArray(trade.screenshots)) {
+      continue;
+    }
+
+    for (const screenshotPath of trade.screenshots) {
+      if (typeof screenshotPath === "string") {
+        paths.push(screenshotPath);
+      }
+    }
+  }
+
+  return paths;
+}
+
+// Deletes files under uploads/trades/ that are no longer referenced by the
+// provided path list. Used after a bulk replace (import / clear / reset) so
+// orphaned screenshots cannot accumulate on disk. Best-effort per file.
+// Returns the number of files removed.
+export async function deleteOrphanedTradeScreenshots(
+  referencedPaths: string[],
+): Promise<number> {
+  const referenced = new Set(
+    referencedPaths
+      .map((relativePath) => relativePath.replace(/^\/+/, ""))
+      .filter((relativePath) =>
+        relativePath.startsWith(`uploads/${TRADES_DIRNAME}/`),
+      ),
+  );
+  const dir = path.join(UPLOADS_ROOT, TRADES_DIRNAME);
+
+  try {
+    const entries = await readdir(dir, { withFileTypes: true });
+    let removed = 0;
+
+    for (const entry of entries) {
+      if (!entry.isFile()) {
+        continue;
+      }
+
+      const relative = `uploads/${TRADES_DIRNAME}/${entry.name}`;
+
+      if (referenced.has(relative)) {
+        continue;
+      }
+
+      try {
+        await unlink(path.join(dir, entry.name));
+        removed += 1;
+      } catch (error) {
+        console.error("[uploads] failed to delete orphan", relative, error);
+      }
+    }
+
+    return removed;
+  } catch {
+    // The trades dir does not exist yet — nothing to clean.
+    return 0;
   }
 }
 

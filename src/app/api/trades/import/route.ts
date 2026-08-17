@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { replaceAllTrades } from "@/lib/db";
+import {
+  collectScreenshotPaths,
+  deleteOrphanedTradeScreenshots,
+} from "@/lib/uploads";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -33,7 +37,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    return NextResponse.json(replaceAllTrades(trades));
+    const result = replaceAllTrades(trades);
+
+    // Remove screenshot files that the surviving trades no longer reference.
+    await deleteOrphanedTradeScreenshots(collectScreenshotPaths(result));
+
+    return NextResponse.json(result);
   } catch (error) {
     console.error("[api/trades/import] POST failed", error);
     return NextResponse.json(
