@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { isValidDateKey } from "@/lib/calendar-utils";
+import { isRecord } from "@/lib/guards";
 import type {
   PeriodReport,
   ReportPeriodType,
@@ -41,10 +42,6 @@ interface PeriodReportStoreContextValue {
 
 const PeriodReportStoreContext =
   createContext<PeriodReportStoreContextValue | null>(null);
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
 
 function isReportPeriodType(value: unknown): value is ReportPeriodType {
   return value === "weekly" || value === "monthly";

@@ -11,13 +11,14 @@ import {
   type ReactNode,
 } from "react";
 
+import { isFiniteNumber, isRecord } from "@/lib/guards";
 import { getSeedTrades } from "@/lib/mock-data";
-import type {
-  Trade,
-  TradeInput,
-  TradeSetup,
-  TradeSide,
-  TradeStatus,
+import {
+  isTradeSetup,
+  isTradeSide,
+  isTradeStatus,
+  type Trade,
+  type TradeInput,
 } from "@/lib/trade-types";
 
 // Legacy localStorage key — only read once, during the one-time migration into
@@ -43,32 +44,6 @@ interface TradeStoreContextValue {
 
 const TradeStoreContext = createContext<TradeStoreContextValue | null>(null);
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isTradeSide(value: unknown): value is TradeSide {
-  return value === "long" || value === "short";
-}
-
-function isTradeSetup(value: unknown): value is TradeSetup {
-  return (
-    value === "trendFollowing" ||
-    value === "breakout" ||
-    value === "scalping" ||
-    value === "meanReversion" ||
-    value === "other"
-  );
-}
-
-function isTradeStatus(value: unknown): value is TradeStatus {
-  return value === "closed";
-}
-
-function isNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
 function isTrade(value: unknown): value is Trade {
   if (!isRecord(value)) {
     return false;
@@ -82,11 +57,11 @@ function isTrade(value: unknown): value is Trade {
     typeof value.symbol === "string" &&
     isTradeSide(value.side) &&
     isTradeSetup(value.setup) &&
-    isNumber(value.entryPrice) &&
-    isNumber(value.exitPrice) &&
-    isNumber(value.riskPercent) &&
-    isNumber(value.pnl) &&
-    isNumber(value.rMultiple) &&
+    isFiniteNumber(value.entryPrice) &&
+    isFiniteNumber(value.exitPrice) &&
+    isFiniteNumber(value.riskPercent) &&
+    isFiniteNumber(value.pnl) &&
+    isFiniteNumber(value.rMultiple) &&
     (value.playbookId === undefined || typeof value.playbookId === "string") &&
     isTradeStatus(value.status) &&
     (value.notes === undefined || typeof value.notes === "string") &&

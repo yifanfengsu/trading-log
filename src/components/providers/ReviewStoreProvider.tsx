@@ -12,11 +12,12 @@ import {
 } from "react";
 
 import { isValidDateKey } from "@/lib/calendar-utils";
+import { isRecord } from "@/lib/guards";
 import { getSeedDailyReviews } from "@/lib/review-seed";
-import type {
-  DailyReview,
-  DailyReviewScore,
-  ReviewEmotion,
+import {
+  isDailyReviewScore,
+  isReviewEmotion,
+  type DailyReview,
 } from "@/lib/review-types";
 
 // Legacy localStorage key — only read once, during the one-time migration into
@@ -40,26 +41,6 @@ interface ReviewStoreContextValue {
 }
 
 const ReviewStoreContext = createContext<ReviewStoreContextValue | null>(null);
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isReviewEmotion(value: unknown): value is ReviewEmotion {
-  return (
-    value === "calm" ||
-    value === "confident" ||
-    value === "anxious" ||
-    value === "greedy" ||
-    value === "frustrated" ||
-    value === "tired" ||
-    value === "neutral"
-  );
-}
-
-function isDailyReviewScore(value: unknown): value is DailyReviewScore {
-  return value === 1 || value === 2 || value === 3 || value === 4 || value === 5;
-}
 
 function isDailyReview(value: unknown): value is DailyReview {
   if (!isRecord(value)) {

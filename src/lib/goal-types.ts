@@ -1,3 +1,4 @@
+import { isFiniteNumber, isRecord } from "@/lib/guards";
 import {
   getCurrentMonthKey,
   getMonthRangeFromMonthKey,
@@ -116,14 +117,6 @@ export const goalUnits = [
   "trades",
   "days",
 ] as const satisfies readonly GoalUnit[];
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
 
 export function isGoalCategory(value: unknown): value is GoalCategory {
   return goalCategories.some((category) => category === value);

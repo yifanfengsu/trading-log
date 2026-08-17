@@ -1,3 +1,4 @@
+import { isRecord, isStringArray } from "@/lib/guards";
 import { isValidDateKey } from "@/lib/utils";
 
 export type NoteType =
@@ -54,14 +55,6 @@ export const noteLinkTypes = [
   "date",
   "playbook",
 ] as const satisfies readonly NoteLink["type"][];
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
-}
 
 export function isNoteType(value: unknown): value is NoteType {
   return noteTypes.some((type) => type === value);

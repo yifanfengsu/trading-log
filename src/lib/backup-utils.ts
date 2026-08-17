@@ -1,18 +1,26 @@
 import type { BackupFile } from "@/lib/backup-types";
 import { isValidDateKey } from "@/lib/calendar-utils";
 import { normalizeGoals, type Goal } from "@/lib/goal-types";
+import { isFiniteNumber, isRecord, isStringArray } from "@/lib/guards";
 import { normalizeNotes, type Note } from "@/lib/note-types";
 import { normalizePlaybooks, type Playbook } from "@/lib/playbook-types";
-import type { DailyReview, DailyReviewScore, ReviewEmotion } from "@/lib/review-types";
+import {
+  isDailyReviewScore,
+  isReviewEmotion,
+  type DailyReview,
+} from "@/lib/review-types";
 import type { PeriodReport, ReportPeriodType } from "@/lib/report-types";
 import {
   DEFAULT_USER_SETTINGS,
-  isTradeSetup,
-  isTradeSide,
   normalizeUserSettings,
   type UserSettings,
 } from "@/lib/settings-types";
-import type { Trade, TradeStatus } from "@/lib/trade-types";
+import {
+  isTradeSetup,
+  isTradeSide,
+  isTradeStatus,
+  type Trade,
+} from "@/lib/trade-types";
 
 interface CreateBackupParams {
   settings: UserSettings;
@@ -31,24 +39,8 @@ type BackupShell = {
   data: Record<string, unknown>;
 };
 
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
 function isIsoDateTime(value: unknown): value is string {
   return typeof value === "string" && Number.isFinite(Date.parse(value));
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
-}
-
-function isTradeStatus(value: unknown): value is TradeStatus {
-  return value === "closed";
 }
 
 function isTrade(value: unknown): value is Trade {
@@ -62,32 +54,16 @@ function isTrade(value: unknown): value is Trade {
     typeof value.symbol === "string" &&
     isTradeSide(value.side) &&
     isTradeSetup(value.setup) &&
-    isNumber(value.entryPrice) &&
-    isNumber(value.exitPrice) &&
-    isNumber(value.riskPercent) &&
-    isNumber(value.pnl) &&
-    isNumber(value.rMultiple) &&
+    isFiniteNumber(value.entryPrice) &&
+    isFiniteNumber(value.exitPrice) &&
+    isFiniteNumber(value.riskPercent) &&
+    isFiniteNumber(value.pnl) &&
+    isFiniteNumber(value.rMultiple) &&
     (value.playbookId === undefined || typeof value.playbookId === "string") &&
     isTradeStatus(value.status) &&
     (value.notes === undefined || typeof value.notes === "string") &&
     (value.tags === undefined || isStringArray(value.tags))
   );
-}
-
-function isReviewEmotion(value: unknown): value is ReviewEmotion {
-  return (
-    value === "calm" ||
-    value === "confident" ||
-    value === "anxious" ||
-    value === "greedy" ||
-    value === "frustrated" ||
-    value === "tired" ||
-    value === "neutral"
-  );
-}
-
-function isDailyReviewScore(value: unknown): value is DailyReviewScore {
-  return value === 1 || value === 2 || value === 3 || value === 4 || value === 5;
 }
 
 function isDailyReview(value: unknown): value is DailyReview {

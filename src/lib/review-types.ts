@@ -32,3 +32,11 @@ export const reviewEmotions: ReviewEmotion[] = [
 ];
 
 export const dailyReviewScores: DailyReviewScore[] = [1, 2, 3, 4, 5];
+
+export function isReviewEmotion(value: unknown): value is ReviewEmotion {
+  return reviewEmotions.some((emotion) => emotion === value);
+}
+
+export function isDailyReviewScore(value: unknown): value is DailyReviewScore {
+  return dailyReviewScores.some((score) => score === value);
+}

@@ -46,3 +46,25 @@ export type Trade = {
 };
 
 export type TradeInput = Omit<Trade, "id">;
+
+// Runtime guards for the trade domain. Kept here (next to the types) so every
+// consumer — db.ts, backup-utils.ts and the store providers — validates against
+// the same single definition instead of re-declaring the union inline.
+
+export function isTradeSide(value: unknown): value is TradeSide {
+  return value === "long" || value === "short";
+}
+
+export function isTradeSetup(value: unknown): value is TradeSetup {
+  return (
+    value === "trendFollowing" ||
+    value === "breakout" ||
+    value === "scalping" ||
+    value === "meanReversion" ||
+    value === "other"
+  );
+}
+
+export function isTradeStatus(value: unknown): value is TradeStatus {
+  return value === "closed";
+}

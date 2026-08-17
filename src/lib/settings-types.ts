@@ -1,4 +1,14 @@
-import type { TradeSetup, TradeSide } from "@/lib/trade-types";
+import { isNonNegativeNumber, isRecord } from "@/lib/guards";
+import {
+  isTradeSetup,
+  isTradeSide,
+  type TradeSetup,
+  type TradeSide,
+} from "@/lib/trade-types";
+
+// Re-exported so existing importers (e.g. backup-utils) can keep pulling the
+// trade guards through the settings module without a second definition.
+export { isTradeSetup, isTradeSide };
 
 export type CurrencyCode = "USD" | "CNY" | "HKD" | "EUR" | "USDT";
 
@@ -40,28 +50,6 @@ export function isCurrencyCode(value: unknown): value is CurrencyCode {
     value === "EUR" ||
     value === "USDT"
   );
-}
-
-export function isTradeSide(value: unknown): value is TradeSide {
-  return value === "long" || value === "short";
-}
-
-export function isTradeSetup(value: unknown): value is TradeSetup {
-  return (
-    value === "trendFollowing" ||
-    value === "breakout" ||
-    value === "scalping" ||
-    value === "meanReversion" ||
-    value === "other"
-  );
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isNonNegativeNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value) && value >= 0;
 }
 
 export function isUserSettings(value: unknown): value is UserSettings {

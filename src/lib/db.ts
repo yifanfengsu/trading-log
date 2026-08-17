@@ -13,6 +13,7 @@ import type {
 } from "@/lib/goal-types";
 import { normalizeGoal } from "@/lib/goal-types";
 import type { Note, NoteLink, NoteStatus, NoteType } from "@/lib/note-types";
+import { isFiniteNumber, isRecord, isStringArray } from "@/lib/guards";
 import { isNoteLink, normalizeNote } from "@/lib/note-types";
 import type {
   Playbook,
@@ -25,15 +26,16 @@ import type {
   DailyReviewScore,
   ReviewEmotion,
 } from "@/lib/review-types";
-import { dailyReviewScores, reviewEmotions } from "@/lib/review-types";
+import { isDailyReviewScore, isReviewEmotion } from "@/lib/review-types";
 import type { PeriodReport, ReportPeriodType } from "@/lib/report-types";
 import type { CurrencyCode, UserSettings } from "@/lib/settings-types";
 import { DEFAULT_USER_SETTINGS, normalizeUserSettings } from "@/lib/settings-types";
-import type {
-  Trade,
-  TradeSetup,
-  TradeSide,
-  TradeStatus,
+import {
+  isTradeSide,
+  type Trade,
+  type TradeSetup,
+  type TradeSide,
+  type TradeStatus,
 } from "@/lib/trade-types";
 
 // The SQLite file lives at the project root (process.cwd() in dev/start).
@@ -262,18 +264,6 @@ function ensureTradeColumns(db: Database.Database) {
   }
 }
 
-function isFiniteNumber(value: unknown): value is number {
-  return typeof value === "number" && Number.isFinite(value);
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
-}
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
 // Read side: snake_case row -> camelCase Trade.
 function rowToTrade(row: TradeRow): Trade {
   let tags: string[] | undefined;
@@ -359,7 +349,7 @@ function toWriteParams(input: unknown): TradeWriteParams {
     typeof trade.id !== "string" ||
     typeof trade.closedAt !== "string" ||
     typeof trade.symbol !== "string" ||
-    (trade.side !== "long" && trade.side !== "short") ||
+    !isTradeSide(trade.side) ||
     typeof trade.setup !== "string" ||
     !isFiniteNumber(trade.entryPrice) ||
     !isFiniteNumber(trade.exitPrice) ||
@@ -1077,14 +1067,6 @@ function rowToReview(row: ReviewRow): DailyReview {
   }
 
   return review;
-}
-
-function isReviewEmotion(value: unknown): value is ReviewEmotion {
-  return reviewEmotions.some((emotion) => emotion === value);
-}
-
-function isDailyReviewScore(value: unknown): value is DailyReviewScore {
-  return dailyReviewScores.some((score) => score === value);
 }
 
 function toReviewWriteParams(input: unknown): ReviewWriteParams {

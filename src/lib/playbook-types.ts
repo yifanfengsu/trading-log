@@ -1,4 +1,5 @@
-import type { TradeSetup } from "@/lib/trade-types";
+import { isRecord, isStringArray } from "@/lib/guards";
+import { isTradeSetup, type TradeSetup } from "@/lib/trade-types";
 
 export type PlaybookStatus = "active" | "archived";
 
@@ -27,24 +28,6 @@ export type Playbook = {
 };
 
 export type PlaybookInput = Omit<Playbook, "id" | "createdAt" | "updatedAt">;
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isStringArray(value: unknown): value is string[] {
-  return Array.isArray(value) && value.every((item) => typeof item === "string");
-}
-
-function isTradeSetup(value: unknown): value is TradeSetup {
-  return (
-    value === "trendFollowing" ||
-    value === "breakout" ||
-    value === "scalping" ||
-    value === "meanReversion" ||
-    value === "other"
-  );
-}
 
 export function isPlaybookStatus(value: unknown): value is PlaybookStatus {
   return value === "active" || value === "archived";
