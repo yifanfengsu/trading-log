@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 
+import { isRecord } from "@/lib/guards";
+
 // Local file storage for per-trade chart screenshots (Plan A). Files live under
 // <project root>/uploads/trades/ and are git-ignored; the database only stores
 // the relative path (e.g. "uploads/trades/<id>-<ts>.png"). This module is the
@@ -96,6 +98,24 @@ export function resolveUploadFile(segments: string[]): string | null {
   return target;
 }
 
+// Resolves a stored relative screenshot path (e.g. "uploads/trades/x.png") to an
+// absolute path inside the trades dir, reusing the traversal guard. Returns null
+// for any path that is not a valid trades screenshot path.
+export function resolveScreenshotWritePath(relativePath: string): string | null {
+  const normalized = relativePath.replace(/^\/+/, "");
+
+  if (!normalized.startsWith(`uploads/${TRADES_DIRNAME}/`)) {
+    return null;
+  }
+
+  const segments = normalized
+    .slice("uploads/".length)
+    .split("/")
+    .filter(Boolean);
+
+  return resolveUploadFile(segments);
+}
+
 // Best-effort deletion of a trade's screenshot files. Never throws — a missing
 // file or permission error is logged and skipped so it cannot block a delete.
 export async function deleteTradeScreenshots(paths: unknown): Promise<void> {
@@ -108,17 +128,7 @@ export async function deleteTradeScreenshots(paths: unknown): Promise<void> {
       continue;
     }
 
-    const normalized = relativePath.replace(/^\/+/, "");
-
-    if (!normalized.startsWith(`uploads/${TRADES_DIRNAME}/`)) {
-      continue;
-    }
-
-    const segments = normalized
-      .slice("uploads/".length)
-      .split("/")
-      .filter(Boolean);
-    const absolute = resolveUploadFile(segments);
+    const absolute = resolveScreenshotWritePath(relativePath);
 
     if (!absolute) {
       continue;
@@ -130,4 +140,64 @@ export async function deleteTradeScreenshots(paths: unknown): Promise<void> {
       console.error("[uploads] failed to delete", relativePath, error);
     }
   }
+}
+
+// Decodes a "data:<mime>;base64,<payload>" URL back into a Buffer, only for the
+// image types this app accepts. Returns null for anything malformed.
+function decodeScreenshotDataUrl(dataUrl: string): Buffer | null {
+  const match = /^data:([^;]+);base64,([\s\S]+)$/.exec(dataUrl);
+
+  if (!match || !isAllowedImageType(match[1])) {
+    return null;
+  }
+
+  try {
+    return Buffer.from(match[2], "base64");
+  } catch {
+    return null;
+  }
+}
+
+// Writes a backup's screenshot map ({ relativePath → data URL }) back to disk so
+// restored trades can resolve their image paths. Best-effort per file: invalid
+// paths or undecodable data are skipped, and failures are logged, not thrown.
+// Returns the number of files actually written.
+export async function restoreScreenshots(value: unknown): Promise<number> {
+  if (!isRecord(value)) {
+    return 0;
+  }
+
+  let restored = 0;
+
+  for (const [relativePath, dataUrl] of Object.entries(value)) {
+    if (typeof dataUrl !== "string") {
+      continue;
+    }
+
+    const absolute = resolveScreenshotWritePath(relativePath);
+
+    if (!absolute) {
+      continue;
+    }
+
+    const buffer = decodeScreenshotDataUrl(dataUrl);
+
+    if (!buffer) {
+      continue;
+    }
+
+    try {
+      await mkdir(path.dirname(absolute), { recursive: true });
+      await writeFile(absolute, buffer);
+      restored += 1;
+    } catch (error) {
+      console.error(
+        "[uploads] failed to restore screenshot",
+        relativePath,
+        error,
+      );
+    }
+  }
+
+  return restored;
 }

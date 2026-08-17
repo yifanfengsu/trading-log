@@ -23,6 +23,48 @@ import { downloadTextFile } from "@/lib/utils";
 
 type ActionStatus = "exported" | "imported" | null;
 
+function blobToDataUrl(blob: Blob): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () =>
+      resolve(typeof reader.result === "string" ? reader.result : "");
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(blob);
+  });
+}
+
+// Reads every unique trade screenshot and returns a path → data-URL map for the
+// backup. Per-file failures are skipped so one missing image never blocks the
+// whole export.
+async function collectScreenshots(
+  trades: { screenshots?: string[] }[],
+): Promise<Record<string, string>> {
+  const paths = Array.from(
+    new Set(trades.flatMap((trade) => trade.screenshots ?? [])),
+  );
+  const screenshots: Record<string, string> = {};
+
+  await Promise.all(
+    paths.map(async (relativePath) => {
+      try {
+        const response = await fetch(`/api/${relativePath}`);
+
+        if (!response.ok) {
+          return;
+        }
+
+        const blob = await response.blob();
+        screenshots[relativePath] = await blobToDataUrl(blob);
+      } catch (error) {
+        console.error("[backup] failed to read screenshot", relativePath, error);
+      }
+    }),
+  );
+
+  return screenshots;
+}
+
 export default function DataManagementSettings() {
   const { dictionary: copy } = useLanguage();
   const { settings, reloadSettings } = useUserSettings();
@@ -65,24 +107,31 @@ export default function DataManagementSettings() {
     }, 1500);
   }
 
-  function handleExportBackup() {
-    const backup = createBackupFile({
-      settings,
-      trades,
-      dailyReviews,
-      periodReports,
-      playbooks,
-      notes,
-      goals,
-    });
+  async function handleExportBackup() {
+    try {
+      const screenshots = await collectScreenshots(trades);
+      const backup = createBackupFile({
+        settings,
+        trades,
+        dailyReviews,
+        periodReports,
+        playbooks,
+        notes,
+        goals,
+        screenshots,
+      });
 
-    downloadTextFile(
-      getBackupFileName(),
-      serializeBackup(backup),
-      "application/json;charset=utf-8",
-    );
-    setError(null);
-    markStatus("exported");
+      downloadTextFile(
+        getBackupFileName(),
+        serializeBackup(backup),
+        "application/json;charset=utf-8",
+      );
+      setError(null);
+      markStatus("exported");
+    } catch (error) {
+      console.error("[settings] backup export failed", error);
+      setError(copy.settingsPage.invalidBackupFile);
+    }
   }
 
   async function handleImportFile(file: File | undefined) {

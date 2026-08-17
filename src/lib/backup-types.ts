@@ -18,5 +18,9 @@ export type BackupFile = {
     playbooks: Playbook[];
     notes: Note[];
     goals: Goal[];
+    // Relative screenshot path (e.g. "uploads/trades/x.png") → data URL.
+    // Optional so backups exported before screenshots were supported still
+    // parse cleanly.
+    screenshots?: Record<string, string>;
   };
 };

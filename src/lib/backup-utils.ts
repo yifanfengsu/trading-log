@@ -30,6 +30,7 @@ interface CreateBackupParams {
   playbooks: Playbook[];
   notes: Note[];
   goals: Goal[];
+  screenshots?: Record<string, string>;
 }
 
 type BackupShell = {
@@ -159,25 +160,40 @@ export function createBackupFile({
   playbooks,
   notes,
   goals,
+  screenshots,
 }: CreateBackupParams): BackupFile {
+  const data: BackupFile["data"] = {
+    settings,
+    trades,
+    dailyReviews,
+    periodReports,
+    playbooks,
+    notes,
+    goals,
+  };
+
+  if (screenshots) {
+    data.screenshots = screenshots;
+  }
+
   return {
     app: "trade-journal",
     version: 1,
     exportedAt: new Date().toISOString(),
-    data: {
-      settings,
-      trades,
-      dailyReviews,
-      periodReports,
-      playbooks,
-      notes,
-      goals,
-    },
+    data,
   };
 }
 
 export function serializeBackup(backup: BackupFile): string {
   return JSON.stringify(backup, null, 2);
+}
+
+function isScreenshotMap(value: unknown): value is Record<string, string> {
+  if (!isRecord(value)) {
+    return false;
+  }
+
+  return Object.values(value).every((entry) => typeof entry === "string");
 }
 
 export function parseBackupJson(json: string): BackupFile | null {
@@ -204,6 +220,11 @@ export function parseBackupJson(json: string): BackupFile | null {
     const playbooks = normalizePlaybooks(parsed.data.playbooks ?? []);
     const notes = normalizeNotes(parsed.data.notes ?? []);
     const goals = normalizeGoals(parsed.data.goals ?? []);
+    // Screenshots are optional and leniently parsed: an absent or malformed map
+    // is dropped rather than invalidating the whole backup.
+    const screenshots = isScreenshotMap(parsed.data.screenshots)
+      ? parsed.data.screenshots
+      : undefined;
 
     if (
       settings === null ||
@@ -217,19 +238,25 @@ export function parseBackupJson(json: string): BackupFile | null {
       return null;
     }
 
+    const data: BackupFile["data"] = {
+      settings,
+      trades,
+      dailyReviews,
+      periodReports,
+      playbooks,
+      notes,
+      goals,
+    };
+
+    if (screenshots) {
+      data.screenshots = screenshots;
+    }
+
     return {
       app: parsed.app,
       version: parsed.version,
       exportedAt: parsed.exportedAt,
-      data: {
-        settings,
-        trades,
-        dailyReviews,
-        periodReports,
-        playbooks,
-        notes,
-        goals,
-      },
+      data,
     };
   } catch {
     return null;
