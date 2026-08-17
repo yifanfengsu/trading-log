@@ -4,7 +4,10 @@ import { twMerge } from "tailwind-merge";
 import type { GoalUnit } from "@/lib/goal-types";
 import type { Locale } from "@/lib/i18n";
 import type { MetricFormat } from "@/lib/mock-data";
-import type { CurrencyCode } from "@/lib/settings-types";
+import {
+  currencySymbols,
+  type CurrencyCode,
+} from "@/lib/settings-types";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -18,14 +21,6 @@ interface NumberOptions {
 interface CurrencyFormatOptions extends NumberOptions {
   currency?: CurrencyCode;
 }
-
-const currencySymbols: Record<CurrencyCode, string> = {
-  USD: "$",
-  CNY: "¥",
-  HKD: "HK$",
-  EUR: "€",
-  USDT: "USDT",
-};
 
 function resolveNumberOptions(
   options: NumberOptions | number | undefined,

@@ -42,6 +42,12 @@ export const currencyOptions: {
   { code: "USDT", label: "USDT - USDT", symbol: "USDT" },
 ];
 
+// Symbol lookup derived from currencyOptions so the display symbol lives in a
+// single place (utils.ts used to maintain a second copy).
+export const currencySymbols = Object.fromEntries(
+  currencyOptions.map((option) => [option.code, option.symbol]),
+) as Record<CurrencyCode, string>;
+
 export function isCurrencyCode(value: unknown): value is CurrencyCode {
   return (
     value === "USD" ||

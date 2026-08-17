@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/i18n";
+import { getDictionary, type Locale } from "@/lib/i18n";
 import type { DailyReview } from "@/lib/review-types";
 import type {
   DailyReportBreakdownRow,
@@ -34,22 +34,6 @@ const tradeSetupOrder: TradeSetup[] = [
   "meanReversion",
   "other",
 ];
-const setupLabels: Record<Locale, Record<TradeSetup, string>> = {
-  zh: {
-    trendFollowing: "趋势跟随",
-    breakout: "突破策略",
-    scalping: "剥头皮",
-    meanReversion: "均值回归",
-    other: "其他",
-  },
-  en: {
-    trendFollowing: "Trend Following",
-    breakout: "Breakout",
-    scalping: "Scalping",
-    meanReversion: "Mean Reversion",
-    other: "Other",
-  },
-};
 
 export interface ReportSelection {
   periodType: ReportPeriodType;
@@ -332,7 +316,7 @@ export function buildSuggestedReportText(
 
   if (locale === "zh") {
     const setupText = bestSetup
-      ? `表现较好的部分来自 ${setupLabels.zh[bestSetup.setup]}。`
+      ? `表现较好的部分来自 ${getDictionary("zh").strategies[bestSetup.setup]}。`
       : "";
     const tagText = worstTag
       ? `亏损或低质量机会需要重点检查标签为 ${worstTag.tag} 的交易。`
@@ -354,7 +338,7 @@ export function buildSuggestedReportText(
   }
 
   const setupText = bestSetup
-    ? `The strongest contribution came from ${setupLabels.en[bestSetup.setup]}.`
+    ? `The strongest contribution came from ${getDictionary("en").strategies[bestSetup.setup]}.`
     : "";
   const tagText = worstTag
     ? `Pay close attention to trades tagged ${worstTag.tag}.`

@@ -1,4 +1,4 @@
-import type { Locale } from "@/lib/i18n";
+import { getDictionary, type Locale } from "@/lib/i18n";
 import type {
   DailyReportBreakdownRow,
   PeriodReport,
@@ -39,34 +39,6 @@ export interface GenerateReportMarkdownParams {
   currency?: CurrencyCode;
 }
 
-const setupLabels = {
-  zh: {
-    trendFollowing: "趋势跟随",
-    breakout: "突破策略",
-    scalping: "剥头皮",
-    meanReversion: "均值回归",
-    other: "其他",
-  },
-  en: {
-    trendFollowing: "Trend Following",
-    breakout: "Breakout",
-    scalping: "Scalping",
-    meanReversion: "Mean Reversion",
-    other: "Other",
-  },
-} as const;
-
-const sideLabels = {
-  zh: {
-    long: "做多",
-    short: "做空",
-  },
-  en: {
-    long: "Long",
-    short: "Short",
-  },
-} as const;
-
 function textOrNoData(value: string, noData: string) {
   const trimmed = value.trim();
 
@@ -90,7 +62,7 @@ function buildSetupRows(
   return rows
     .map(
       (row) =>
-        `| ${setupLabels[locale][row.setup]} | ${row.trades} | ${formatCurrency(
+        `| ${getDictionary(locale).strategies[row.setup]} | ${row.trades} | ${formatCurrency(
           row.netPnl,
           currency,
         )} | ${formatPercent(row.winRate)} | ${formatRMultiple(row.avgR)} |`,
@@ -133,7 +105,11 @@ function buildDailyRows(
       (row) =>
         `| ${formatDateTime(row.date, locale)} | ${formatCurrency(row.pnl, currency)} | ${
           row.trades
-        } | ${row.reviewed ? copyReviewed(locale) : copyNotReviewed(locale)} |`,
+        } | ${
+          row.reviewed
+            ? getDictionary(locale).reportsPage.reviewed
+            : getDictionary(locale).reportsPage.notReviewed
+        } |`,
     )
     .join("\n");
 }
@@ -153,19 +129,11 @@ function buildTradeRows(
       (trade) =>
         `| ${formatDateTime(trade.closedAt, locale)} | ${escapeTableCell(
           trade.symbol,
-        )} | ${sideLabels[locale][trade.side]} | ${
-          setupLabels[locale][trade.setup]
+        )} | ${getDictionary(locale).side[trade.side]} | ${
+          getDictionary(locale).strategies[trade.setup]
         } | ${formatCurrency(trade.pnl, currency)} | ${formatRMultiple(trade.rMultiple)} |`,
     )
     .join("\n");
-}
-
-function copyReviewed(locale: Locale) {
-  return locale === "zh" ? "已复盘" : "Reviewed";
-}
-
-function copyNotReviewed(locale: Locale) {
-  return locale === "zh" ? "未复盘" : "Not reviewed";
 }
 
 export function generateReportMarkdown({
@@ -183,15 +151,12 @@ export function generateReportMarkdown({
   manualReport,
   currency = "USD",
 }: GenerateReportMarkdownParams) {
-  const noData = locale === "zh" ? "暂无数据" : "No data";
+  const dictionary = getDictionary(locale);
+  const noData = dictionary.reportsPage.noData;
   const title =
-    locale === "zh"
-      ? periodType === "weekly"
-        ? "交易周报"
-        : "交易月报"
-      : periodType === "weekly"
-        ? "Trading Weekly Report"
-        : "Trading Monthly Report";
+    periodType === "weekly"
+      ? dictionary.reportsPage.tradingWeeklyReport
+      : dictionary.reportsPage.tradingMonthlyReport;
 
   if (locale === "zh") {
     return `# ${title}
