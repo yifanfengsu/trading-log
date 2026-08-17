@@ -4,13 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
 } from "react";
 
+import { useCollectionStore } from "@/components/providers/use-collection-store";
 import { getSeedNotes } from "@/lib/note-seed";
 import type { Note, NoteInput, NotePatch } from "@/lib/note-types";
 import { normalizeNotes } from "@/lib/note-types";
@@ -86,124 +84,28 @@ function sortNotes(notes: Note[]) {
   });
 }
 
-async function fetchNotes(): Promise<Note[]> {
-  const response = await fetch("/api/notes");
-
-  if (!response.ok) {
-    throw new Error(`GET /api/notes failed with status ${response.status}`);
-  }
-
-  const data: unknown = await response.json();
-  return Array.isArray(data) ? (data as Note[]) : [];
-}
-
-// One-time import of legacy localStorage notes into SQLite. Runs only when the
-// migration flag is unset (checked here) and the database is empty (checked by
-// the caller). The flag is recorded even when there is no legacy data so the
-// check never runs again — the marker, not "database empty", is the real gate.
-async function migrateLegacyNotesIfNeeded(): Promise<boolean> {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  if (window.localStorage.getItem(NOTES_MIGRATION_FLAG_KEY)) {
-    return false;
-  }
-
-  const legacyNotes = parseStoredNotes(
-    window.localStorage.getItem(NOTES_STORAGE_KEY),
-  );
-
-  if (!legacyNotes || legacyNotes.length === 0) {
-    window.localStorage.setItem(
-      NOTES_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-    return false;
-  }
-
-  try {
-    const response = await fetch("/api/notes/import", {
-      method: "POST",
-      headers: JSON_HEADERS,
-      body: JSON.stringify(legacyNotes),
-    });
-
-    if (!response.ok) {
-      throw new Error(`import failed with status ${response.status}`);
-    }
-
-    window.localStorage.setItem(
-      NOTES_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-
-    return true;
-  } catch (error) {
-    console.error("[notes] migration from localStorage failed", error);
-    return false;
-  }
-}
+const collectionConfig = {
+  name: "notes",
+  basePath: "/api/notes",
+  sort: sortNotes,
+  seed: getSeedNotes,
+  legacy: {
+    storageKey: NOTES_STORAGE_KEY,
+    migrationFlagKey: NOTES_MIGRATION_FLAG_KEY,
+    parse: parseStoredNotes,
+  },
+};
 
 export function NotesStoreProvider({ children }: { children: ReactNode }) {
-  const [notes, setNotes] = useState<Note[]>([]);
-  const notesRef = useRef<Note[]>([]);
-
-  const applyNotes = useCallback((nextNotes: Note[]) => {
-    const sortedNotes = sortNotes(nextNotes);
-    notesRef.current = sortedNotes;
-    setNotes(sortedNotes);
-  }, []);
-
-  const persist = useCallback(
-    async (
-      request: () => Promise<Response>,
-      previousNotes: Note[],
-      label: string,
-    ) => {
-      try {
-        const response = await request();
-
-        if (!response.ok) {
-          throw new Error(`${label} failed with status ${response.status}`);
-        }
-      } catch (error) {
-        console.error(`[notes] ${label} failed — rolling back`, error);
-        applyNotes(previousNotes);
-      }
-    },
-    [applyNotes],
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        let serverNotes = await fetchNotes();
-
-        if (serverNotes.length === 0) {
-          const migrated = await migrateLegacyNotesIfNeeded();
-
-          if (migrated) {
-            serverNotes = await fetchNotes();
-          }
-        }
-
-        if (!cancelled) {
-          applyNotes(serverNotes);
-        }
-      } catch (error) {
-        console.error("[notes] failed to load from API", error);
-      }
-    }
-
-    void load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [applyNotes]);
+  const {
+    items: notes,
+    itemsRef: notesRef,
+    apply: applyNotes,
+    persist,
+    replace: replaceNotes,
+    clear: clearNotes,
+    reset: resetNotesToSeed,
+  } = useCollectionStore<Note>(collectionConfig);
 
   const addNote = useCallback(
     (input: NoteInput) => {
@@ -229,7 +131,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
         "POST /api/notes",
       );
     },
-    [applyNotes, persist],
+    [applyNotes, persist, notesRef],
   );
 
   const updateNote = useCallback(
@@ -273,7 +175,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
         `PUT /api/notes/${id}`,
       );
     },
-    [applyNotes, persist],
+    [applyNotes, persist, notesRef],
   );
 
   const archiveNote = useCallback(
@@ -302,7 +204,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
         `DELETE /api/notes/${id}`,
       );
     },
-    [applyNotes, persist],
+    [applyNotes, persist, notesRef],
   );
 
   const togglePinNote = useCallback(
@@ -313,64 +215,8 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
         updateNote(id, { pinned: !note.pinned });
       }
     },
-    [updateNote],
+    [updateNote, notesRef],
   );
-
-  const replaceNotes = useCallback(
-    (nextNotes: Note[]) => {
-      const previousNotes = notesRef.current;
-      const snapshot = [...nextNotes];
-
-      applyNotes(snapshot);
-
-      void persist(
-        () =>
-          fetch("/api/notes/import", {
-            method: "POST",
-            headers: JSON_HEADERS,
-            body: JSON.stringify(snapshot),
-          }),
-        previousNotes,
-        "POST /api/notes/import (replace)",
-      );
-    },
-    [applyNotes, persist],
-  );
-
-  const clearNotes = useCallback(() => {
-    const previousNotes = notesRef.current;
-
-    applyNotes([]);
-
-    void persist(
-      () =>
-        fetch("/api/notes/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify([]),
-        }),
-      previousNotes,
-      "POST /api/notes/import (clear)",
-    );
-  }, [applyNotes, persist]);
-
-  const resetNotesToSeed = useCallback(() => {
-    const seedNotes = getSeedNotes();
-    const previousNotes = notesRef.current;
-
-    applyNotes(seedNotes);
-
-    void persist(
-      () =>
-        fetch("/api/notes/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify(seedNotes),
-        }),
-      previousNotes,
-      "POST /api/notes/import (reset)",
-    );
-  }, [applyNotes, persist]);
 
   const getNoteById = useCallback(
     (id: string) => notes.find((note) => note.id === id),

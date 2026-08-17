@@ -4,13 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
 } from "react";
 
+import { useCollectionStore } from "@/components/providers/use-collection-store";
 import { getSeedGoals } from "@/lib/goal-seed";
 import type { Goal, GoalInput, GoalPatch } from "@/lib/goal-types";
 import { normalizeGoals } from "@/lib/goal-types";
@@ -68,132 +66,28 @@ function sortGoals(goals: Goal[]) {
   return [...goals].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-async function fetchGoals(): Promise<Goal[]> {
-  const response = await fetch("/api/goals");
-
-  if (!response.ok) {
-    throw new Error(`GET /api/goals failed with status ${response.status}`);
-  }
-
-  const data: unknown = await response.json();
-  return Array.isArray(data) ? (data as Goal[]) : [];
-}
-
-// One-time import of legacy localStorage goals into SQLite. Runs only when the
-// migration flag is unset (checked here) and the database is empty (checked by
-// the caller). The flag is recorded even when there is no legacy data so the
-// check never runs again — the marker, not "database empty", is the real gate.
-// Returns true when an import actually happened.
-async function migrateLegacyGoalsIfNeeded(): Promise<boolean> {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  if (window.localStorage.getItem(GOALS_MIGRATION_FLAG_KEY)) {
-    return false;
-  }
-
-  const legacyGoals = parseStoredGoals(
-    window.localStorage.getItem(GOALS_STORAGE_KEY),
-  );
-
-  if (!legacyGoals || legacyGoals.length === 0) {
-    // Nothing to migrate — record the marker so this never runs again.
-    window.localStorage.setItem(
-      GOALS_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-    return false;
-  }
-
-  try {
-    const response = await fetch("/api/goals/import", {
-      method: "POST",
-      headers: JSON_HEADERS,
-      body: JSON.stringify(legacyGoals),
-    });
-
-    if (!response.ok) {
-      throw new Error(`import failed with status ${response.status}`);
-    }
-
-    window.localStorage.setItem(
-      GOALS_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-
-    return true;
-  } catch (error) {
-    console.error("[goals] migration from localStorage failed", error);
-    return false;
-  }
-}
+const collectionConfig = {
+  name: "goals",
+  basePath: "/api/goals",
+  sort: sortGoals,
+  seed: getSeedGoals,
+  legacy: {
+    storageKey: GOALS_STORAGE_KEY,
+    migrationFlagKey: GOALS_MIGRATION_FLAG_KEY,
+    parse: parseStoredGoals,
+  },
+};
 
 export function GoalStoreProvider({ children }: { children: ReactNode }) {
-  const [goals, setGoals] = useState<Goal[]>([]);
-  const goalsRef = useRef<Goal[]>([]);
-
-  // Update the in-memory state (optimistic UI). Persistence happens separately
-  // through the API helpers below.
-  const applyGoals = useCallback((nextGoals: Goal[]) => {
-    const sortedGoals = sortGoals(nextGoals);
-    goalsRef.current = sortedGoals;
-    setGoals(sortedGoals);
-  }, []);
-
-  // Run an API write and, on failure, log and roll the in-memory state back to
-  // the snapshot captured before the optimistic update.
-  const persist = useCallback(
-    async (
-      request: () => Promise<Response>,
-      previousGoals: Goal[],
-      label: string,
-    ) => {
-      try {
-        const response = await request();
-
-        if (!response.ok) {
-          throw new Error(`${label} failed with status ${response.status}`);
-        }
-      } catch (error) {
-        console.error(`[goals] ${label} failed — rolling back`, error);
-        applyGoals(previousGoals);
-      }
-    },
-    [applyGoals],
-  );
-
-  // Initial load: pull from SQLite, migrating legacy localStorage data on the
-  // first run if the database is still empty and the marker is unset.
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        let serverGoals = await fetchGoals();
-
-        if (serverGoals.length === 0) {
-          const migrated = await migrateLegacyGoalsIfNeeded();
-
-          if (migrated) {
-            serverGoals = await fetchGoals();
-          }
-        }
-
-        if (!cancelled) {
-          applyGoals(serverGoals);
-        }
-      } catch (error) {
-        console.error("[goals] failed to load from API", error);
-      }
-    }
-
-    void load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [applyGoals]);
+  const {
+    items: goals,
+    itemsRef: goalsRef,
+    apply: applyGoals,
+    persist,
+    replace: replaceGoals,
+    clear: clearGoals,
+    reset: resetGoalsToSeed,
+  } = useCollectionStore<Goal>(collectionConfig);
 
   const addGoal = useCallback(
     (input: GoalInput) => {
@@ -221,7 +115,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
         "POST /api/goals",
       );
     },
-    [applyGoals, persist],
+    [applyGoals, persist, goalsRef],
   );
 
   const updateGoal = useCallback(
@@ -261,7 +155,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
         `PUT /api/goals/${id}`,
       );
     },
-    [applyGoals, persist],
+    [applyGoals, persist, goalsRef],
   );
 
   const pauseGoal = useCallback(
@@ -311,65 +205,8 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
         `DELETE /api/goals/${id}`,
       );
     },
-    [applyGoals, persist],
+    [applyGoals, persist, goalsRef],
   );
-
-  // Bulk replace (backup restore). Goes through the transactional import route.
-  const replaceGoals = useCallback(
-    (nextGoals: Goal[]) => {
-      const previousGoals = goalsRef.current;
-      const snapshot = [...nextGoals];
-
-      applyGoals(snapshot);
-
-      void persist(
-        () =>
-          fetch("/api/goals/import", {
-            method: "POST",
-            headers: JSON_HEADERS,
-            body: JSON.stringify(snapshot),
-          }),
-        previousGoals,
-        "POST /api/goals/import (replace)",
-      );
-    },
-    [applyGoals, persist],
-  );
-
-  const clearGoals = useCallback(() => {
-    const previousGoals = goalsRef.current;
-
-    applyGoals([]);
-
-    void persist(
-      () =>
-        fetch("/api/goals/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify([]),
-        }),
-      previousGoals,
-      "POST /api/goals/import (clear)",
-    );
-  }, [applyGoals, persist]);
-
-  const resetGoalsToSeed = useCallback(() => {
-    const seedGoals = getSeedGoals();
-    const previousGoals = goalsRef.current;
-
-    applyGoals(seedGoals);
-
-    void persist(
-      () =>
-        fetch("/api/goals/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify(seedGoals),
-        }),
-      previousGoals,
-      "POST /api/goals/import (reset)",
-    );
-  }, [applyGoals, persist]);
 
   const getGoalById = useCallback(
     (id: string) => goals.find((goal) => goal.id === id),

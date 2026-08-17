@@ -4,13 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
 } from "react";
 
+import { useCollectionStore } from "@/components/providers/use-collection-store";
 import { isFiniteNumber, isRecord } from "@/lib/guards";
 import { getSeedTrades } from "@/lib/mock-data";
 import {
@@ -104,134 +102,27 @@ function normalizeTradeInput(trade: TradeInput): TradeInput {
   };
 }
 
-async function fetchTrades(): Promise<Trade[]> {
-  const response = await fetch("/api/trades");
-
-  if (!response.ok) {
-    throw new Error(`GET /api/trades failed with status ${response.status}`);
-  }
-
-  const data: unknown = await response.json();
-  return Array.isArray(data) ? (data as Trade[]) : [];
-}
-
-// One-time import of legacy localStorage trades into SQLite. Runs only when the
-// database is empty, the migration flag is unset, and valid legacy data exists.
-// Returns true when an import succeeded.
-async function migrateLegacyTradesIfNeeded(): Promise<boolean> {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  if (window.localStorage.getItem(TRADE_MIGRATION_FLAG_KEY)) {
-    return false;
-  }
-
-  const legacyTrades = parseStoredTrades(
-    window.localStorage.getItem(TRADE_STORAGE_KEY),
-  );
-
-  if (!legacyTrades || legacyTrades.length === 0) {
-    // Nothing to migrate — record the marker so this never runs again. The
-    // marker, not "database empty", is the real gate that prevents a future
-    // refresh from re-importing stale localStorage after the user clears data.
-    window.localStorage.setItem(
-      TRADE_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-    return false;
-  }
-
-  try {
-    const response = await fetch("/api/trades/import", {
-      method: "POST",
-      headers: JSON_HEADERS,
-      body: JSON.stringify(legacyTrades),
-    });
-
-    if (!response.ok) {
-      throw new Error(`import failed with status ${response.status}`);
-    }
-
-    // Keep the legacy localStorage data as a backup — only record that the
-    // migration has happened.
-    window.localStorage.setItem(
-      TRADE_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-
-    return true;
-  } catch (error) {
-    console.error("[trades] migration from localStorage failed", error);
-    return false;
-  }
-}
+const collectionConfig = {
+  name: "trades",
+  basePath: "/api/trades",
+  seed: getSeedTrades,
+  legacy: {
+    storageKey: TRADE_STORAGE_KEY,
+    migrationFlagKey: TRADE_MIGRATION_FLAG_KEY,
+    parse: parseStoredTrades,
+  },
+};
 
 export function TradeStoreProvider({ children }: { children: ReactNode }) {
-  const [trades, setTrades] = useState<Trade[]>([]);
-  const tradesRef = useRef<Trade[]>([]);
-
-  // Update the in-memory state (optimistic UI). Persistence happens separately
-  // through the API helpers below.
-  const applyTrades = useCallback((nextTrades: Trade[]) => {
-    tradesRef.current = nextTrades;
-    setTrades(nextTrades);
-  }, []);
-
-  // Run an API write and, on failure, log and roll the in-memory state back to
-  // the snapshot captured before the optimistic update. Basic fault tolerance
-  // for a single-user local tool.
-  const persist = useCallback(
-    async (
-      request: () => Promise<Response>,
-      previousTrades: Trade[],
-      label: string,
-    ) => {
-      try {
-        const response = await request();
-
-        if (!response.ok) {
-          throw new Error(`${label} failed with status ${response.status}`);
-        }
-      } catch (error) {
-        console.error(`[trades] ${label} failed — rolling back`, error);
-        applyTrades(previousTrades);
-      }
-    },
-    [applyTrades],
-  );
-
-  // Initial load: pull from SQLite, migrating legacy localStorage data on the
-  // first run if the database is still empty.
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        let serverTrades = await fetchTrades();
-
-        if (serverTrades.length === 0) {
-          const migrated = await migrateLegacyTradesIfNeeded();
-
-          if (migrated) {
-            serverTrades = await fetchTrades();
-          }
-        }
-
-        if (!cancelled) {
-          applyTrades(serverTrades);
-        }
-      } catch (error) {
-        console.error("[trades] failed to load from API", error);
-      }
-    }
-
-    void load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [applyTrades]);
+  const {
+    items: trades,
+    itemsRef: tradesRef,
+    apply: applyTrades,
+    persist,
+    replace: replaceTrades,
+    clear: clearTrades,
+    reset: resetTradesToSeed,
+  } = useCollectionStore<Trade>(collectionConfig);
 
   const addTrade = useCallback(
     (trade: TradeInput) => {
@@ -254,7 +145,7 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
         "POST /api/trades",
       );
     },
-    [applyTrades, persist],
+    [applyTrades, persist, tradesRef],
   );
 
   const updateTrade = useCallback(
@@ -279,7 +170,7 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
         `PUT /api/trades/${id}`,
       );
     },
-    [applyTrades, persist],
+    [applyTrades, persist, tradesRef],
   );
 
   const deleteTrade = useCallback(
@@ -294,65 +185,8 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
         `DELETE /api/trades/${id}`,
       );
     },
-    [applyTrades, persist],
+    [applyTrades, persist, tradesRef],
   );
-
-  // Bulk replace (backup restore). Goes through the transactional import route.
-  const replaceTrades = useCallback(
-    (nextTrades: Trade[]) => {
-      const previousTrades = tradesRef.current;
-      const snapshot = [...nextTrades];
-
-      applyTrades(snapshot);
-
-      void persist(
-        () =>
-          fetch("/api/trades/import", {
-            method: "POST",
-            headers: JSON_HEADERS,
-            body: JSON.stringify(snapshot),
-          }),
-        previousTrades,
-        "POST /api/trades/import (replace)",
-      );
-    },
-    [applyTrades, persist],
-  );
-
-  const clearTrades = useCallback(() => {
-    const previousTrades = tradesRef.current;
-
-    applyTrades([]);
-
-    void persist(
-      () =>
-        fetch("/api/trades/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify([]),
-        }),
-      previousTrades,
-      "POST /api/trades/import (clear)",
-    );
-  }, [applyTrades, persist]);
-
-  const resetTradesToSeed = useCallback(() => {
-    const seedTrades = getSeedTrades();
-    const previousTrades = tradesRef.current;
-
-    applyTrades(seedTrades);
-
-    void persist(
-      () =>
-        fetch("/api/trades/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify(seedTrades),
-        }),
-      previousTrades,
-      "POST /api/trades/import (reset)",
-    );
-  }, [applyTrades, persist]);
 
   const value = useMemo(
     () => ({

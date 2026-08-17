@@ -4,19 +4,14 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
 } from "react";
 
+import { useCollectionStore } from "@/components/providers/use-collection-store";
 import { isValidDateKey } from "@/lib/calendar-utils";
 import { isRecord } from "@/lib/guards";
-import type {
-  PeriodReport,
-  ReportPeriodType,
-} from "@/lib/report-types";
+import type { PeriodReport, ReportPeriodType } from "@/lib/report-types";
 
 // Legacy localStorage key — only read once, during the one-time migration into
 // SQLite. Reports are now persisted server-side via /api/reports.
@@ -97,128 +92,30 @@ function sortReports(reports: PeriodReport[]) {
   return [...reports].sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 }
 
-async function fetchReports(): Promise<PeriodReport[]> {
-  const response = await fetch("/api/reports");
-
-  if (!response.ok) {
-    throw new Error(`GET /api/reports failed with status ${response.status}`);
-  }
-
-  const data: unknown = await response.json();
-  return Array.isArray(data) ? (data as PeriodReport[]) : [];
-}
-
-// One-time import of legacy localStorage reports into SQLite. Runs only when the
-// migration flag is unset (checked here) and the database is empty (checked by
-// the caller). The flag is recorded even when there is no legacy data so the
-// check never runs again — the marker, not "database empty", is the real gate.
-async function migrateLegacyReportsIfNeeded(): Promise<boolean> {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  if (window.localStorage.getItem(REPORT_MIGRATION_FLAG_KEY)) {
-    return false;
-  }
-
-  const legacyReports = parseStoredReports(
-    window.localStorage.getItem(PERIOD_REPORT_STORAGE_KEY),
-  );
-
-  if (!legacyReports || legacyReports.length === 0) {
-    window.localStorage.setItem(
-      REPORT_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-    return false;
-  }
-
-  try {
-    const response = await fetch("/api/reports/import", {
-      method: "POST",
-      headers: JSON_HEADERS,
-      body: JSON.stringify(legacyReports),
-    });
-
-    if (!response.ok) {
-      throw new Error(`import failed with status ${response.status}`);
-    }
-
-    window.localStorage.setItem(
-      REPORT_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-
-    return true;
-  } catch (error) {
-    console.error("[reports] migration from localStorage failed", error);
-    return false;
-  }
-}
+const collectionConfig = {
+  name: "reports",
+  basePath: "/api/reports",
+  sort: sortReports,
+  legacy: {
+    storageKey: PERIOD_REPORT_STORAGE_KEY,
+    migrationFlagKey: REPORT_MIGRATION_FLAG_KEY,
+    parse: parseStoredReports,
+  },
+};
 
 export function PeriodReportStoreProvider({
   children,
 }: {
   children: ReactNode;
 }) {
-  const [periodReports, setPeriodReports] = useState<PeriodReport[]>([]);
-  const reportsRef = useRef<PeriodReport[]>([]);
-
-  const applyReports = useCallback((nextReports: PeriodReport[]) => {
-    const sortedReports = sortReports(nextReports);
-    reportsRef.current = sortedReports;
-    setPeriodReports(sortedReports);
-  }, []);
-
-  const persist = useCallback(
-    async (
-      request: () => Promise<Response>,
-      previousReports: PeriodReport[],
-      label: string,
-    ) => {
-      try {
-        const response = await request();
-
-        if (!response.ok) {
-          throw new Error(`${label} failed with status ${response.status}`);
-        }
-      } catch (error) {
-        console.error(`[reports] ${label} failed — rolling back`, error);
-        applyReports(previousReports);
-      }
-    },
-    [applyReports],
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        let serverReports = await fetchReports();
-
-        if (serverReports.length === 0) {
-          const migrated = await migrateLegacyReportsIfNeeded();
-
-          if (migrated) {
-            serverReports = await fetchReports();
-          }
-        }
-
-        if (!cancelled) {
-          applyReports(serverReports);
-        }
-      } catch (error) {
-        console.error("[reports] failed to load from API", error);
-      }
-    }
-
-    void load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [applyReports]);
+  const {
+    items: periodReports,
+    itemsRef: reportsRef,
+    apply: applyReports,
+    persist,
+    replace: replacePeriodReports,
+    clear: clearPeriodReports,
+  } = useCollectionStore<PeriodReport>(collectionConfig);
 
   const getReport = useCallback(
     (periodType: ReportPeriodType, periodKey: string) =>
@@ -261,7 +158,7 @@ export function PeriodReportStoreProvider({
         "POST /api/reports",
       );
     },
-    [applyReports, persist],
+    [applyReports, persist, reportsRef],
   );
 
   const deleteReport = useCallback(
@@ -278,46 +175,8 @@ export function PeriodReportStoreProvider({
         `DELETE /api/reports/${id}`,
       );
     },
-    [applyReports, persist],
+    [applyReports, persist, reportsRef],
   );
-
-  const replacePeriodReports = useCallback(
-    (nextReports: PeriodReport[]) => {
-      const previousReports = reportsRef.current;
-      const snapshot = [...nextReports];
-
-      applyReports(snapshot);
-
-      void persist(
-        () =>
-          fetch("/api/reports/import", {
-            method: "POST",
-            headers: JSON_HEADERS,
-            body: JSON.stringify(snapshot),
-          }),
-        previousReports,
-        "POST /api/reports/import (replace)",
-      );
-    },
-    [applyReports, persist],
-  );
-
-  const clearPeriodReports = useCallback(() => {
-    const previousReports = reportsRef.current;
-
-    applyReports([]);
-
-    void persist(
-      () =>
-        fetch("/api/reports/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify([]),
-        }),
-      previousReports,
-      "POST /api/reports/import (clear)",
-    );
-  }, [applyReports, persist]);
 
   const value = useMemo(
     () => ({

@@ -4,13 +4,11 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useRef,
-  useState,
   type ReactNode,
 } from "react";
 
+import { useCollectionStore } from "@/components/providers/use-collection-store";
 import { isValidDateKey } from "@/lib/calendar-utils";
 import { isRecord } from "@/lib/guards";
 import { getSeedDailyReviews } from "@/lib/review-seed";
@@ -78,124 +76,28 @@ function sortReviews(reviews: DailyReview[]) {
   return [...reviews].sort((a, b) => a.date.localeCompare(b.date));
 }
 
-async function fetchReviews(): Promise<DailyReview[]> {
-  const response = await fetch("/api/reviews");
-
-  if (!response.ok) {
-    throw new Error(`GET /api/reviews failed with status ${response.status}`);
-  }
-
-  const data: unknown = await response.json();
-  return Array.isArray(data) ? (data as DailyReview[]) : [];
-}
-
-// One-time import of legacy localStorage reviews into SQLite. Runs only when the
-// migration flag is unset (checked here) and the database is empty (checked by
-// the caller). The flag is recorded even when there is no legacy data so the
-// check never runs again — the marker, not "database empty", is the real gate.
-async function migrateLegacyReviewsIfNeeded(): Promise<boolean> {
-  if (typeof window === "undefined") {
-    return false;
-  }
-
-  if (window.localStorage.getItem(REVIEW_MIGRATION_FLAG_KEY)) {
-    return false;
-  }
-
-  const legacyReviews = parseStoredReviews(
-    window.localStorage.getItem(REVIEW_STORAGE_KEY),
-  );
-
-  if (!legacyReviews || legacyReviews.length === 0) {
-    window.localStorage.setItem(
-      REVIEW_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-    return false;
-  }
-
-  try {
-    const response = await fetch("/api/reviews/import", {
-      method: "POST",
-      headers: JSON_HEADERS,
-      body: JSON.stringify(legacyReviews),
-    });
-
-    if (!response.ok) {
-      throw new Error(`import failed with status ${response.status}`);
-    }
-
-    window.localStorage.setItem(
-      REVIEW_MIGRATION_FLAG_KEY,
-      new Date().toISOString(),
-    );
-
-    return true;
-  } catch (error) {
-    console.error("[reviews] migration from localStorage failed", error);
-    return false;
-  }
-}
+const collectionConfig = {
+  name: "reviews",
+  basePath: "/api/reviews",
+  sort: sortReviews,
+  seed: getSeedDailyReviews,
+  legacy: {
+    storageKey: REVIEW_STORAGE_KEY,
+    migrationFlagKey: REVIEW_MIGRATION_FLAG_KEY,
+    parse: parseStoredReviews,
+  },
+};
 
 export function ReviewStoreProvider({ children }: { children: ReactNode }) {
-  const [dailyReviews, setDailyReviews] = useState<DailyReview[]>([]);
-  const reviewsRef = useRef<DailyReview[]>([]);
-
-  const applyReviews = useCallback((nextReviews: DailyReview[]) => {
-    const sortedReviews = sortReviews(nextReviews);
-    reviewsRef.current = sortedReviews;
-    setDailyReviews(sortedReviews);
-  }, []);
-
-  const persist = useCallback(
-    async (
-      request: () => Promise<Response>,
-      previousReviews: DailyReview[],
-      label: string,
-    ) => {
-      try {
-        const response = await request();
-
-        if (!response.ok) {
-          throw new Error(`${label} failed with status ${response.status}`);
-        }
-      } catch (error) {
-        console.error(`[reviews] ${label} failed — rolling back`, error);
-        applyReviews(previousReviews);
-      }
-    },
-    [applyReviews],
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      try {
-        let serverReviews = await fetchReviews();
-
-        if (serverReviews.length === 0) {
-          const migrated = await migrateLegacyReviewsIfNeeded();
-
-          if (migrated) {
-            serverReviews = await fetchReviews();
-          }
-        }
-
-        if (!cancelled) {
-          applyReviews(serverReviews);
-        }
-      } catch (error) {
-        console.error("[reviews] failed to load from API", error);
-      }
-    }
-
-    void load();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [applyReviews]);
+  const {
+    items: dailyReviews,
+    itemsRef: reviewsRef,
+    apply: applyReviews,
+    persist,
+    replace: replaceDailyReviews,
+    clear: clearDailyReviews,
+    reset: resetDailyReviewsToSeed,
+  } = useCollectionStore<DailyReview>(collectionConfig);
 
   const getReviewByDate = useCallback(
     (date: string) => dailyReviews.find((review) => review.date === date),
@@ -226,7 +128,7 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
         "POST /api/reviews",
       );
     },
-    [applyReviews, persist],
+    [applyReviews, persist, reviewsRef],
   );
 
   const deleteReview = useCallback(
@@ -243,64 +145,8 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
         `DELETE /api/reviews/${date}`,
       );
     },
-    [applyReviews, persist],
+    [applyReviews, persist, reviewsRef],
   );
-
-  const replaceDailyReviews = useCallback(
-    (nextReviews: DailyReview[]) => {
-      const previousReviews = reviewsRef.current;
-      const snapshot = [...nextReviews];
-
-      applyReviews(snapshot);
-
-      void persist(
-        () =>
-          fetch("/api/reviews/import", {
-            method: "POST",
-            headers: JSON_HEADERS,
-            body: JSON.stringify(snapshot),
-          }),
-        previousReviews,
-        "POST /api/reviews/import (replace)",
-      );
-    },
-    [applyReviews, persist],
-  );
-
-  const clearDailyReviews = useCallback(() => {
-    const previousReviews = reviewsRef.current;
-
-    applyReviews([]);
-
-    void persist(
-      () =>
-        fetch("/api/reviews/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify([]),
-        }),
-      previousReviews,
-      "POST /api/reviews/import (clear)",
-    );
-  }, [applyReviews, persist]);
-
-  const resetDailyReviewsToSeed = useCallback(() => {
-    const seedReviews = getSeedDailyReviews();
-    const previousReviews = reviewsRef.current;
-
-    applyReviews(seedReviews);
-
-    void persist(
-      () =>
-        fetch("/api/reviews/import", {
-          method: "POST",
-          headers: JSON_HEADERS,
-          body: JSON.stringify(seedReviews),
-        }),
-      previousReviews,
-      "POST /api/reviews/import (reset)",
-    );
-  }, [applyReviews, persist]);
 
   const value = useMemo(
     () => ({
