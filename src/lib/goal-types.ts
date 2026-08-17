@@ -1,6 +1,7 @@
 import { isFiniteNumber, isRecord } from "@/lib/guards";
 import {
   getCurrentMonthKey,
+  getLocalDateTime,
   getMonthRangeFromMonthKey,
   isValidDateKey,
 } from "@/lib/utils";
@@ -194,7 +195,7 @@ export function normalizeGoal(value: unknown, index = 0): Goal | null {
   const metric = isGoalMetric(value.metric) ? value.metric : "custom";
   const metricDefaults = getGoalMetricDefaults(metric);
   const fallbackRange = getMonthRangeFromMonthKey(getCurrentMonthKey());
-  const fallbackCreatedAt = new Date().toISOString();
+  const fallbackCreatedAt = getLocalDateTime();
   const startDate = isValidDateKey(String(value.startDate))
     ? String(value.startDate)
     : fallbackRange.startDate;

@@ -309,7 +309,19 @@ export function pad2(value: number): string {
   return String(value).padStart(2, "0");
 }
 
+function hasExplicitTimezone(value: string) {
+  return /(?:Z|[+-]\d{2}:\d{2})$/i.test(value);
+}
+
 export function getDateKey(dateOrIso: string) {
+  if (hasExplicitTimezone(dateOrIso)) {
+    const parsed = new Date(dateOrIso);
+
+    if (!Number.isNaN(parsed.getTime())) {
+      return getDateKeyFromLocalDate(parsed);
+    }
+  }
+
   return dateOrIso.slice(0, 10);
 }
 
@@ -321,6 +333,19 @@ export function getDateKeyFromLocalDate(date: Date): string {
 
 export function getTodayDateKey(): string {
   return getDateKeyFromLocalDate(new Date());
+}
+
+// User-entered journal timestamps use wall-clock local time, matching the
+// datetime-local value stored for trades. The absence of a timezone suffix is
+// intentional; timezone-aware legacy values are converted on read by
+// getDateKey/formatDateTime.
+export function getLocalDateTime(date = new Date()): string {
+  return `${getDateKeyFromLocalDate(date)}T${pad2(date.getHours())}:${pad2(
+    date.getMinutes(),
+  )}:${pad2(date.getSeconds())}.${String(date.getMilliseconds()).padStart(
+    3,
+    "0",
+  )}`;
 }
 
 export function getCurrentYear(): number {
@@ -593,7 +618,13 @@ export function formatTradeTimestamp(iso: string) {
 
 export function formatDateTime(iso: string, locale: Locale) {
   const dateKey = getDateKey(iso);
-  const time = iso.includes("T") ? iso.split("T")[1]?.slice(0, 5) : "";
+  const parsed = hasExplicitTimezone(iso) ? new Date(iso) : null;
+  const time =
+    parsed && !Number.isNaN(parsed.getTime())
+      ? `${pad2(parsed.getHours())}:${pad2(parsed.getMinutes())}`
+      : iso.includes("T")
+        ? iso.split("T")[1]?.slice(0, 5)
+        : "";
   const [year, month, day] = dateKey.split("-").map(Number);
 
   if (

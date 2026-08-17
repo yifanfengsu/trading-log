@@ -12,6 +12,7 @@ import { useCollectionStore } from "@/components/providers/use-collection-store"
 import { getSeedGoals } from "@/lib/goal-seed";
 import type { Goal, GoalInput, GoalPatch } from "@/lib/goal-types";
 import { normalizeGoals } from "@/lib/goal-types";
+import { getLocalDateTime } from "@/lib/utils";
 
 // Legacy localStorage key — only read once, during the one-time migration into
 // SQLite. Goals are now persisted server-side via /api/goals.
@@ -93,7 +94,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
 
   const addGoal = useCallback(
     (input: GoalInput) => {
-      const now = new Date().toISOString();
+      const now = getLocalDateTime();
       const nextGoal: Goal = {
         ...input,
         id: createGoalId(),
@@ -128,7 +129,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const now = new Date().toISOString();
+      const now = getLocalDateTime();
       const nextGoal: Goal = {
         ...existingGoal,
         ...patch,

@@ -1,5 +1,5 @@
 import { isRecord, isStringArray } from "@/lib/guards";
-import { isValidDateKey } from "@/lib/utils";
+import { getLocalDateTime, isValidDateKey } from "@/lib/utils";
 
 export type NoteType =
   | "general"
@@ -101,6 +101,8 @@ export function normalizeNote(value: unknown): Note | null {
     return null;
   }
 
+  const fallbackTimestamp = getLocalDateTime();
+
   return {
     id: value.id,
     title: value.title,
@@ -113,11 +115,11 @@ export function normalizeNote(value: unknown): Note | null {
     createdAt:
       typeof value.createdAt === "string"
         ? value.createdAt
-        : new Date().toISOString(),
+        : fallbackTimestamp,
     updatedAt:
       typeof value.updatedAt === "string"
         ? value.updatedAt
-        : new Date().toISOString(),
+        : fallbackTimestamp,
   };
 }
 

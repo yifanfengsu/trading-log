@@ -12,6 +12,7 @@ import { useCollectionStore } from "@/components/providers/use-collection-store"
 import { getSeedNotes } from "@/lib/note-seed";
 import type { Note, NoteInput, NotePatch } from "@/lib/note-types";
 import { normalizeNotes } from "@/lib/note-types";
+import { getLocalDateTime } from "@/lib/utils";
 
 // Legacy localStorage key — only read once, during the one-time migration into
 // SQLite. Notes are now persisted server-side via /api/notes.
@@ -111,7 +112,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
 
   const addNote = useCallback(
     (input: NoteInput) => {
-      const now = new Date().toISOString();
+      const now = getLocalDateTime();
       const nextNote: Note = {
         ...normalizeNoteInput(input),
         id: createNoteId(),
@@ -144,7 +145,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const now = new Date().toISOString();
+      const now = getLocalDateTime();
       const nextNote: Note = {
         ...existingNote,
         ...normalizeNoteInput({
