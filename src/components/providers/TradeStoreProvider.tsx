@@ -38,6 +38,7 @@ interface TradeStoreContextValue {
   replaceTrades: (trades: Trade[]) => void;
   clearTrades: () => void;
   resetTradesToSeed: () => void;
+  reloadTrades: () => Promise<void>;
 }
 
 const TradeStoreContext = createContext<TradeStoreContextValue | null>(null);
@@ -119,6 +120,7 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
     itemsRef: tradesRef,
     apply: applyTrades,
     persist,
+    reload: reloadTrades,
     replace: replaceTrades,
     clear: clearTrades,
     reset: resetTradesToSeed,
@@ -197,11 +199,13 @@ export function TradeStoreProvider({ children }: { children: ReactNode }) {
       replaceTrades,
       clearTrades,
       resetTradesToSeed,
+      reloadTrades,
     }),
     [
       addTrade,
       clearTrades,
       deleteTrade,
+      reloadTrades,
       replaceTrades,
       resetTradesToSeed,
       trades,

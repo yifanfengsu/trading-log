@@ -25,18 +25,18 @@ type ActionStatus = "exported" | "imported" | null;
 
 export default function DataManagementSettings() {
   const { dictionary: copy } = useLanguage();
-  const { settings, updateSettings } = useUserSettings();
-  const { trades, replaceTrades, resetTradesToSeed } = useTrades();
+  const { settings, reloadSettings } = useUserSettings();
+  const { trades, reloadTrades, resetTradesToSeed } = useTrades();
   const {
     dailyReviews,
-    replaceDailyReviews,
+    reloadDailyReviews,
     resetDailyReviewsToSeed,
   } = useDailyReviews();
-  const { periodReports, replacePeriodReports, clearPeriodReports } =
+  const { periodReports, reloadPeriodReports, clearPeriodReports } =
     usePeriodReports();
-  const { playbooks, replacePlaybooks, resetPlaybooksToSeed } = usePlaybooks();
-  const { notes, replaceNotes, resetNotesToSeed } = useNotes();
-  const { goals, replaceGoals, resetGoalsToSeed } = useGoals();
+  const { playbooks, reloadPlaybooks, resetPlaybooksToSeed } = usePlaybooks();
+  const { notes, reloadNotes, resetNotesToSeed } = useNotes();
+  const { goals, reloadGoals, resetGoalsToSeed } = useGoals();
   const [pendingBackup, setPendingBackup] = useState<BackupFile | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [actionStatus, setActionStatus] = useState<ActionStatus>(null);
@@ -104,24 +104,45 @@ export default function DataManagementSettings() {
     setPendingBackup(backup);
   }
 
-  function handleConfirmImport() {
+  async function handleConfirmImport() {
     if (!pendingBackup) {
       return;
     }
 
-    updateSettings(pendingBackup.data.settings);
-    replaceTrades(pendingBackup.data.trades);
-    replaceDailyReviews(pendingBackup.data.dailyReviews);
-    replacePeriodReports(pendingBackup.data.periodReports);
-    replacePlaybooks(pendingBackup.data.playbooks);
-    replaceNotes(pendingBackup.data.notes ?? []);
-    replaceGoals(pendingBackup.data.goals ?? []);
-    setPendingBackup(null);
-    setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+    try {
+      // Replace every domain in one atomic transaction server-side, then reload
+      // each store from SQLite so the in-memory state mirrors what actually
+      // persisted (no partial restore on a mid-import failure).
+      const response = await fetch("/api/backup/import", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(pendingBackup.data),
+      });
+
+      if (!response.ok) {
+        throw new Error(`import failed with status ${response.status}`);
+      }
+
+      await Promise.all([
+        reloadTrades(),
+        reloadDailyReviews(),
+        reloadPeriodReports(),
+        reloadPlaybooks(),
+        reloadNotes(),
+        reloadGoals(),
+        reloadSettings(),
+      ]);
+
+      setPendingBackup(null);
+      setError(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+      markStatus("imported");
+    } catch (error) {
+      console.error("[settings] backup import failed", error);
+      setError(copy.settingsPage.invalidBackupFile);
     }
-    markStatus("imported");
   }
 
   function handleCancelImport() {

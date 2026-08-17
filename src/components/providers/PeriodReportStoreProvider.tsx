@@ -33,6 +33,7 @@ interface PeriodReportStoreContextValue {
   deleteReport: (id: string) => void;
   replacePeriodReports: (reports: PeriodReport[]) => void;
   clearPeriodReports: () => void;
+  reloadPeriodReports: () => Promise<void>;
 }
 
 const PeriodReportStoreContext =
@@ -113,6 +114,7 @@ export function PeriodReportStoreProvider({
     itemsRef: reportsRef,
     apply: applyReports,
     persist,
+    reload: reloadPeriodReports,
     replace: replacePeriodReports,
     clear: clearPeriodReports,
   } = useCollectionStore<PeriodReport>(collectionConfig);
@@ -186,12 +188,14 @@ export function PeriodReportStoreProvider({
       deleteReport,
       replacePeriodReports,
       clearPeriodReports,
+      reloadPeriodReports,
     }),
     [
       clearPeriodReports,
       deleteReport,
       getReport,
       periodReports,
+      reloadPeriodReports,
       replacePeriodReports,
       upsertReport,
     ],

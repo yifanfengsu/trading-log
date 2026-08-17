@@ -36,6 +36,7 @@ interface PlaybookStoreContextValue {
   replacePlaybooks: (playbooks: Playbook[]) => void;
   clearPlaybooks: () => void;
   resetPlaybooksToSeed: () => void;
+  reloadPlaybooks: () => Promise<void>;
   getPlaybookById: (id: string) => Playbook | undefined;
 }
 
@@ -86,6 +87,7 @@ export function PlaybookStoreProvider({ children }: { children: ReactNode }) {
     itemsRef: playbooksRef,
     apply: applyPlaybooks,
     persist,
+    reload: reloadPlaybooks,
     replace: replacePlaybooks,
     clear: clearPlaybooks,
     reset: resetPlaybooksToSeed,
@@ -205,6 +207,7 @@ export function PlaybookStoreProvider({ children }: { children: ReactNode }) {
       replacePlaybooks,
       clearPlaybooks,
       resetPlaybooksToSeed,
+      reloadPlaybooks,
       getPlaybookById,
     }),
     [
@@ -214,6 +217,7 @@ export function PlaybookStoreProvider({ children }: { children: ReactNode }) {
       deletePlaybook,
       getPlaybookById,
       playbooks,
+      reloadPlaybooks,
       replacePlaybooks,
       resetPlaybooksToSeed,
       restorePlaybook,

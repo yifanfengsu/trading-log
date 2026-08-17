@@ -34,6 +34,7 @@ interface NotesStoreContextValue {
   replaceNotes: (notes: Note[]) => void;
   clearNotes: () => void;
   resetNotesToSeed: () => void;
+  reloadNotes: () => Promise<void>;
   getNoteById: (id: string) => Note | undefined;
   getNotesForTrade: (tradeId: string) => Note[];
   getNotesForDate: (date: string) => Note[];
@@ -102,6 +103,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
     itemsRef: notesRef,
     apply: applyNotes,
     persist,
+    reload: reloadNotes,
     replace: replaceNotes,
     clear: clearNotes,
     reset: resetNotesToSeed,
@@ -258,6 +260,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
       replaceNotes,
       clearNotes,
       resetNotesToSeed,
+      reloadNotes,
       getNoteById,
       getNotesForTrade,
       getNotesForDate,
@@ -273,6 +276,7 @@ export function NotesStoreProvider({ children }: { children: ReactNode }) {
       getNotesForPlaybook,
       getNotesForTrade,
       notes,
+      reloadNotes,
       replaceNotes,
       resetNotesToSeed,
       restoreNote,

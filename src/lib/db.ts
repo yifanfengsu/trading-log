@@ -1365,3 +1365,132 @@ export function saveUserSettings(input: unknown): UserSettings {
 
   return getUserSettings();
 }
+
+// ============================================================================
+// Whole-backup import (all domains replaced inside one transaction)
+// ============================================================================
+
+export interface BackupImportSummary {
+  trades: number;
+  dailyReviews: number;
+  periodReports: number;
+  playbooks: number;
+  notes: number;
+  goals: number;
+}
+
+function toImportParamsList<T>(
+  value: unknown,
+  map: (item: unknown) => T,
+  label: string,
+): T[] {
+  if (value === undefined) {
+    return [];
+  }
+
+  if (!Array.isArray(value)) {
+    throw new Error(`Invalid import payload: expected an array of ${label}`);
+  }
+
+  return value.map(map);
+}
+
+// Replaces every domain (and settings) from a single backup payload inside one
+// SQLite transaction, so a failed import can never leave a half-restored state.
+// Every item is validated before the transaction runs; a single bad row aborts
+// the whole import. Used by backup restore via /api/backup/import.
+export function importBackupData(input: unknown): BackupImportSummary {
+  if (!isRecord(input)) {
+    throw new Error("Invalid backup payload: expected an object");
+  }
+
+  const tradesParams = toImportParamsList(input.trades, toWriteParams, "trades");
+  const goalsParams = toImportParamsList(input.goals, toGoalWriteParams, "goals");
+  const notesParams = toImportParamsList(input.notes, toNoteWriteParams, "notes");
+  const playbooksParams = toImportParamsList(
+    input.playbooks,
+    toPlaybookWriteParams,
+    "playbooks",
+  );
+  const reviewsParams = toImportParamsList(
+    input.dailyReviews,
+    toReviewWriteParams,
+    "dailyReviews",
+  );
+  const reportsParams = toImportParamsList(
+    input.periodReports,
+    toReportWriteParams,
+    "periodReports",
+  );
+
+  const settings =
+    input.settings === undefined
+      ? DEFAULT_USER_SETTINGS
+      : normalizeUserSettings(input.settings);
+
+  if (!settings) {
+    throw new Error("Invalid import payload: malformed settings");
+  }
+
+  const db = getDb();
+
+  const runImport = db.transaction(() => {
+    db.prepare("DELETE FROM trades").run();
+    db.prepare("DELETE FROM goals").run();
+    db.prepare("DELETE FROM notes").run();
+    db.prepare("DELETE FROM playbooks").run();
+    db.prepare("DELETE FROM daily_reviews").run();
+    db.prepare("DELETE FROM period_reports").run();
+
+    const insertTrade = db.prepare(INSERT_SQL);
+    for (const item of tradesParams) {
+      insertTrade.run(item);
+    }
+
+    const insertGoal = db.prepare(GOAL_INSERT_SQL);
+    for (const item of goalsParams) {
+      insertGoal.run(item);
+    }
+
+    const insertNote = db.prepare(NOTE_INSERT_SQL);
+    for (const item of notesParams) {
+      insertNote.run(item);
+    }
+
+    const insertPlaybook = db.prepare(PLAYBOOK_INSERT_SQL);
+    for (const item of playbooksParams) {
+      insertPlaybook.run(item);
+    }
+
+    const insertReview = db.prepare(REVIEW_UPSERT_SQL);
+    for (const item of reviewsParams) {
+      insertReview.run(item);
+    }
+
+    const insertReport = db.prepare(REPORT_UPSERT_SQL);
+    for (const item of reportsParams) {
+      insertReport.run(item);
+    }
+
+    db.prepare(SETTINGS_UPSERT_SQL).run({
+      id: SETTINGS_SINGLETON_ID,
+      currency: settings.currency,
+      starting_balance: settings.startingBalance,
+      default_symbol: settings.defaultSymbol,
+      default_side: settings.defaultSide,
+      default_setup: settings.defaultSetup,
+      default_risk_percent: settings.defaultRiskPercent,
+    });
+  });
+
+  runImport();
+
+  return {
+    trades: tradesParams.length,
+    dailyReviews: reviewsParams.length,
+    periodReports: reportsParams.length,
+    playbooks: playbooksParams.length,
+    notes: notesParams.length,
+    goals: goalsParams.length,
+  };
+}

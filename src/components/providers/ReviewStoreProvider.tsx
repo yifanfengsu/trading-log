@@ -36,6 +36,7 @@ interface ReviewStoreContextValue {
   replaceDailyReviews: (reviews: DailyReview[]) => void;
   clearDailyReviews: () => void;
   resetDailyReviewsToSeed: () => void;
+  reloadDailyReviews: () => Promise<void>;
 }
 
 const ReviewStoreContext = createContext<ReviewStoreContextValue | null>(null);
@@ -94,6 +95,7 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
     itemsRef: reviewsRef,
     apply: applyReviews,
     persist,
+    reload: reloadDailyReviews,
     replace: replaceDailyReviews,
     clear: clearDailyReviews,
     reset: resetDailyReviewsToSeed,
@@ -157,12 +159,14 @@ export function ReviewStoreProvider({ children }: { children: ReactNode }) {
       replaceDailyReviews,
       clearDailyReviews,
       resetDailyReviewsToSeed,
+      reloadDailyReviews,
     }),
     [
       clearDailyReviews,
       dailyReviews,
       deleteReview,
       getReviewByDate,
+      reloadDailyReviews,
       replaceDailyReviews,
       resetDailyReviewsToSeed,
       upsertReview,

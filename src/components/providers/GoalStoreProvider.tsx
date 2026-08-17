@@ -36,6 +36,7 @@ interface GoalStoreContextValue {
   replaceGoals: (goals: Goal[]) => void;
   clearGoals: () => void;
   resetGoalsToSeed: () => void;
+  reloadGoals: () => Promise<void>;
   getGoalById: (id: string) => Goal | undefined;
 }
 
@@ -84,6 +85,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
     itemsRef: goalsRef,
     apply: applyGoals,
     persist,
+    reload: reloadGoals,
     replace: replaceGoals,
     clear: clearGoals,
     reset: resetGoalsToSeed,
@@ -227,6 +229,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
       replaceGoals,
       clearGoals,
       resetGoalsToSeed,
+      reloadGoals,
       getGoalById,
     }),
     [
@@ -238,6 +241,7 @@ export function GoalStoreProvider({ children }: { children: ReactNode }) {
       getGoalById,
       goals,
       pauseGoal,
+      reloadGoals,
       replaceGoals,
       resetGoalsToSeed,
       restoreGoal,

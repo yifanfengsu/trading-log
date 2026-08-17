@@ -31,6 +31,7 @@ interface UserSettingsContextValue {
   settings: UserSettings;
   updateSettings: (patch: Partial<UserSettings>) => void;
   resetSettings: () => void;
+  reloadSettings: () => Promise<void>;
 }
 
 const UserSettingsContext = createContext<UserSettingsContextValue | null>(null);
@@ -198,13 +199,23 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
     );
   }, [applySettings, persist]);
 
+  const reloadSettings = useCallback(async () => {
+    try {
+      const serverSettings = await fetchSettings();
+      applySettings(serverSettings);
+    } catch (error) {
+      console.error("[settings] failed to reload from API", error);
+    }
+  }, [applySettings]);
+
   const value = useMemo(
     () => ({
       settings,
       updateSettings,
       resetSettings,
+      reloadSettings,
     }),
-    [resetSettings, settings, updateSettings],
+    [reloadSettings, resetSettings, settings, updateSettings],
   );
 
   return (

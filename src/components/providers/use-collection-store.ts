@@ -160,6 +160,15 @@ export function useCollectionStore<T>(config: CollectionStoreConfig<T>) {
     };
   }, [apply, basePath, migrateLegacy, name]);
 
+  const reload = useCallback(async () => {
+    try {
+      const serverItems = await fetchCollection<T>(basePath);
+      apply(serverItems);
+    } catch (error) {
+      console.error(`[${name}] failed to reload from API`, error);
+    }
+  }, [apply, basePath, name]);
+
   const replace = useCallback(
     (nextItems: T[]) => {
       const previousItems = itemsRef.current;
@@ -220,5 +229,5 @@ export function useCollectionStore<T>(config: CollectionStoreConfig<T>) {
     );
   }, [apply, basePath, persist, seed]);
 
-  return { items, itemsRef, apply, persist, replace, clear, reset };
+  return { items, itemsRef, apply, persist, reload, replace, clear, reset };
 }
