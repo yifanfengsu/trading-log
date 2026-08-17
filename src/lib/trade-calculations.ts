@@ -1,7 +1,8 @@
 import type { Trade, TradeSetup, TradeSide } from "@/lib/trade-types";
+import { DEFAULT_USER_SETTINGS } from "@/lib/settings-types";
 import { getDateKey } from "@/lib/utils";
 
-export const STARTING_BALANCE = 100000;
+export const STARTING_BALANCE = DEFAULT_USER_SETTINGS.startingBalance;
 
 // ============================================================================
 // Per-trade derivation: pnl / initial risk / R-multiple / risk %

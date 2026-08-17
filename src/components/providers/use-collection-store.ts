@@ -52,6 +52,7 @@ export function useCollectionStore<T>(config: CollectionStoreConfig<T>) {
 
   const [items, setItems] = useState<T[]>([]);
   const itemsRef = useRef<T[]>([]);
+  const pendingWritesRef = useRef(0);
 
   const apply = useCallback(
     (nextItems: T[]) => {
@@ -68,6 +69,8 @@ export function useCollectionStore<T>(config: CollectionStoreConfig<T>) {
       previousItems: T[],
       label: string,
     ) => {
+      pendingWritesRef.current += 1;
+
       try {
         const response = await request();
 
@@ -77,6 +80,8 @@ export function useCollectionStore<T>(config: CollectionStoreConfig<T>) {
       } catch (error) {
         console.error(`[${name}] ${label} failed — rolling back`, error);
         apply(previousItems);
+      } finally {
+        pendingWritesRef.current -= 1;
       }
     },
     [apply, name],
@@ -168,6 +173,42 @@ export function useCollectionStore<T>(config: CollectionStoreConfig<T>) {
       console.error(`[${name}] failed to reload from API`, error);
     }
   }, [apply, basePath, name]);
+
+  useEffect(() => {
+    let refreshInFlight = false;
+
+    async function refreshIfIdle() {
+      if (refreshInFlight || pendingWritesRef.current > 0) {
+        return;
+      }
+
+      refreshInFlight = true;
+
+      try {
+        await reload();
+      } finally {
+        refreshInFlight = false;
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        void refreshIfIdle();
+      }
+    }
+
+    function handleFocus() {
+      void refreshIfIdle();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [reload]);
 
   const replace = useCallback(
     (nextItems: T[]) => {

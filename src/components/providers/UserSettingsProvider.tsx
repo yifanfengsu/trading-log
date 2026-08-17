@@ -105,6 +105,7 @@ async function migrateLegacySettingsIfNeeded(): Promise<void> {
 export function UserSettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<UserSettings>(DEFAULT_USER_SETTINGS);
   const settingsRef = useRef<UserSettings>(DEFAULT_USER_SETTINGS);
+  const pendingWritesRef = useRef(0);
 
   // Update the in-memory state (optimistic UI). Persistence happens separately.
   const applySettings = useCallback((nextSettings: UserSettings) => {
@@ -118,6 +119,8 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
       previousSettings: UserSettings,
       label: string,
     ) => {
+      pendingWritesRef.current += 1;
+
       try {
         const response = await request();
 
@@ -127,6 +130,8 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
       } catch (error) {
         console.error(`[settings] ${label} failed — rolling back`, error);
         applySettings(previousSettings);
+      } finally {
+        pendingWritesRef.current -= 1;
       }
     },
     [applySettings],
@@ -207,6 +212,42 @@ export function UserSettingsProvider({ children }: { children: ReactNode }) {
       console.error("[settings] failed to reload from API", error);
     }
   }, [applySettings]);
+
+  useEffect(() => {
+    let refreshInFlight = false;
+
+    async function refreshIfIdle() {
+      if (refreshInFlight || pendingWritesRef.current > 0) {
+        return;
+      }
+
+      refreshInFlight = true;
+
+      try {
+        await reloadSettings();
+      } finally {
+        refreshInFlight = false;
+      }
+    }
+
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        void refreshIfIdle();
+      }
+    }
+
+    function handleFocus() {
+      void refreshIfIdle();
+    }
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [reloadSettings]);
 
   const value = useMemo(
     () => ({

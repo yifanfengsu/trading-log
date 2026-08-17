@@ -522,7 +522,9 @@ export interface Dictionary {
     preferences: string;
     language: string;
     currency: string;
+    currencyDisplayHint: string;
     startingBalance: string;
+    startingBalanceRiskHint: string;
     saveSettings: string;
     resetDefaults: string;
     resetPreferencesConfirm: string;
@@ -1191,7 +1193,10 @@ export const dictionaries: Record<Locale, Dictionary> = {
       preferences: "偏好设置",
       language: "语言",
       currency: "货币显示",
+      currencyDisplayHint: "仅切换显示符号，不进行汇率换算，也不会修改已记录数值。",
       startingBalance: "初始资金",
+      startingBalanceRiskHint:
+        "风险比例与回撤百分比均以此固定初始资金为基准，不随当前权益动态变化。",
       saveSettings: "保存设置",
       resetDefaults: "重置默认",
       resetPreferencesConfirm: "确定要重置偏好设置吗？",
@@ -1872,7 +1877,11 @@ export const dictionaries: Record<Locale, Dictionary> = {
       preferences: "Preferences",
       language: "Language",
       currency: "Currency",
+      currencyDisplayHint:
+        "Changes the display symbol only; no exchange-rate conversion or stored-value changes are performed.",
       startingBalance: "Starting Balance",
+      startingBalanceRiskHint:
+        "Risk and drawdown percentages use this fixed starting balance, not dynamically changing account equity.",
       saveSettings: "Save Settings",
       resetDefaults: "Reset Defaults",
       resetPreferencesConfirm: "Reset preferences to defaults?",

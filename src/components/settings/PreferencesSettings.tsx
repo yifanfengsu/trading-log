@@ -137,6 +137,9 @@ export default function PreferencesSettings() {
               </option>
             ))}
           </Select>
+          <span className="mt-2 block text-xs font-normal leading-5 text-slate-500">
+            {copy.settingsPage.currencyDisplayHint}
+          </span>
         </label>
 
         <label className="block text-sm font-medium text-slate-600">
@@ -149,6 +152,9 @@ export default function PreferencesSettings() {
             onChange={(event) => setStartingBalance(event.target.value)}
             className="mt-2"
           />
+          <span className="mt-2 block text-xs font-normal leading-5 text-slate-500">
+            {copy.settingsPage.startingBalanceRiskHint}
+          </span>
         </label>
 
         {error ? (
