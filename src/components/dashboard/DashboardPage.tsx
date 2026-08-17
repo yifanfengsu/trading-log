@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import {
   todayReviewItems,
   type MetricData,
@@ -104,39 +106,66 @@ export default function DashboardPage() {
   const { trades } = useTrades();
   const { settings } = useUserSettings();
   const { selectedMonth } = useSelectedMonth();
-  const { year, month } = parseSelectedMonth(selectedMonth);
-  const monthTrades = getTradesByMonth(trades, year, month);
-  // calendarStats is still needed for the PerformanceRadar consistency metric
-  // below, even though the monthly P&L calendar block was removed.
-  const calendarStats = getCalendarStats(trades, year, month);
-  const equityCurveData = getEquityCurveData(monthTrades);
-  const strategyStats = getStrategyStats(monthTrades);
-  const dashboardMetrics = buildMetrics(monthTrades, settings.startingBalance);
-  // Radar inputs — all reuse existing aggregates; normalization lives in the
-  // PerformanceRadar display layer.
-  const performanceSummary = getAnalyticsSummary(
-    monthTrades,
-    settings.startingBalance,
+  const { year, month } = useMemo(
+    () => parseSelectedMonth(selectedMonth),
+    [selectedMonth],
   );
-  const periodStats = getPeriodStats(monthTrades);
-  const payoffRatio =
-    periodStats.averageLoss < 0
-      ? periodStats.averageWin / Math.abs(periodStats.averageLoss)
-      : periodStats.averageWin > 0
-        ? Number.POSITIVE_INFINITY
-        : 0;
-  const tradedDays = calendarStats.winningDays + calendarStats.losingDays;
-  const dayConsistency =
-    tradedDays > 0 ? (calendarStats.winningDays / tradedDays) * 100 : 0;
-  const recentTrades = [...trades]
-    .sort((a, b) => b.closedAt.localeCompare(a.closedAt))
-    .slice(0, 6);
-  const activeDate =
-    getLatestTradeDate(monthTrades) ??
-    (selectedMonth === getCurrentMonthKey()
-      ? getTodayDateKey()
-      : getMonthEndDateKey(selectedMonth));
-  const reviewPnlSummary = getDailyWeeklyMonthlyPnl(trades, activeDate);
+  const monthTrades = useMemo(
+    () => getTradesByMonth(trades, year, month),
+    [month, trades, year],
+  );
+  const {
+    dashboardMetrics,
+    dayConsistency,
+    equityCurveData,
+    payoffRatio,
+    performanceSummary,
+    strategyStats,
+  } = useMemo(() => {
+    // calendarStats remains an input to the radar consistency metric even
+    // though the dashboard's duplicate monthly calendar was removed.
+    const calendarStats = getCalendarStats(monthTrades, year, month);
+    const periodStats = getPeriodStats(monthTrades);
+    const tradedDays = calendarStats.winningDays + calendarStats.losingDays;
+
+    return {
+      dashboardMetrics: buildMetrics(monthTrades, settings.startingBalance),
+      dayConsistency:
+        tradedDays > 0 ? (calendarStats.winningDays / tradedDays) * 100 : 0,
+      equityCurveData: getEquityCurveData(monthTrades),
+      payoffRatio:
+        periodStats.averageLoss < 0
+          ? periodStats.averageWin / Math.abs(periodStats.averageLoss)
+          : periodStats.averageWin > 0
+            ? Number.POSITIVE_INFINITY
+            : 0,
+      // Radar normalization stays in the PerformanceRadar display layer.
+      performanceSummary: getAnalyticsSummary(
+        monthTrades,
+        settings.startingBalance,
+      ),
+      strategyStats: getStrategyStats(monthTrades),
+    };
+  }, [month, monthTrades, settings.startingBalance, year]);
+  const recentTrades = useMemo(
+    () =>
+      [...trades]
+        .sort((a, b) => b.closedAt.localeCompare(a.closedAt))
+        .slice(0, 6),
+    [trades],
+  );
+  const activeDate = useMemo(
+    () =>
+      getLatestTradeDate(monthTrades) ??
+      (selectedMonth === getCurrentMonthKey()
+        ? getTodayDateKey()
+        : getMonthEndDateKey(selectedMonth)),
+    [monthTrades, selectedMonth],
+  );
+  const reviewPnlSummary = useMemo(
+    () => getDailyWeeklyMonthlyPnl(trades, activeDate),
+    [activeDate, trades],
+  );
 
   return (
     <>
