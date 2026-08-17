@@ -12,8 +12,8 @@ import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
+import DatePicker from "@/components/ui/DatePicker";
 import EmptyState from "@/components/ui/EmptyState";
-import MonthPicker from "@/components/ui/MonthPicker";
 import PageHeader from "@/components/ui/PageHeader";
 import {
   getMonthNavigation,
@@ -112,8 +112,14 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
 
   function handleMonthChange(nextSelectedMonth: string) {
     setSelectedMonth(nextSelectedMonth);
-    setSelectedDate(null);
+    setSelectedDate(`${nextSelectedMonth}-01`);
     setIsDrawerOpen(false);
+  }
+
+  function handleDatePickerChange(nextSelectedDate: string) {
+    setSelectedMonth(getMonthKeyFromDateKey(nextSelectedDate));
+    setSelectedDate(nextSelectedDate);
+    setIsDrawerOpen(true);
   }
 
   function formatInsightDay(date: string | null, value: number) {
@@ -142,10 +148,10 @@ export default function CalendarPage({ initialDate }: CalendarPageProps) {
               <ChevronLeft className="h-4 w-4" />
               {copy.calendarPage.previousMonth}
             </Button>
-            <MonthPicker
-              value={selectedMonth}
-              onChange={handleMonthChange}
-              label={copy.selectMonth}
+            <DatePicker
+              value={selectedDate ?? `${selectedMonth}-01`}
+              onChange={handleDatePickerChange}
+              label={copy.selectDate}
             />
             <Button
               onClick={() => handleMonthChange(nextMonth)}

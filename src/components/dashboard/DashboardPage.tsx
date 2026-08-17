@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import {
   todayReviewItems,
@@ -19,7 +19,7 @@ import { useSelectedMonth } from "@/components/providers/SelectedMonthProvider";
 import { useTrades } from "@/components/providers/TradeStoreProvider";
 import { useUserSettings } from "@/components/providers/UserSettingsProvider";
 import Badge from "@/components/ui/Badge";
-import MonthPicker from "@/components/ui/MonthPicker";
+import DatePicker from "@/components/ui/DatePicker";
 import PageHeader from "@/components/ui/PageHeader";
 import { getAnalyticsSummary } from "@/lib/analytics-calculations";
 import {
@@ -33,9 +33,7 @@ import {
 } from "@/lib/trade-calculations";
 import type { Trade } from "@/lib/trade-types";
 import {
-  getCurrentMonthKey,
-  getDateKey,
-  getMonthEndDateKey,
+  getMonthKeyFromDateKey,
   getTodayDateKey,
   parseSelectedMonth,
   formatMonthRange,
@@ -51,18 +49,6 @@ function getValueTone(value: number): Tone {
   }
 
   return "neutral";
-}
-
-function getLatestTradeDate(trades: Trade[]) {
-  if (trades.length === 0) {
-    return null;
-  }
-
-  const latestTrade = [...trades].sort((a, b) =>
-    b.closedAt.localeCompare(a.closedAt),
-  )[0];
-
-  return latestTrade ? getDateKey(latestTrade.closedAt) : null;
 }
 
 function buildMetrics(trades: Trade[], startingBalance: number): MetricData[] {
@@ -107,6 +93,7 @@ export default function DashboardPage() {
   const { trades } = useTrades();
   const { settings } = useUserSettings();
   const { selectedMonth, setSelectedMonth } = useSelectedMonth();
+  const [selectedDate, setSelectedDate] = useState(() => getTodayDateKey());
   const { year, month } = useMemo(
     () => parseSelectedMonth(selectedMonth),
     [selectedMonth],
@@ -155,18 +142,15 @@ export default function DashboardPage() {
         .slice(0, 6),
     [trades],
   );
-  const activeDate = useMemo(
-    () =>
-      getLatestTradeDate(monthTrades) ??
-      (selectedMonth === getCurrentMonthKey()
-        ? getTodayDateKey()
-        : getMonthEndDateKey(selectedMonth)),
-    [monthTrades, selectedMonth],
-  );
   const reviewPnlSummary = useMemo(
-    () => getDailyWeeklyMonthlyPnl(trades, activeDate),
-    [activeDate, trades],
+    () => getDailyWeeklyMonthlyPnl(trades, selectedDate),
+    [selectedDate, trades],
   );
+
+  function handleDateChange(nextDate: string) {
+    setSelectedDate(nextDate);
+    setSelectedMonth(getMonthKeyFromDateKey(nextDate));
+  }
 
   return (
     <>
@@ -184,10 +168,10 @@ export default function DashboardPage() {
             <span className="hidden text-xs text-slate-500 lg:inline">
               {formatMonthRange(selectedMonth, locale)}
             </span>
-            <MonthPicker
-              value={selectedMonth}
-              onChange={setSelectedMonth}
-              label={copy.selectMonth}
+            <DatePicker
+              value={selectedDate}
+              onChange={handleDateChange}
+              label={copy.selectDate}
             />
           </div>
         }
@@ -213,7 +197,7 @@ export default function DashboardPage() {
           now spans the full width to fill the space. */}
       <TodayReview
         items={todayReviewItems}
-        activeDate={activeDate}
+        activeDate={selectedDate}
         pnlSummary={reviewPnlSummary}
       />
 
